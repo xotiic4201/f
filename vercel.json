@@ -9,7 +9,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/main.html"
     }
   ],
   "headers": [
@@ -21,3 +21,4 @@
     }
   ]
 }
+
