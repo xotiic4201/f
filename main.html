@@ -8,20 +8,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* ========== CYBERPUNK DARK THEME ========== */
+        /* ========== DEFAULT CYBERPUNK THEME ========== */
         :root {
-            --primary: #8a2be2;      /* Dark purple */
-            --primary-dark: #5a189a;  /* Deeper purple */
-            --primary-light: #9d4edd; /* Lighter purple */
-            --secondary: #0a0a0a;     /* Pure black */
+            --primary: #8a2be2;
+            --primary-dark: #5a189a;
+            --primary-light: #9d4edd;
+            --secondary: #0a0a0a;
             --secondary-dark: #000000;
             --secondary-light: #1a1a1a;
-            --accent: #00ffff;        /* Cyan accent */
+            --accent: #00ffff;
             --accent-dark: #00b3b3;
-            --danger: #ff2a6d;        /* Pink/red for alerts */
-            --warning: #ffd166;       /* Yellow for warnings */
-            --success: #06d6a0;       /* Green for success */
-            --info: #118ab2;          /* Blue for info */
+            --danger: #ff2a6d;
+            --warning: #ffd166;
+            --success: #06d6a0;
+            --info: #118ab2;
             
             --background: #000000;
             --card-bg: #0d0d0d;
@@ -33,13 +33,36 @@
             --glow-primary: 0 0 20px rgba(138, 43, 226, 0.7);
             --glow-accent: 0 0 15px rgba(0, 255, 255, 0.5);
             --glow-danger: 0 0 15px rgba(255, 42, 109, 0.5);
-            
-            --radius-sm: 4px;
-            --radius-md: 8px;
-            --radius-lg: 12px;
-            --radius-xl: 16px;
         }
 
+        /* ========== FEMBOY THEME (For Nathan only) ========== */
+        .theme-femboy {
+            --primary: #ff69b4;
+            --primary-dark: #db7093;
+            --primary-light: #ffb6c1;
+            --secondary: #1a0b2e;
+            --secondary-dark: #0d0519;
+            --secondary-light: #2d1b47;
+            --accent: #ff9ff3;
+            --accent-dark: #f368e0;
+            --danger: #ff6b6b;
+            --warning: #ffd93d;
+            --success: #6bcf7f;
+            --info: #54a0ff;
+            
+            --background: #1a0b2e;
+            --card-bg: rgba(45, 27, 71, 0.9);
+            --card-border: #6d3b9a;
+            --text: #ffffff;
+            --text-secondary: #d8bfd8;
+            --text-muted: #a881af;
+            
+            --glow-primary: 0 0 20px rgba(255, 105, 180, 0.7);
+            --glow-accent: 0 0 15px rgba(255, 159, 243, 0.5);
+            --glow-danger: 0 0 15px rgba(255, 107, 107, 0.5);
+        }
+
+        /* ========== COMMON STYLES ========== */
         * {
             margin: 0;
             padding: 0;
@@ -60,10 +83,11 @@
             background-image: 
                 radial-gradient(circle at 20% 50%, rgba(138, 43, 226, 0.05) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 50%),
-                linear-gradient(180deg, rgba(0,0,0,0.95) 0%, rgba(10,10,10,0.95) 100%);
+                linear-gradient(180deg, rgba(0,0,0,0.95) 0%, var(--secondary-dark) 100%);
+            transition: all 0.5s ease;
         }
 
-        /* ========== CYBER GRID BACKGROUND ========== */
+        /* Cyber grid for cyberpunk theme only */
         .cyber-grid {
             position: fixed;
             top: 0;
@@ -76,9 +100,26 @@
             background-size: 50px 50px;
             z-index: -1;
             pointer-events: none;
+            opacity: 0.5;
         }
 
-        /* ========== SCANLINES EFFECT ========== */
+        /* Hearts background for femboy theme */
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 105, 180, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 30%, rgba(255, 182, 193, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 50% 80%, rgba(255, 159, 243, 0.1) 0%, transparent 20%);
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* Scanlines for both themes */
         .scanlines {
             position: fixed;
             top: 0;
@@ -98,6 +139,15 @@
             opacity: 0.3;
         }
 
+        .theme-femboy .scanlines {
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(255, 159, 243, 0.03) 51%,
+                transparent 52%
+            );
+        }
+
         @keyframes scanlines {
             0% { transform: translateY(-100%); }
             100% { transform: translateY(100%); }
@@ -107,6 +157,15 @@
         @keyframes glow-pulse {
             0%, 100% { box-shadow: var(--glow-primary); }
             50% { box-shadow: 0 0 30px rgba(138, 43, 226, 0.9); }
+        }
+
+        .theme-femboy .glow-pulse {
+            animation: glow-pulse 2s infinite;
+        }
+
+        .theme-femboy .glow-pulse {
+            0%, 100% { box-shadow: var(--glow-primary); }
+            50% { box-shadow: 0 0 30px rgba(255, 105, 180, 0.9); }
         }
 
         @keyframes flicker {
@@ -119,12 +178,30 @@
             to { transform: translateY(0); opacity: 1; }
         }
 
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
         .glow-pulse {
             animation: glow-pulse 2s infinite;
         }
 
         .flicker {
             animation: flicker 3s infinite;
+        }
+
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .sparkle {
+            animation: sparkle 2s infinite;
         }
 
         /* ========== CUSTOM SCROLLBAR ========== */
@@ -162,12 +239,12 @@
 
         /* ========== HEADER ========== */
         .header {
-            background: rgba(10, 10, 10, 0.95);
+            background: rgba(13, 13, 13, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(138, 43, 226, 0.3);
             padding: 20px 30px;
             margin-bottom: 30px;
-            border-radius: var(--radius-lg);
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -175,6 +252,12 @@
             overflow: hidden;
             box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
             flex-shrink: 0;
+            transition: all 0.5s ease;
+        }
+
+        .theme-femboy .header {
+            background: rgba(45, 27, 71, 0.95);
+            border-bottom: 1px solid rgba(255, 105, 180, 0.3);
         }
 
         .header::before {
@@ -213,6 +296,10 @@
             animation: glow-pulse 3s infinite;
         }
 
+        .theme-femboy .logo-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+
         .logo-text {
             font-family: 'Orbitron', monospace;
         }
@@ -236,6 +323,7 @@
             opacity: 0.8;
         }
 
+        /* ========== USER PANEL ========== */
         .user-panel {
             display: flex;
             align-items: center;
@@ -277,8 +365,13 @@
             gap: 12px;
             padding: 10px 20px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius-md);
+            border-radius: 8px;
             border: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        .theme-femboy .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 105, 180, 0.3);
         }
 
         .user-avatar {
@@ -292,6 +385,10 @@
             font-weight: bold;
             font-size: 18px;
             color: white;
+        }
+
+        .theme-femboy .user-avatar {
+            animation: sparkle 2s infinite;
         }
 
         .user-details {
@@ -316,7 +413,7 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: var(--radius-md);
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             display: flex;
@@ -343,7 +440,7 @@
         .stat-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
+            border-radius: 12px;
             padding: 25px;
             position: relative;
             overflow: hidden;
@@ -355,6 +452,10 @@
             transform: translateY(-5px);
             border-color: var(--primary);
             box-shadow: var(--glow-primary);
+        }
+
+        .theme-femboy .stat-card:hover {
+            animation: float 0.5s ease-in-out;
         }
 
         .stat-card::before {
@@ -381,6 +482,12 @@
             border: 1px solid rgba(138, 43, 226, 0.3);
         }
 
+        .theme-femboy .stat-icon {
+            background: rgba(255, 105, 180, 0.1);
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            animation: sparkle 2s infinite;
+        }
+
         .stat-value {
             font-family: 'Orbitron', monospace;
             font-size: 42px;
@@ -401,47 +508,20 @@
             font-weight: 600;
         }
 
-        .stat-trend {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-top: 10px;
-            font-size: 12px;
-        }
-
-        .stat-trend.positive {
-            color: var(--success);
-        }
-
-        .stat-trend.negative {
-            color: var(--danger);
-        }
-
-        /* ========== MAIN CONTENT ========== */
-        .main-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-            flex: 1;
-            min-height: 0;
-        }
-
-        @media (max-width: 1200px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
         /* ========== PANELS ========== */
         .panel {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
+            border-radius: 12px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             height: 600px;
+            transition: all 0.5s ease;
+        }
+
+        .theme-femboy .panel {
+            backdrop-filter: blur(10px);
         }
 
         .panel-header {
@@ -454,6 +534,10 @@
             flex-shrink: 0;
         }
 
+        .theme-femboy .panel-header {
+            background: rgba(45, 27, 71, 0.95);
+        }
+
         .panel-header h2 {
             font-family: 'Orbitron', monospace;
             font-size: 18px;
@@ -462,11 +546,6 @@
             color: var(--accent);
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .panel-actions {
-            display: flex;
             gap: 10px;
         }
 
@@ -484,6 +563,10 @@
             border-bottom: 1px solid var(--card-border);
             padding: 5px;
             flex-shrink: 0;
+        }
+
+        .theme-femboy .tabs {
+            background: rgba(45, 27, 71, 0.95);
         }
 
         .tab {
@@ -510,9 +593,17 @@
             background: rgba(138, 43, 226, 0.1);
         }
 
+        .theme-femboy .tab:hover {
+            background: rgba(255, 105, 180, 0.1);
+        }
+
         .tab.active {
             color: var(--primary);
             background: rgba(138, 43, 226, 0.2);
+        }
+
+        .theme-femboy .tab.active {
+            background: rgba(255, 105, 180, 0.2);
         }
 
         .tab.active::after {
@@ -528,7 +619,7 @@
         /* ========== TABLES ========== */
         .table-container {
             overflow-x: auto;
-            border-radius: var(--radius-md);
+            border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(0, 0, 0, 0.5);
         }
@@ -552,6 +643,11 @@
             border-bottom: 2px solid rgba(138, 43, 226, 0.3);
         }
 
+        .theme-femboy th {
+            background: rgba(255, 105, 180, 0.1);
+            border-bottom: 2px solid rgba(255, 105, 180, 0.3);
+        }
+
         td {
             padding: 15px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -560,6 +656,10 @@
 
         tr:hover td {
             background: rgba(138, 43, 226, 0.05);
+        }
+
+        .theme-femboy tr:hover td {
+            background: rgba(255, 105, 180, 0.05);
         }
 
         tr:last-child td {
@@ -603,11 +703,16 @@
             border: 1px solid rgba(0, 255, 255, 0.3);
         }
 
+        .theme-femboy .status-running {
+            background: rgba(255, 159, 243, 0.1);
+            border: 1px solid rgba(255, 159, 243, 0.3);
+        }
+
         /* ========== BUTTONS ========== */
         .btn {
             padding: 12px 24px;
             border: none;
-            border-radius: var(--radius-md);
+            border-radius: 8px;
             font-family: 'Exo 2', sans-serif;
             font-weight: 600;
             font-size: 14px;
@@ -647,6 +752,11 @@
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 0 25px rgba(138, 43, 226, 0.7);
+        }
+
+        .theme-femboy .btn-primary:hover {
+            animation: sparkle 0.5s;
+            box-shadow: 0 0 25px rgba(255, 105, 180, 0.7);
         }
 
         .btn-secondary {
@@ -702,11 +812,15 @@
             padding: 14px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-md);
+            border-radius: 8px;
             color: var(--text);
             font-family: 'Exo 2', sans-serif;
             font-size: 14px;
             transition: all 0.3s;
+        }
+
+        .theme-femboy .form-control {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .form-control:focus {
@@ -714,6 +828,12 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.1);
             background: rgba(138, 43, 226, 0.05);
+        }
+
+        .theme-femboy .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.1);
+            background: rgba(255, 105, 180, 0.05);
         }
 
         .form-control::placeholder {
@@ -734,6 +854,10 @@
             background-repeat: no-repeat;
             background-position: right 16px center;
             padding-right: 40px;
+        }
+
+        .theme-femboy select.form-control {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ff69b4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
         }
 
         .form-hint {
@@ -762,147 +886,6 @@
             color: var(--text-secondary);
         }
 
-        /* ========== MODALS ========== */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 10000;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            max-width: 90vw;
-            max-height: 90vh;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 50px rgba(138, 43, 226, 0.3);
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            z-index: 100;
-            transition: all 0.3s;
-        }
-
-        .modal-close:hover {
-            transform: rotate(90deg);
-            box-shadow: var(--glow-danger);
-        }
-
-        /* ========== LOADING ========== */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(138, 43, 226, 0.3);
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 10001;
-            backdrop-filter: blur(5px);
-        }
-
-        .loading-spinner {
-            width: 80px;
-            height: 80px;
-            border: 4px solid rgba(138, 43, 226, 0.3);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        /* ========== NOTIFICATIONS ========== */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--card-bg);
-            border-left: 4px solid var(--primary);
-            border-radius: var(--radius-md);
-            padding: 16px 20px;
-            color: var(--text);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            z-index: 10000;
-            animation: slideIn 0.3s;
-            max-width: 400px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-
-        .notification-success {
-            border-left-color: var(--success);
-        }
-
-        .notification-error {
-            border-left-color: var(--danger);
-        }
-
-        .notification-warning {
-            border-left-color: var(--warning);
-        }
-
-        .notification-info {
-            border-left-color: var(--info);
-        }
-
         /* ========== LOGIN PAGE ========== */
         .login-container {
             display: flex;
@@ -913,10 +896,15 @@
             animation: fadeIn 0.5s ease;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .login-box {
             background: rgba(13, 13, 13, 0.95);
             border: 1px solid rgba(138, 43, 226, 0.3);
-            border-radius: var(--radius-xl);
+            border-radius: 16px;
             padding: 50px 40px;
             width: 100%;
             max-width: 420px;
@@ -924,6 +912,12 @@
             position: relative;
             overflow: hidden;
             backdrop-filter: blur(10px);
+        }
+
+        .theme-femboy .login-box {
+            background: rgba(45, 27, 71, 0.95);
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            box-shadow: 0 0 60px rgba(255, 105, 180, 0.2);
         }
 
         .login-box::before {
@@ -987,6 +981,53 @@
             color: var(--accent);
         }
 
+        /* ========== NOTIFICATIONS ========== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border-left: 4px solid var(--primary);
+            border-radius: 8px;
+            padding: 16px 20px;
+            color: var(--text);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            animation: slideIn 0.3s;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .notification-success {
+            border-left-color: var(--success);
+        }
+
+        .notification-error {
+            border-left-color: var(--danger);
+        }
+
+        .notification-warning {
+            border-left-color: var(--warning);
+        }
+
+        .notification-info {
+            border-left-color: var(--info);
+        }
+
         /* ========== UTILITY CLASSES ========== */
         .text-primary { color: var(--primary); }
         .text-accent { color: var(--accent); }
@@ -1026,48 +1067,146 @@
             flex-direction: column;
             height: 100%;
         }
+
+        /* ========== LOADING ========== */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(138, 43, 226, 0.3);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(138, 43, 226, 0.3);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* ========== FEMBOY SPECIAL ELEMENTS ========== */
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            color: var(--primary);
+            opacity: 0.5;
+            animation: float 3s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        .heart:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+        .heart:nth-child(2) { top: 20%; right: 15%; animation-delay: 0.5s; }
+        .heart:nth-child(3) { bottom: 15%; left: 20%; animation-delay: 1s; }
+        .heart:nth-child(4) { bottom: 25%; right: 25%; animation-delay: 1.5s; }
+
+        /* ========== SPECIAL BADGE FOR NATHAN ========== */
+        .special-badge {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 10px;
+            animation: sparkle 2s infinite;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .space-y-2 > * + * {
+            margin-top: 8px;
+        }
+
+        .space-y-3 > * + * {
+            margin-top: 12px;
+        }
     </style>
 </head>
-<body>
-    <!-- Background Effects -->
+<body class="theme-cyberpunk">
+    <!-- Theme-specific background elements -->
     <div class="cyber-grid"></div>
+    <div class="hearts-bg hidden"></div>
     <div class="scanlines"></div>
+    
+    <!-- Floating hearts for femboy theme -->
+    <div class="heart"><i class="fas fa-heart"></i></div>
+    <div class="heart"><i class="fas fa-heart"></i></div>
+    <div class="heart"><i class="fas fa-heart"></i></div>
+    <div class="heart"><i class="fas fa-heart"></i></div>
 
     <!-- Login Page -->
-<!-- Updated Login Page Section -->
-<div id="loginPage" class="login-container">
-    <div class="login-box">
-        <div class="login-title">
-            <h1>ANALCONTROL</h1>
-            <div class="tagline">v3.0 | ADMINISTRATOR ACCESS</div>
-        </div>
-        
-        <div class="form-group">
-            <label class="form-label">USERNAME</label>
-            <input type="text" id="loginEmail" class="form-control" placeholder="Enter username" autocomplete="username">
-        </div>
-        
-        <div class="form-group">
-            <label class="form-label">PASSWORD</label>
-            <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" autocomplete="current-password">
-        </div>
-        
-        <button onclick="handleLogin()" class="btn btn-primary w-full" id="loginButton">
-            <i class="fas fa-lock"></i> SECURE LOGIN
-        </button>
-        
-        <div id="loginError" class="hidden mt-2">
-            <div class="text-center text-danger">
-                <i class="fas fa-exclamation-triangle"></i> <span id="loginErrorText">Authentication failed</span>
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <div class="login-title">
+                <h1>ANALCONTROL</h1>
+                <div class="tagline">v3.0 | ADMINISTRATOR ACCESS</div>
             </div>
-            <div class="form-hint text-center">Check your credentials and try again</div>
-        </div>
-        
-        <div class="text-center mt-4">
-            <div class="form-hint">Access restricted to authorized personnel only</div>
+            
+            <div class="form-group">
+                <label class="form-label">USERNAME</label>
+                <input type="text" id="loginEmail" class="form-control" placeholder="Enter username" autocomplete="username">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">PASSWORD</label>
+                <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" autocomplete="current-password">
+            </div>
+            
+            <button onclick="handleLogin()" class="btn btn-primary w-full" id="loginButton">
+                <i class="fas fa-lock"></i> SECURE LOGIN
+            </button>
+            
+            <div id="loginError" class="hidden mt-2">
+                <div class="text-center text-danger">
+                    <i class="fas fa-exclamation-triangle"></i> <span id="loginErrorText">Authentication failed</span>
+                </div>
+                <div class="form-hint text-center">Check your credentials and try again</div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <div class="form-hint">Default users: admin/admin123, xotiic/40671Mps19*, nathan/femboy67</div>
+                <div class="form-hint mt-2">Try "nathan" for special theme!</div>
+            </div>
         </div>
     </div>
-</div>
 
     <!-- Dashboard -->
     <div id="dashboard" class="hidden">
@@ -1079,8 +1218,8 @@
                         <i class="fas fa-server"></i>
                     </div>
                     <div class="logo-text">
-                        <h1>ANALCONTROL v1.0</h1>
-                        <div class="tagline">REAL-TIME ANAL MONITOR</div>
+                        <h1>ANALCONTROL v3.0</h1>
+                        <div class="tagline">REAL-TIME ANAL MONITOR <span id="themeBadge" class="special-badge hidden">SPECIAL THEME</span></div>
                     </div>
                 </div>
                 
@@ -1091,7 +1230,7 @@
                     </div>
                     
                     <div class="user-info">
-                        <div class="user-avatar" id="userAvatar">AD</div>
+                        <div class="user-avatar" id="userAvatar">A</div>
                         <div class="user-details">
                             <div class="user-email" id="userEmail">admin</div>
                             <div class="user-role" id="userRole">ADMINISTRATOR</div>
@@ -1191,7 +1330,7 @@
                                 </div>
                             </div>
                             
-                            <div class="table-container" id="clientsTableContainer">
+                            <div class="table-container hidden" id="clientsTableContainer">
                                 <table>
                                     <thead>
                                         <tr>
@@ -1257,7 +1396,7 @@
                                     <p>Commands will appear here after execution</p>
                                 </div>
                                 
-                                <div class="table-container" id="commandsHistoryContainer">
+                                <div class="table-container hidden" id="commandsHistoryContainer">
                                     <table>
                                         <thead>
                                             <tr>
@@ -1314,7 +1453,7 @@
                                 <p>System logs will appear here</p>
                             </div>
                             
-                            <div class="table-container" id="logsTableContainer">
+                            <div class="table-container hidden" id="logsTableContainer">
                                 <table>
                                     <thead>
                                         <tr>
@@ -1345,7 +1484,7 @@
                         
                         <div class="panel-content">
                             <!-- User Management -->
-                            <div class="mb-6">
+                            <div class="mb-4">
                                 <h3 class="mb-3 text-accent"><i class="fas fa-user-plus"></i> CREATE NEW ADMIN</h3>
                                 <div class="form-group">
                                     <label class="form-label">ADMIN USERNAME</label>
@@ -1362,9 +1501,11 @@
                                     <input type="password" id="newAdminConfirmPassword" class="form-control" placeholder="Confirm password">
                                 </div>
                                 
-                                <div class="form-check mb-4">
-                                    <input type="checkbox" id="newAdminIsAdmin" class="form-check-input" checked>
-                                    <label class="form-check-label">Full Administrator Access</label>
+                                <div class="form-group">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="newAdminIsAdmin" class="mr-2" checked>
+                                        Full Administrator Access
+                                    </label>
                                 </div>
                                 
                                 <button onclick="createNewAdmin()" class="btn btn-primary w-full" id="createAdminBtn">
@@ -1385,7 +1526,7 @@
                             </div>
                             
                             <!-- Existing Users -->
-                            <div class="mt-6">
+                            <div class="mt-4">
                                 <h3 class="mb-3 text-accent"><i class="fas fa-users"></i> EXISTING ADMIN USERS</h3>
                                 <div id="usersEmpty" class="empty-state">
                                     <i class="fas fa-users-slash"></i>
@@ -1393,7 +1534,7 @@
                                     <p>No admin users in database</p>
                                 </div>
                                 
-                                <div class="table-container" id="usersTableContainer">
+                                <div class="table-container hidden" id="usersTableContainer">
                                     <table>
                                         <thead>
                                             <tr>
@@ -1480,17 +1621,18 @@
                         </div>
                     </div>
                     
-                    <!-- Connection Graph -->
-                    <div class="panel">
+                    <!-- Theme Info -->
+                    <div class="panel" id="themeInfoPanel">
                         <div class="panel-header">
-                            <h2><i class="fas fa-signal"></i> CONNECTION GRAPH</h2>
+                            <h2><i class="fas fa-palette"></i> THEME INFO</h2>
                         </div>
                         <div class="panel-content">
-                            <div style="height: 200px;">
-                                <canvas id="connectionsChart"></canvas>
-                            </div>
-                            <div class="text-center mt-2">
-                                <div class="form-hint" id="chartLastUpdate">Updated: Just now</div>
+                            <div class="text-center">
+                                <div class="stat-value" id="themeName">CYBERPUNK</div>
+                                <div class="stat-label" id="themeDescription">DEFAULT THEME</div>
+                                <div class="mt-4">
+                                    <p id="themeMessage">Standard cyberpunk interface</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1521,11 +1663,11 @@
     <script>
         // ========== CONFIGURATION ==========
         const CONFIG = {
-            BACKEND_URL: 'https://dd-kpxl.onrender.com',
+            BACKEND_URL: window.location.origin,
             REFRESH_INTERVAL: 10000,
             WS_RECONNECT_DELAY: 3000,
-            TOKEN_KEY: 'cybercontrol_token',
-            USER_KEY: 'cybercontrol_user'
+            TOKEN_KEY: 'analcontrol_token',
+            USER_KEY: 'analcontrol_user'
         };
 
         // ========== STATE ==========
@@ -1541,7 +1683,8 @@
             refreshInterval: null,
             dashboardStartTime: null,
             connectionAttempts: 0,
-            isInitialized: false
+            isInitialized: false,
+            currentTheme: 'cyberpunk'
         };
 
         // ========== INITIALIZATION ==========
@@ -1554,6 +1697,7 @@
                 try {
                     state.token = token;
                     state.user = JSON.parse(user);
+                    applyTheme(state.user.theme || 'cyberpunk');
                     await initializeDashboard();
                 } catch (error) {
                     console.error('Session restore failed:', error);
@@ -1564,6 +1708,10 @@
             
             // Setup event listeners
             setupEventListeners();
+            
+            // Add pre-filled credentials for testing (remove in production)
+            document.getElementById('loginEmail').value = 'admin';
+            document.getElementById('loginPassword').value = 'admin123';
         });
 
         function setupEventListeners() {
@@ -1577,15 +1725,15 @@
             });
             
             // Admin creation form
-            document.getElementById('newAdminUsername').addEventListener('keypress', (e) => {
+            document.getElementById('newAdminUsername')?.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') createNewAdmin();
             });
             
-            document.getElementById('newAdminPassword').addEventListener('keypress', (e) => {
+            document.getElementById('newAdminPassword')?.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') createNewAdmin();
             });
             
-            document.getElementById('newAdminConfirmPassword').addEventListener('keypress', (e) => {
+            document.getElementById('newAdminConfirmPassword')?.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') createNewAdmin();
             });
             
@@ -1597,10 +1745,73 @@
             });
         }
 
+        // ========== THEME MANAGEMENT ==========
+        function applyTheme(theme) {
+            state.currentTheme = theme;
+            
+            // Remove existing theme classes
+            document.body.classList.remove('theme-femboy', 'theme-cyberpunk');
+            
+            // Apply new theme
+            if (theme === 'femboy') {
+                document.body.classList.add('theme-femboy');
+                
+                // Show hearts background
+                document.querySelector('.hearts-bg').classList.remove('hidden');
+                document.querySelector('.cyber-grid').classList.add('hidden');
+                
+                // Show hearts
+                document.querySelectorAll('.heart').forEach(heart => {
+                    heart.style.display = 'block';
+                });
+                
+                // Show theme badge
+                const themeBadge = document.getElementById('themeBadge');
+                if (themeBadge) {
+                    themeBadge.classList.remove('hidden');
+                    themeBadge.textContent = 'FEMBOY THEME';
+                }
+                
+                // Update theme info
+                updateThemeInfo('FEMBOY', 'Exclusive Pink Theme', 'Welcome to your special femboy theme! ✨');
+                
+            } else {
+                document.body.classList.add('theme-cyberpunk');
+                
+                // Show cyber grid
+                document.querySelector('.cyber-grid').classList.remove('hidden');
+                document.querySelector('.hearts-bg').classList.add('hidden');
+                
+                // Hide hearts
+                document.querySelectorAll('.heart').forEach(heart => {
+                    heart.style.display = 'none';
+                });
+                
+                // Hide theme badge
+                const themeBadge = document.getElementById('themeBadge');
+                if (themeBadge) {
+                    themeBadge.classList.add('hidden');
+                }
+                
+                // Update theme info
+                updateThemeInfo('CYBERPUNK', 'Default Theme', 'Standard cyberpunk interface');
+            }
+        }
+
+        function updateThemeInfo(name, description, message) {
+            const themeName = document.getElementById('themeName');
+            const themeDesc = document.getElementById('themeDescription');
+            const themeMsg = document.getElementById('themeMessage');
+            
+            if (themeName) themeName.textContent = name;
+            if (themeDesc) themeDesc.textContent = description;
+            if (themeMsg) themeMsg.textContent = message;
+        }
+
         // ========== AUTHENTICATION ==========
         async function handleLogin() {
-            const email = document.getElementById('loginEmail').value || 'admin';
-            const password = document.getElementById('loginPassword').value || 'admin123';
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
             
             if (!email || !password) {
                 showNotification('Please enter username and password', 'error');
@@ -1618,9 +1829,14 @@
                     body: JSON.stringify({ email, password })
                 });
                 
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+                
                 const data = await response.json();
                 
-                if (response.ok && data.success) {
+                if (data.success) {
                     // Store auth data
                     localStorage.setItem(CONFIG.TOKEN_KEY, data.token);
                     localStorage.setItem(CONFIG.USER_KEY, JSON.stringify(data.user));
@@ -1628,16 +1844,21 @@
                     state.user = data.user;
                     state.token = data.token;
                     
+                    // Apply user's theme
+                    applyTheme(data.user.theme || 'cyberpunk');
+                    
                     // Initialize dashboard
                     await initializeDashboard();
                     
-                    showNotification('Login successful', 'success');
+                    showNotification(`Login successful! Welcome ${data.user.email}`, 'success');
+                    
                 } else {
-                    throw new Error(data.detail || 'Invalid credentials');
+                    throw new Error(data.detail || 'Authentication failed');
                 }
             } catch (error) {
                 console.error('Login error:', error);
                 document.getElementById('loginError').classList.remove('hidden');
+                document.getElementById('loginErrorText').textContent = error.message;
                 showNotification('Login failed: ' + error.message, 'error');
             } finally {
                 hideLoading();
@@ -1672,8 +1893,12 @@
                 refreshInterval: null,
                 dashboardStartTime: null,
                 connectionAttempts: 0,
-                isInitialized: false
+                isInitialized: false,
+                currentTheme: 'cyberpunk'
             };
+            
+            // Reset to default theme
+            applyTheme('cyberpunk');
             
             // Show login page
             document.getElementById('dashboard').classList.add('hidden');
@@ -1694,8 +1919,14 @@
                 // Set user info
                 if (state.user) {
                     document.getElementById('userEmail').textContent = state.user.email;
-                    document.getElementById('userAvatar').textContent = state.user.email.charAt(0).toUpperCase();
+                    const firstLetter = state.user.email.charAt(0).toUpperCase();
+                    document.getElementById('userAvatar').textContent = firstLetter;
                     document.getElementById('userRole').textContent = state.user.is_admin ? 'ADMINISTRATOR' : 'USER';
+                    
+                    // Special avatar for Nathan
+                    if (state.user.email === 'nathan') {
+                        document.getElementById('userAvatar').style.background = 'linear-gradient(45deg, #ff69b4, #ff9ff3)';
+                    }
                     
                     // Show admin tab only for xotiic user
                     if (state.user.email === 'xotiic' && state.user.is_admin) {
@@ -1848,6 +2079,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.token}`
                     },
                     body: JSON.stringify({
                         email: username,
@@ -2651,13 +2883,15 @@
 
         // ========== CHART FUNCTIONS ==========
         function initializeCharts() {
-            const ctx = document.getElementById('connectionsChart').getContext('2d');
+            const ctx = document.getElementById('connectionsChart');
+            if (!ctx) return;
             
+            const canvasCtx = ctx.getContext('2d');
             if (state.charts.connections) {
                 state.charts.connections.destroy();
             }
             
-            state.charts.connections = new Chart(ctx, {
+            state.charts.connections = new Chart(canvasCtx, {
                 type: 'line',
                 data: {
                     labels: [],
@@ -2736,9 +2970,6 @@
             }
             
             chart.update('none');
-            
-            // Update last update time
-            document.getElementById('chartLastUpdate').textContent = `Updated: ${formatTime(new Date().toISOString())}`;
         }
 
         // ========== SYSTEM FUNCTIONS ==========
@@ -2753,12 +2984,15 @@
 
         // ========== UI HELPERS ==========
         function showLoading(message = 'Loading...') {
-            document.getElementById('loadingMessage').textContent = message;
-            document.getElementById('loadingOverlay').style.display = 'flex';
+            const loadingMessage = document.getElementById('loadingMessage');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingMessage) loadingMessage.textContent = message;
+            if (loadingOverlay) loadingOverlay.style.display = 'flex';
         }
 
         function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
         }
 
         function showNotification(message, type = 'info', duration = 3000) {
@@ -2823,4 +3057,3 @@
     </script>
 </body>
 </html>
-
