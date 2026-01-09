@@ -730,77 +730,6 @@
             margin-top: 20px;
         }
 
-        /* ========== SCREENSHOT CARDS ========== */
-        .screenshot-card {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .screenshot-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: var(--glow-primary);
-        }
-
-        .screenshot-card img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .screenshot-info {
-            padding: 15px;
-        }
-
-        .screenshot-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--accent);
-        }
-
-        .screenshot-meta {
-            color: var(--text-muted);
-            font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* ========== AUDIO CONTROLS ========== */
-        .audio-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .audio-visualizer {
-            flex: 1;
-            height: 40px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .audio-bar {
-            position: absolute;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(to top, var(--primary), var(--accent));
-            border-radius: 2px 2px 0 0;
-            animation: audio-wave 1s ease-in-out infinite;
-        }
-
-        @keyframes audio-wave {
-            0%, 100% { height: 20%; }
-            50% { height: 100%; }
-        }
-
         /* ========== EMPTY STATES ========== */
         .empty-state {
             text-align: center;
@@ -961,91 +890,6 @@
             border-left-color: var(--info);
         }
 
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 1024px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .header {
-                flex-direction: column;
-                gap: 20px;
-                padding: 20px;
-            }
-            
-            .user-panel {
-                width: 100%;
-                justify-content: space-between;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .tabs {
-                flex-direction: column;
-            }
-            
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stat-value {
-                font-size: 32px;
-            }
-            
-            .header {
-                padding: 15px;
-            }
-            
-            .user-info {
-                padding: 8px 12px;
-            }
-        }
-
-        /* ========== UTILITY CLASSES ========== */
-        .text-primary { color: var(--primary); }
-        .text-accent { color: var(--accent); }
-        .text-success { color: var(--success); }
-        .text-danger { color: var(--danger); }
-        .text-warning { color: var(--warning); }
-        .text-info { color: var(--info); }
-
-        .mb-1 { margin-bottom: 8px; }
-        .mb-2 { margin-bottom: 16px; }
-        .mb-3 { margin-bottom: 24px; }
-        .mb-4 { margin-bottom: 32px; }
-
-        .mt-1 { margin-top: 8px; }
-        .mt-2 { margin-top: 16px; }
-        .mt-3 { margin-top: 24px; }
-        .mt-4 { margin-top: 32px; }
-
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .gap-2 { gap: 16px; }
-        .gap-3 { gap: 24px; }
-
-        .w-full { width: 100%; }
-        .h-full { height: 100%; }
-
-        .hidden { display: none; }
-        .block { display: block; }
-
         /* ========== LOGIN PAGE ========== */
         .login-container {
             display: flex;
@@ -1140,22 +984,28 @@
         <div class="login-box">
             <div class="login-title">
                 <h1>ANALCONTROL</h1>
-                <div class="tagline">v1.0 | ADMINISTRATOR ACCESS</div>
+                <div class="tagline">v3.0 | ADMINISTRATOR ACCESS</div>
             </div>
             
             <div class="form-group">
-                <label class="form-label">EMAIL ADDRESS</label>
-                <input type="email" id="loginEmail" class="form-control" placeholder="user" autocomplete="username">
+                <label class="form-label">USERNAME</label>
+                <input type="text" id="loginEmail" class="form-control" placeholder="admin" value="admin" autocomplete="username">
             </div>
             
             <div class="form-group">
                 <label class="form-label">PASSWORD</label>
-                <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" autocomplete="current-password">
+                <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" value="admin123" autocomplete="current-password">
             </div>
             
             <button onclick="handleLogin()" class="btn btn-primary w-full" id="loginButton">
                 <i class="fas fa-lock"></i> SECURE LOGIN
             </button>
+            
+            <div class="text-center mt-4">
+                <button onclick="showCreateAccount()" class="btn btn-secondary">
+                    <i class="fas fa-user-plus"></i> CREATE ADMIN ACCOUNT
+                </button>
+            </div>
             
             <div id="loginError" class="hidden mt-2">
                 <div class="text-center text-danger">
@@ -1163,9 +1013,57 @@
                 </div>
                 <div class="form-hint text-center">Check your credentials and try again</div>
             </div>
+        </div>
+    </div>
+
+    <!-- Create Account Modal -->
+    <div id="createAccountModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 500px;">
+            <button onclick="closeModal('createAccountModal')" class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
             
-            <div class="text-center mt-4">
+            <div class="p-6">
+                <h2 class="text-center mb-4 text-accent">
+                    <i class="fas fa-user-plus"></i> CREATE ADMIN ACCOUNT
+                </h2>
                 
+                <div class="form-group">
+                    <label class="form-label">ADMIN USERNAME</label>
+                    <input type="text" id="createEmail" class="form-control" placeholder="xotiic">
+                    <div class="form-hint">This will be your login username</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">PASSWORD</label>
+                    <input type="password" id="createPassword" class="form-control" placeholder="••••••••">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">CONFIRM PASSWORD</label>
+                    <input type="password" id="confirmPassword" class="form-control" placeholder="••••••••">
+                </div>
+                
+                <div class="form-check mb-4">
+                    <input type="checkbox" id="isAdmin" class="form-check-input" checked>
+                    <label class="form-check-label">Administrator Account</label>
+                </div>
+                
+                <button onclick="createAccount()" class="btn btn-primary w-full" id="createAccountBtn">
+                    <i class="fas fa-user-plus"></i> CREATE ACCOUNT
+                </button>
+                
+                <div id="createAccountError" class="hidden mt-2">
+                    <div class="text-center text-danger">
+                        <i class="fas fa-exclamation-triangle"></i> <span id="createErrorText"></span>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-4">
+                    <button onclick="closeModal('createAccountModal')" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> BACK TO LOGIN
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -1257,12 +1155,6 @@
                         <button class="tab" onclick="switchTab('commands')">
                             <i class="fas fa-terminal"></i> COMMANDS
                         </button>
-                        <button class="tab" onclick="switchTab('screenshots')">
-                            <i class="fas fa-camera"></i> SCREENSHOTS
-                        </button>
-                        <button class="tab" onclick="switchTab('audio')">
-                            <i class="fas fa-microphone"></i> AUDIO
-                        </button>
                         <button class="tab" onclick="switchTab('logs')">
                             <i class="fas fa-clipboard-list"></i> LOGS
                         </button>
@@ -1287,6 +1179,11 @@
                                 <i class="fas fa-users-slash"></i>
                                 <h3>No Clients Connected</h3>
                                 <p>Waiting for client connections...</p>
+                                <div class="mt-2">
+                                    <button onclick="refreshClients()" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-sync"></i> Refresh
+                                    </button>
+                                </div>
                             </div>
                             
                             <div class="table-container" id="clientsTableContainer">
@@ -1333,9 +1230,6 @@
                                 <select id="commandType" class="form-control" onchange="updateCommandParams()">
                                     <option value="screenshot">📷 Capture Screenshot</option>
                                     <option value="system_info">💻 Get System Information</option>
-                                    <option value="audio_record">🎤 Record Audio</option>
-                                    <option value="audio_stop">⏹️ Stop Recording</option>
-                                    <option value="process_list">📊 List Processes</option>
                                     <option value="custom">⚡ Custom Command</option>
                                 </select>
                             </div>
@@ -1373,89 +1267,6 @@
                                             <!-- Command history will be loaded here -->
                                         </tbody>
                                     </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Screenshots Tab -->
-                    <div id="screenshotsTab" class="tab-content hidden">
-                        <div class="panel-header">
-                            <h2><i class="fas fa-camera"></i> SCREENSHOT GALLERY</h2>
-                            <div class="panel-actions">
-                                <button onclick="refreshScreenshots()" class="btn btn-secondary btn-sm">
-                                    <i class="fas fa-sync"></i> REFRESH
-                                </button>
-                                <button onclick="captureAllScreens()" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-camera"></i> CAPTURE ALL
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="panel-content">
-                            <div id="screenshotsEmpty" class="empty-state">
-                                <i class="fas fa-camera-slash"></i>
-                                <h3>No Screenshots Available</h3>
-                                <p>Capture screenshots from connected clients</p>
-                            </div>
-                            
-                            <div class="card-grid" id="screenshotsGrid">
-                                <!-- Screenshots will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Audio Tab -->
-                    <div id="audioTab" class="tab-content hidden">
-                        <div class="panel-header">
-                            <h2><i class="fas fa-microphone"></i> AUDIO MONITORING</h2>
-                            <div class="panel-actions">
-                                <button onclick="refreshAudio()" class="btn btn-secondary btn-sm">
-                                    <i class="fas fa-sync"></i> REFRESH
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="panel-content">
-                            <div class="form-group">
-                                <label class="form-label">SELECT CLIENT</label>
-                                <select id="audioClient" class="form-control">
-                                    <option value="">-- Select a client --</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">RECORDING DURATION (seconds)</label>
-                                <input type="range" id="audioDuration" min="5" max="60" value="10" class="w-full">
-                                <div class="flex justify-between">
-                                    <span class="text-sm">5s</span>
-                                    <span class="text-sm" id="durationValue">10s</span>
-                                    <span class="text-sm">60s</span>
-                                </div>
-                            </div>
-                            
-                            <div class="audio-controls">
-                                <button onclick="startRecording()" class="btn btn-primary">
-                                    <i class="fas fa-circle"></i> START RECORDING
-                                </button>
-                                <button onclick="stopRecording()" class="btn btn-danger">
-                                    <i class="fas fa-stop"></i> STOP
-                                </button>
-                                <div class="audio-visualizer" id="audioVisualizer">
-                                    <!-- Audio bars will be generated here -->
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4">
-                                <h3 class="mb-2"><i class="fas fa-headphones"></i> RECORDINGS</h3>
-                                <div id="audioEmpty" class="empty-state">
-                                    <i class="fas fa-volume-mute"></i>
-                                    <h3>No Audio Recordings</h3>
-                                    <p>Start recording to capture audio</p>
-                                </div>
-                                
-                                <div class="card-grid" id="audioGrid">
-                                    <!-- Audio recordings will be loaded here -->
                                 </div>
                             </div>
                         </div>
@@ -1567,17 +1378,11 @@
                         </div>
                         <div class="panel-content">
                             <div class="space-y-2">
-                                <button onclick="quickAction('screenshot_all')" class="btn btn-secondary w-full justify-start">
-                                    <i class="fas fa-camera"></i> Capture All Screens
-                                </button>
-                                <button onclick="quickAction('system_info_all')" class="btn btn-secondary w-full justify-start">
-                                    <i class="fas fa-info-circle"></i> Get All System Info
-                                </button>
-                                <button onclick="quickAction('audio_all')" class="btn btn-secondary w-full justify-start">
-                                    <i class="fas fa-microphone"></i> Record All Audio
-                                </button>
                                 <button onclick="quickAction('refresh_all')" class="btn btn-secondary w-full justify-start">
                                     <i class="fas fa-sync"></i> Refresh All Data
+                                </button>
+                                <button onclick="quickAction('test_connection')" class="btn btn-secondary w-full justify-start">
+                                    <i class="fas fa-plug"></i> Test Connection
                                 </button>
                             </div>
                         </div>
@@ -1616,31 +1421,6 @@
         </div>
     </div>
 
-    <!-- Modals -->
-    <div id="screenshotModal" class="modal hidden">
-        <div class="modal-content">
-            <button onclick="closeModal('screenshotModal')" class="modal-close">
-                <i class="fas fa-times"></i>
-            </button>
-            <img id="modalImage" src="" style="max-width: 90vw; max-height: 80vh;">
-            <div class="p-4">
-                <div id="modalInfo" class="text-center"></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="audioModal" class="modal hidden">
-        <div class="modal-content">
-            <button onclick="closeModal('audioModal')" class="modal-close">
-                <i class="fas fa-times"></i>
-            </button>
-            <audio id="modalAudio" controls style="width: 100%;"></audio>
-            <div class="p-4">
-                <div id="audioInfo" class="text-center"></div>
-            </div>
-        </div>
-    </div>
-
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner"></div>
@@ -1650,7 +1430,7 @@
     <script>
         // ========== CONFIGURATION ==========
         const CONFIG = {
-            BACKEND_URL: 'https://dd-kpxl.onrender.com', // ⚠️ CHANGE THIS
+            BACKEND_URL: 'https://dd-kpxl.onrender.com',
             REFRESH_INTERVAL: 10000,
             WS_RECONNECT_DELAY: 3000,
             TOKEN_KEY: 'cybercontrol_token',
@@ -1664,8 +1444,6 @@
             ws: null,
             clients: [],
             commands: [],
-            screenshots: [],
-            audioRecordings: [],
             logs: [],
             charts: {},
             refreshInterval: null,
@@ -1694,7 +1472,6 @@
             
             // Setup event listeners
             setupEventListeners();
-            updateAudioVisualizer();
         });
 
         function setupEventListeners() {
@@ -1707,13 +1484,18 @@
                 if (e.key === 'Enter') handleLogin();
             });
             
-            // Audio duration slider
-            const durationSlider = document.getElementById('audioDuration');
-            if (durationSlider) {
-                durationSlider.addEventListener('input', (e) => {
-                    document.getElementById('durationValue').textContent = e.target.value + 's';
-                });
-            }
+            // Create account form
+            document.getElementById('createEmail').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') createAccount();
+            });
+            
+            document.getElementById('createPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') createAccount();
+            });
+            
+            document.getElementById('confirmPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') createAccount();
+            });
             
             // Close modals on ESC
             document.addEventListener('keydown', (e) => {
@@ -1723,27 +1505,87 @@
             });
         }
 
-        function updateAudioVisualizer() {
-            const visualizer = document.getElementById('audioVisualizer');
-            if (!visualizer) return;
+        // ========== ACCOUNT CREATION ==========
+        function showCreateAccount() {
+            document.getElementById('createEmail').value = '';
+            document.getElementById('createPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            document.getElementById('createAccountError').classList.add('hidden');
+            document.getElementById('createAccountModal').classList.remove('hidden');
+        }
+
+        async function createAccount() {
+            const email = document.getElementById('createEmail').value.trim();
+            const password = document.getElementById('createPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const isAdmin = document.getElementById('isAdmin').checked;
             
-            visualizer.innerHTML = '';
-            for (let i = 0; i < 20; i++) {
-                const bar = document.createElement('div');
-                bar.className = 'audio-bar';
-                bar.style.left = (i * 6) + 'px';
-                bar.style.animationDelay = (i * 0.05) + 's';
-                visualizer.appendChild(bar);
+            // Validation
+            if (!email || !password || !confirmPassword) {
+                showCreateError('Please fill in all fields');
+                return;
             }
+            
+            if (password !== confirmPassword) {
+                showCreateError('Passwords do not match');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showCreateError('Password must be at least 6 characters');
+                return;
+            }
+            
+            showLoading('Creating account...');
+            
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/create-account`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password,
+                        confirm_password: confirmPassword,
+                        is_admin: isAdmin
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showNotification('Account created successfully! You can now login.', 'success');
+                    closeModal('createAccountModal');
+                    
+                    // Auto-fill login form
+                    document.getElementById('loginEmail').value = email;
+                    document.getElementById('loginPassword').value = password;
+                } else {
+                    throw new Error(data.detail || 'Account creation failed');
+                }
+            } catch (error) {
+                console.error('Create account error:', error);
+                showCreateError(error.message || 'Failed to create account');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function showCreateError(message) {
+            const errorDiv = document.getElementById('createAccountError');
+            const errorText = document.getElementById('createErrorText');
+            errorText.textContent = message;
+            errorDiv.classList.remove('hidden');
         }
 
         // ========== AUTHENTICATION ==========
         async function handleLogin() {
-            const email = document.getElementById('loginEmail').value || 'admin@system.io';
-            const password = document.getElementById('loginPassword').value || 'password123';
+            const email = document.getElementById('loginEmail').value || 'admin';
+            const password = document.getElementById('loginPassword').value || 'admin123';
             
             if (!email || !password) {
-                showNotification('Please enter email and password', 'error');
+                showNotification('Please enter username and password', 'error');
                 return;
             }
             
@@ -1806,8 +1648,6 @@
                 ws: null,
                 clients: [],
                 commands: [],
-                screenshots: [],
-                audioRecordings: [],
                 logs: [],
                 charts: {},
                 refreshInterval: null,
@@ -1884,28 +1724,28 @@
 
         async function loadDashboardData() {
             try {
+                showLoading('Loading dashboard data...');
+                
                 // Load all data in parallel
-                const [clientsData, commandsData, screenshotsData, audioData, logsData] = await Promise.allSettled([
+                const [clientsData, commandsData, logsData] = await Promise.allSettled([
                     apiRequest('/api/clients'),
                     apiRequest('/api/commands?limit=20'),
-                    apiRequest('/api/screenshots?limit=12'),
-                    apiRequest('/api/audio?limit=10'),
                     apiRequest('/api/logs?limit=100')
                 ]);
                 
                 // Update state
                 state.clients = clientsData.status === 'fulfilled' ? clientsData.value.clients || [] : [];
-                state.commands = commandsData.status === 'fulfilled' ? commandsData.value.commands || [] : [];
-                state.screenshots = screenshotsData.status === 'fulfilled' ? screenshotsData.value.screenshots || [] : [];
-                state.audioRecordings = audioData.status === 'fulfilled' ? audioData.value.audio_recordings || [] : [];
-                state.logs = logsData.status === 'fulfilled' ? logsData.value.logs || [] : [];
+                state.commands = commandsData.status === 'fulfilled' ? commandsData.value.commands || [];
+                state.logs = logsData.status === 'fulfilled' ? logsData.value.logs || [];
+                
+                // Debug log
+                console.log('Clients loaded:', state.clients.length);
+                console.log('Clients data:', state.clients);
                 
                 // Update UI
                 updateStats();
                 updateClientsTable();
                 updateCommandsTable();
-                updateScreenshotsGrid();
-                updateAudioGrid();
                 updateLogsTable();
                 updateClientDropdowns();
                 updateLogFilterClients();
@@ -1915,19 +1755,21 @@
                 
             } catch (error) {
                 console.error('Failed to load dashboard data:', error);
+                showNotification('Failed to load dashboard data', 'error');
+            } finally {
+                hideLoading();
             }
         }
 
         function updateStats() {
             const totalClients = state.clients.length;
-            const onlineClients = state.clients.filter(c => c.online).length;
+            const onlineClients = state.clients.filter(c => c.online || c.ws_online).length;
             const activeCommands = state.commands.filter(c => c.status === 'pending' || c.status === 'running').length;
-            const audioRecordings = state.audioRecordings.length;
             
             document.getElementById('totalClients').textContent = totalClients;
             document.getElementById('onlineClients').textContent = onlineClients;
             document.getElementById('activeCommands').textContent = activeCommands;
-            document.getElementById('audioRecordings').textContent = audioRecordings;
+            document.getElementById('audioRecordings').textContent = '0';
             
             // Update trends
             document.getElementById('clientsTrend').innerHTML = `
@@ -1936,7 +1778,7 @@
             
             document.getElementById('onlineHint').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
             document.getElementById('commandsHint').textContent = activeCommands === 0 ? 'No active commands' : `${activeCommands} running`;
-            document.getElementById('audioHint').textContent = audioRecordings === 0 ? 'No recordings yet' : `${audioRecordings} stored`;
+            document.getElementById('audioHint').textContent = 'Feature coming soon';
             
             // Update system status
             document.getElementById('activeSessions').textContent = onlineClients;
@@ -2052,6 +1894,8 @@
         }
 
         function handleWebSocketMessage(data) {
+            console.log('WebSocket message:', data);
+            
             switch (data.type) {
                 case 'client_connected':
                     showNotification(`Client connected: ${data.client_id}`, 'info');
@@ -2063,16 +1907,6 @@
                     refreshClients();
                     break;
                     
-                case 'screenshot_received':
-                    showNotification(`Screenshot received from ${data.client_id}`, 'success');
-                    refreshScreenshots();
-                    break;
-                    
-                case 'audio_received':
-                    showNotification(`Audio recording received from ${data.client_id}`, 'success');
-                    refreshAudio();
-                    break;
-                    
                 case 'command_result':
                     showNotification(`Command completed for ${data.client_id}`, 'info');
                     refreshCommands();
@@ -2082,7 +1916,7 @@
                     // Add log to state
                     state.logs.unshift({
                         created_at: data.timestamp,
-                        clients: { client_id: data.client_id },
+                        client: { client_id: data.client_id },
                         log_type: data.log_type,
                         message: data.message
                     });
@@ -2113,8 +1947,9 @@
             state.clients.forEach(client => {
                 const row = document.createElement('tr');
                 const lastSeen = formatTime(client.last_seen);
-                const statusClass = client.online ? 'status-online' : 'status-offline';
-                const statusText = client.online ? 'ONLINE' : 'OFFLINE';
+                const isOnline = client.online || client.ws_online;
+                const statusClass = isOnline ? 'status-online' : 'status-offline';
+                const statusText = isOnline ? 'ONLINE' : 'OFFLINE';
                 
                 row.innerHTML = `
                     <td><code class="text-accent">${client.client_id.substring(0, 8)}</code></td>
@@ -2129,9 +1964,6 @@
                             </button>
                             <button onclick="clientAction('${client.client_id}', 'info')" class="btn btn-secondary btn-icon" title="System Info">
                                 <i class="fas fa-info-circle"></i>
-                            </button>
-                            <button onclick="clientAction('${client.client_id}', 'audio')" class="btn btn-secondary btn-icon" title="Record Audio">
-                                <i class="fas fa-microphone"></i>
                             </button>
                         </div>
                     </td>
@@ -2161,7 +1993,7 @@
             state.commands.forEach(command => {
                 const row = document.createElement('tr');
                 const time = formatTime(command.created_at);
-                const clientName = command.clients ? (command.clients.name || command.clients.client_id.substring(0, 8)) : 'Unknown';
+                const clientName = command.client ? (command.client.name || command.client.client_id.substring(0, 8)) : 'Unknown';
                 const status = command.status || 'pending';
                 const result = command.result ? truncateText(command.result, 30) : '-';
                 
@@ -2173,98 +2005,6 @@
                     <td>${result}</td>
                 `;
                 table.appendChild(row);
-            });
-        }
-
-        function updateScreenshotsGrid() {
-            const grid = document.getElementById('screenshotsGrid');
-            const emptyState = document.getElementById('screenshotsEmpty');
-            
-            if (!grid || !emptyState) return;
-            
-            grid.innerHTML = '';
-            
-            if (state.screenshots.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            }
-            
-            emptyState.classList.add('hidden');
-            
-            state.screenshots.forEach(screenshot => {
-                const clientName = screenshot.clients ? 
-                    (screenshot.clients.name || screenshot.clients.client_id.substring(0, 8)) : 
-                    'Unknown';
-                const timestamp = formatTime(screenshot.created_at);
-                const imageData = screenshot.image_data || '';
-                
-                if (!imageData) return;
-                
-                const card = document.createElement('div');
-                card.className = 'screenshot-card';
-                card.innerHTML = `
-                    <img src="data:image/png;base64,${imageData}" 
-                         alt="Screenshot"
-                         onclick="showScreenshot('${imageData}', '${clientName}', '${timestamp}')">
-                    <div class="screenshot-info">
-                        <div class="screenshot-title">${clientName}</div>
-                        <div class="screenshot-meta">
-                            <span>${timestamp}</span>
-                            <button onclick="downloadScreenshot('${imageData}', '${clientName}_${timestamp}.png')" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-download"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function updateAudioGrid() {
-            const grid = document.getElementById('audioGrid');
-            const emptyState = document.getElementById('audioEmpty');
-            
-            if (!grid || !emptyState) return;
-            
-            grid.innerHTML = '';
-            
-            if (state.audioRecordings.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            }
-            
-            emptyState.classList.add('hidden');
-            
-            state.audioRecordings.forEach(audio => {
-                const clientName = audio.clients ? 
-                    (audio.clients.name || audio.clients.client_id.substring(0, 8)) : 
-                    'Unknown';
-                const timestamp = formatTime(audio.created_at);
-                const audioData = audio.audio_data || '';
-                
-                if (!audioData) return;
-                
-                const card = document.createElement('div');
-                card.className = 'screenshot-card';
-                card.innerHTML = `
-                    <div class="screenshot-info">
-                        <div class="screenshot-title">
-                            <i class="fas fa-headphones"></i> ${clientName}
-                        </div>
-                        <div class="screenshot-meta">
-                            <span>${timestamp}</span>
-                            <div>
-                                <button onclick="playAudio('${audioData}', '${clientName}', '${timestamp}')" class="btn btn-secondary btn-sm">
-                                    <i class="fas fa-play"></i>
-                                </button>
-                                <button onclick="downloadAudio('${audioData}', '${clientName}_${timestamp}.wav')" class="btn btn-secondary btn-sm">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
             });
         }
 
@@ -2289,7 +2029,7 @@
             
             if (filterClient !== 'all') {
                 filteredLogs = filteredLogs.filter(log => {
-                    const clientId = log.clients ? log.clients.client_id : null;
+                    const clientId = log.client ? log.client.client_id : null;
                     return clientId === filterClient;
                 });
             }
@@ -2308,8 +2048,8 @@
             filteredLogs.forEach(log => {
                 const row = document.createElement('tr');
                 const time = formatTime(log.created_at);
-                const clientName = log.clients ? 
-                    (log.clients.name || log.clients.client_id.substring(0, 8)) : 
+                const clientName = log.client ? 
+                    (log.client.name || log.client.client_id.substring(0, 8)) : 
                     'System';
                 const logType = log.log_type || 'info';
                 
@@ -2325,28 +2065,15 @@
 
         function updateClientDropdowns() {
             const commandSelect = document.getElementById('commandClient');
-            const audioSelect = document.getElementById('audioClient');
             
             if (commandSelect) {
                 commandSelect.innerHTML = '<option value="">-- Select a client --</option>';
                 state.clients.forEach(client => {
-                    if (client.online) {
+                    if (client.online || client.ws_online) {
                         const option = document.createElement('option');
                         option.value = client.client_id;
                         option.textContent = `${client.name} (${client.client_id.substring(0, 8)})`;
                         commandSelect.appendChild(option);
-                    }
-                });
-            }
-            
-            if (audioSelect) {
-                audioSelect.innerHTML = '<option value="">-- Select a client --</option>';
-                state.clients.forEach(client => {
-                    if (client.online) {
-                        const option = document.createElement('option');
-                        option.value = client.client_id;
-                        option.textContent = `${client.name} (${client.client_id.substring(0, 8)})`;
-                        audioSelect.appendChild(option);
                     }
                 });
             }
@@ -2361,9 +2088,9 @@
             
             const clients = new Map();
             state.logs.forEach(log => {
-                if (log.clients) {
-                    const clientId = log.clients.client_id;
-                    const clientName = log.clients.name || clientId.substring(0, 8);
+                if (log.client) {
+                    const clientId = log.client.client_id;
+                    const clientName = log.client.name || clientId.substring(0, 8);
                     if (clientId && !clients.has(clientId)) {
                         clients.set(clientId, clientName);
                     }
@@ -2395,11 +2122,6 @@
                 paramsLabel.textContent = 'CUSTOM COMMAND';
                 codeTextarea.placeholder = 'Enter custom command (e.g., "dir" or "ls -la")';
                 paramsHint.textContent = 'Enter any system command to execute on the client';
-            } else if (commandType === 'audio_record') {
-                paramsDiv.classList.remove('hidden');
-                paramsLabel.textContent = 'RECORDING DURATION (seconds)';
-                codeTextarea.placeholder = '10';
-                paramsHint.textContent = 'Enter recording duration in seconds (default: 10)';
             } else {
                 paramsDiv.classList.add('hidden');
             }
@@ -2423,9 +2145,6 @@
                     return;
                 }
                 parameters.code = code;
-            } else if (commandType === 'audio_record') {
-                const duration = document.getElementById('commandCode').value.trim() || '10';
-                parameters.duration = parseInt(duration);
             }
             
             showLoading('Sending command...');
@@ -2463,53 +2182,6 @@
             showNotification('Command form cleared', 'info');
         }
 
-        // ========== AUDIO FUNCTIONS ==========
-        async function startRecording() {
-            const clientId = document.getElementById('audioClient').value;
-            const duration = document.getElementById('audioDuration').value;
-            
-            if (!clientId) {
-                showNotification('Please select a client first', 'warning');
-                return;
-            }
-            
-            showLoading('Starting recording...');
-            
-            try {
-                const response = await apiRequest(`/api/audio/${clientId}/record?duration=${duration}`, 'POST');
-                
-                if (response.success) {
-                    showNotification(`Recording started for ${duration} seconds`, 'success');
-                } else {
-                    throw new Error('Recording failed');
-                }
-            } catch (error) {
-                console.error('Failed to start recording:', error);
-                showNotification('Failed to start recording: ' + error.message, 'error');
-            } finally {
-                hideLoading();
-            }
-        }
-
-        async function stopRecording() {
-            const clientId = document.getElementById('audioClient').value;
-            
-            if (!clientId) {
-                showNotification('Please select a client first', 'warning');
-                return;
-            }
-            
-            try {
-                const response = await apiRequest(`/api/audio/${clientId}/stop`, 'POST');
-                
-                if (response.success) {
-                    showNotification('Recording stopped', 'info');
-                }
-            } catch (error) {
-                console.error('Failed to stop recording:', error);
-            }
-        }
-
         // ========== CLIENT ACTIONS ==========
         function clientAction(clientId, action) {
             switch (action) {
@@ -2519,13 +2191,6 @@
                 case 'info':
                     sendSystemInfoCommand(clientId);
                     break;
-                case 'audio':
-                    // Switch to audio tab and select client
-                    switchTab('audio');
-                    setTimeout(() => {
-                        document.getElementById('audioClient').value = clientId;
-                    }, 100);
-                    break;
             }
         }
 
@@ -2533,7 +2198,11 @@
             showLoading('Requesting screenshot...');
             
             try {
-                const response = await apiRequest(`/api/screenshot/${clientId}`, 'POST');
+                const response = await apiRequest('/api/command', 'POST', {
+                    client_id: clientId,
+                    command: 'screenshot',
+                    parameters: {}
+                });
                 
                 if (response.success) {
                     showNotification('Screenshot request sent', 'success');
@@ -2550,15 +2219,20 @@
 
         async function sendSystemInfoCommand(clientId) {
             try {
-                await apiRequest('/api/command', 'POST', {
+                const response = await apiRequest('/api/command', 'POST', {
                     client_id: clientId,
                     command: 'system_info',
                     parameters: {}
                 });
                 
-                showNotification('System info requested', 'info');
+                if (response.success) {
+                    showNotification('System info requested', 'info');
+                } else {
+                    throw new Error('System info request failed');
+                }
             } catch (error) {
                 console.error('Failed to request system info:', error);
+                showNotification('Failed to request system info: ' + error.message, 'error');
             }
         }
 
@@ -2588,30 +2262,6 @@
             }
         }
 
-        async function refreshScreenshots() {
-            try {
-                const data = await apiRequest('/api/screenshots?limit=12');
-                state.screenshots = data.screenshots || [];
-                updateScreenshotsGrid();
-                updateStats();
-                showNotification('Screenshots refreshed', 'success');
-            } catch (error) {
-                console.error('Failed to refresh screenshots:', error);
-            }
-        }
-
-        async function refreshAudio() {
-            try {
-                const data = await apiRequest('/api/audio?limit=10');
-                state.audioRecordings = data.audio_recordings || [];
-                updateAudioGrid();
-                updateStats();
-                showNotification('Audio recordings refreshed', 'success');
-            } catch (error) {
-                console.error('Failed to refresh audio:', error);
-            }
-        }
-
         async function refreshLogs() {
             try {
                 const limit = parseInt(document.getElementById('logLimit').value) || 50;
@@ -2628,76 +2278,36 @@
         // ========== QUICK ACTIONS ==========
         function quickAction(action) {
             switch (action) {
-                case 'screenshot_all':
-                    captureAllScreens();
-                    break;
-                case 'system_info_all':
-                    systemInfoAll();
-                    break;
-                case 'audio_all':
-                    recordAllAudio();
-                    break;
                 case 'refresh_all':
                     refreshAll();
                     break;
+                case 'test_connection':
+                    testConnection();
+                    break;
             }
-        }
-
-        async function captureAllScreens() {
-            const onlineClients = state.clients.filter(c => c.online);
-            if (onlineClients.length === 0) {
-                showNotification('No online clients to capture', 'warning');
-                return;
-            }
-            
-            showNotification(`Requesting screenshots from ${onlineClients.length} clients...`, 'info');
-            
-            for (const client of onlineClients) {
-                try {
-                    await apiRequest(`/api/screenshot/${client.client_id}`, 'POST');
-                } catch (error) {
-                    console.error(`Failed to request screenshot from ${client.client_id}:`, error);
-                }
-            }
-            
-            showNotification(`Screenshot requests sent to ${onlineClients.length} clients`, 'success');
-        }
-
-        function systemInfoAll() {
-            const onlineClients = state.clients.filter(c => c.online);
-            if (onlineClients.length === 0) {
-                showNotification('No online clients', 'warning');
-                return;
-            }
-            
-            showNotification(`Getting system info from ${onlineClients.length} clients...`, 'info');
-            
-            onlineClients.forEach(client => {
-                sendSystemInfoCommand(client.client_id);
-            });
-        }
-
-        function recordAllAudio() {
-            const onlineClients = state.clients.filter(c => c.online);
-            if (onlineClients.length === 0) {
-                showNotification('No online clients', 'warning');
-                return;
-            }
-            
-            showNotification(`Starting audio recording on ${onlineClients.length} clients...`, 'info');
-            
-            onlineClients.forEach(client => {
-                apiRequest(`/api/audio/${client.client_id}/record?duration=10`, 'POST')
-                    .catch(console.error);
-            });
         }
 
         function refreshAll() {
             refreshClients();
             refreshCommands();
-            refreshScreenshots();
-            refreshAudio();
             refreshLogs();
+        }
+
+        function testConnection() {
+            showNotification('Testing connection to backend...', 'info');
+            // Test API connection
+            apiRequest('/api/health')
+                .then(data => {
+                    showNotification(`Backend status: ${data.status}`, 'success');
+                })
+                .catch(error => {
+                    showNotification('Connection test failed', 'error');
+                });
+        }
+
+        function testAllConnections() {
+            showNotification('Testing all client connections...', 'info');
+            // Implement connection testing logic
         }
 
         // ========== UTILITY FUNCTIONS ==========
@@ -2743,20 +2353,6 @@
         }
 
         // ========== MODAL FUNCTIONS ==========
-        function showScreenshot(imageData, clientName, timestamp) {
-            document.getElementById('modalImage').src = `data:image/png;base64,${imageData}`;
-            document.getElementById('modalInfo').textContent = `${clientName} - ${timestamp}`;
-            document.getElementById('screenshotModal').classList.remove('hidden');
-        }
-
-        function playAudio(audioData, clientName, timestamp) {
-            const audio = document.getElementById('modalAudio');
-            audio.src = `data:audio/wav;base64,${audioData}`;
-            document.getElementById('audioInfo').textContent = `${clientName} - ${timestamp}`;
-            document.getElementById('audioModal').classList.remove('hidden');
-            audio.play();
-        }
-
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
         }
@@ -2765,24 +2361,6 @@
             document.querySelectorAll('.modal').forEach(modal => {
                 modal.classList.add('hidden');
             });
-        }
-
-        function downloadScreenshot(imageData, filename) {
-            const link = document.createElement('a');
-            link.href = `data:image/png;base64,${imageData}`;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function downloadAudio(audioData, filename) {
-            const link = document.createElement('a');
-            link.href = `data:audio/wav;base64,${audioData}`;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         }
 
         // ========== LOG FUNCTIONS ==========
@@ -2800,7 +2378,7 @@
                 "Time,Client,Type,Message\n" +
                 state.logs.map(log => {
                     const time = log.created_at ? new Date(log.created_at).toISOString() : '';
-                    const client = log.clients ? (log.clients.name || log.clients.client_id) : 'System';
+                    const client = log.client ? (log.client.name || log.client.client_id) : 'System';
                     const type = log.log_type || 'info';
                     const message = (log.message || '').replace(/"/g, '""');
                     return `"${time}","${client}","${type}","${message}"`;
@@ -2902,7 +2480,7 @@
             
             // Add new data point
             chart.data.labels.push(timeLabel);
-            chart.data.datasets[0].data.push(state.clients.filter(c => c.online).length);
+            chart.data.datasets[0].data.push(state.clients.filter(c => c.online || c.ws_online).length);
             
             // Keep only last 10 data points
             if (chart.data.labels.length > 10) {
@@ -2924,11 +2502,6 @@
                     loadDashboardData();
                 }
             }, CONFIG.REFRESH_INTERVAL);
-        }
-
-        function testAllConnections() {
-            showNotification('Testing all client connections...', 'info');
-            // Implement connection testing logic
         }
 
         // ========== UI HELPERS ==========
@@ -2978,6 +2551,9 @@
         // ========== GLOBAL EXPORTS ==========
         window.handleLogin = handleLogin;
         window.handleLogout = handleLogout;
+        window.showCreateAccount = showCreateAccount;
+        window.createAccount = createAccount;
+        window.closeModal = closeModal;
         window.switchTab = switchTab;
         window.refreshClients = refreshClients;
         window.testAllConnections = testAllConnections;
@@ -2985,20 +2561,10 @@
         window.updateCommandParams = updateCommandParams;
         window.sendCommand = sendCommand;
         window.clearCommandForm = clearCommandForm;
-        window.refreshScreenshots = refreshScreenshots;
-        window.captureAllScreens = captureAllScreens;
-        window.startRecording = startRecording;
-        window.stopRecording = stopRecording;
-        window.refreshAudio = refreshAudio;
         window.exportLogs = exportLogs;
         window.clearLogs = clearLogs;
         window.filterLogs = filterLogs;
         window.quickAction = quickAction;
-        window.showScreenshot = showScreenshot;
-        window.playAudio = playAudio;
-        window.closeModal = closeModal;
-        window.downloadScreenshot = downloadScreenshot;
-        window.downloadAudio = downloadAudio;
         window.showAbout = () => showNotification('CyberControl v3.0 - Secure Monitoring System', 'info');
         window.showSettings = () => showNotification('Settings panel coming soon', 'info');
         window.showHelp = () => showNotification('Help documentation coming soon', 'info');
@@ -3006,6 +2572,3 @@
     </script>
 </body>
 </html>
-
-
-
