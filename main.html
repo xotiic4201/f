@@ -159,6 +159,149 @@
             animation: flicker 3s infinite;
         }
 
+        /* ========== CHAT SCROLLING IMPROVEMENTS ========== */
+        .chat-users {
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+
+        .chat-users::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-users::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-users::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 3px;
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+
+        .messages-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 4px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb:hover {
+            background-color: var(--primary-light);
+        }
+
+        /* Infinite scroll loading indicator */
+        .loading-messages {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+        }
+
+        .loading-messages .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(138, 43, 226, 0.3);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Conversation categories */
+        .conversation-category {
+            padding: 10px 15px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            background: rgba(138, 43, 226, 0.1);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        body.theme-femboy .conversation-category {
+            background: rgba(255, 107, 157, 0.1);
+            border-bottom: 1px solid rgba(255, 107, 157, 0.2);
+        }
+
+        /* Unread message indicator */
+        .unread-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--accent);
+            padding: 4px 8px;
+            background: rgba(0, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 4px;
+        }
+
+        body.theme-femboy .unread-indicator {
+            background: rgba(157, 101, 255, 0.1);
+        }
+
+        /* Message timestamp hover */
+        .message:hover .message-time {
+            opacity: 1;
+        }
+
+        /* Smooth scrolling */
+        .chat-container * {
+            scroll-behavior: smooth;
+        }
+
+        /* Scroll to bottom button */
+        .scroll-to-bottom {
+            position: absolute;
+            bottom: 90px;
+            right: 30px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--glow-primary);
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+        }
+
+        .scroll-to-bottom.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-to-bottom:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
         /* Login Page */
         .login-container {
             display: flex;
@@ -1049,6 +1192,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .chat-header {
@@ -1060,10 +1204,8 @@
             background: rgba(138, 43, 226, 0.05);
         }
 
-        .chat-users {
-            padding: 15px;
-            overflow-y: auto;
-            flex: 1;
+        body.theme-femboy .chat-header {
+            background: rgba(255, 107, 157, 0.05);
         }
 
         .chat-user {
@@ -1075,6 +1217,7 @@
             cursor: pointer;
             transition: all 0.3s;
             margin-bottom: 8px;
+            position: relative;
         }
 
         .chat-user:hover {
@@ -1149,20 +1292,6 @@
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-
-        .messages-container {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        body.theme-femboy .messages-container {
-            background: rgba(255, 255, 255, 0.1);
         }
 
         .message {
@@ -1482,6 +1611,10 @@
             border-radius: 20px;
             font-size: 12px;
             color: var(--text-secondary);
+        }
+
+        body.theme-femboy .date-separator span {
+            background: rgba(255, 107, 157, 0.2);
         }
     </style>
 </head>
@@ -1901,7 +2034,41 @@ if __name__ == "__main__":
                                 </div>
                                 
                                 <div class="chat-users" id="chatUsersList">
-                                    <!-- Users will be loaded here -->
+                                    <!-- Global Chat -->
+                                    <div class="conversation-category">GLOBAL CHAT</div>
+                                    <div class="chat-user active" id="globalChatUser" onclick="selectGlobalChat()">
+                                        <div class="user-avatar" style="background: #00ffff;">
+                                            <i class="fas fa-globe"></i>
+                                        </div>
+                                        <div class="user-info">
+                                            <div class="user-name">Global Chat</div>
+                                            <div class="user-status status-online">
+                                                <div class="status-dot"></div>
+                                                <span>Online</span>
+                                            </div>
+                                            <div class="user-tag" style="background: #00ffff; color: #000;">
+                                                Everyone
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Online Users -->
+                                    <div class="conversation-category">ONLINE USERS</div>
+                                    <div id="onlineUsersList">
+                                        <!-- Online users will be loaded here -->
+                                    </div>
+                                    
+                                    <!-- Private Conversations -->
+                                    <div class="conversation-category">PRIVATE MESSAGES</div>
+                                    <div id="privateConversationsList">
+                                        <!-- Private conversations will be loaded here -->
+                                    </div>
+                                    
+                                    <!-- Offline Users -->
+                                    <div class="conversation-category">OFFLINE USERS</div>
+                                    <div id="offlineUsersList">
+                                        <!-- Offline users will be loaded here -->
+                                    </div>
                                 </div>
                             </div>
                             
@@ -1912,7 +2079,7 @@ if __name__ == "__main__":
                                         <h2 id="chatRecipientName">Global Chat</h2>
                                         <div id="chatRecipientStatus" class="status-online">
                                             <span class="status-dot"></span>
-                                            <span id="onlineStatusText">Online</span>
+                                            <span id="onlineStatusText">Everyone</span>
                                         </div>
                                     </div>
                                     <div id="typingIndicator" class="typing-indicator hidden">
@@ -2233,12 +2400,18 @@ if __name__ == "__main__":
             currentRecipient: "all",
             users: [],
             messages: [],
+            conversations: [],
             isTyping: false,
             typingTimeout: null,
             audioRecorder: null,
             audioChunks: [],
             isRecording: false,
-            recordingTimeout: null
+            recordingTimeout: null,
+            isLoadingMessages: false,
+            hasMoreMessages: true,
+            lastMessageTimestamp: null,
+            unreadMessages: {},
+            scrollToBottomVisible: false
         };
 
         // ========== INITIALIZATION ==========
@@ -2388,12 +2561,18 @@ if __name__ == "__main__":
                 currentRecipient: "all",
                 users: [],
                 messages: [],
+                conversations: [],
                 isTyping: false,
                 typingTimeout: null,
                 audioRecorder: null,
                 audioChunks: [],
                 isRecording: false,
-                recordingTimeout: null
+                recordingTimeout: null,
+                isLoadingMessages: false,
+                hasMoreMessages: true,
+                lastMessageTimestamp: null,
+                unreadMessages: {},
+                scrollToBottomVisible: false
             };
             
             // Show login page
@@ -2438,6 +2617,9 @@ if __name__ == "__main__":
                 // Connect WebSockets
                 connectWebSocket();
                 connectChatWebSocket();
+                
+                // Setup chat scrolling
+                setupChatScrolling();
                 
                 // Start auto-refresh
                 startAutoRefresh();
@@ -2758,6 +2940,7 @@ if __name__ == "__main__":
                     if (data.success) {
                         chatState.users = data.users;
                         updateChatUsers(chatState.users);
+                        loadConversations();
                     }
                 }
             } catch (error) {
@@ -2765,60 +2948,141 @@ if __name__ == "__main__":
             }
         }
 
-        function updateChatUsers(users) {
-            const container = document.getElementById('chatUsersList');
-            container.innerHTML = '';
-            
-            users.forEach(user => {
-                const userElement = document.createElement('div');
-                userElement.className = `chat-user ${chatState.currentRecipient === user.user_id ? 'active' : ''}`;
-                userElement.onclick = () => selectChatUser(user);
+        async function loadConversations() {
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/chat/conversations`, {
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    }
+                });
                 
-                // Generate avatar color based on username
-                const avatarColor = stringToColor(user.username);
-                
-                userElement.innerHTML = `
-                    <div class="user-avatar" style="background: ${avatarColor}">
-                        ${user.username.charAt(0).toUpperCase()}
-                    </div>
-                    <div class="user-info">
-                        <div class="user-name">${user.username}</div>
-                        <div class="user-status ${user.online ? 'status-online' : 'status-offline'}">
-                            <div class="status-dot"></div>
-                            <span>${user.online ? 'Online' : 'Offline'}</span>
-                        </div>
-                        ${user.role !== 'global' ? `
-                            <div class="user-tag" style="background: ${user.color}; color: white; margin-top: 4px;">
-                                ${user.role}
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-                
-                container.appendChild(userElement);
-            });
-        }
-
-        function updateUserOnlineStatus(userId, isOnline) {
-            const users = document.querySelectorAll('.chat-user');
-            users.forEach(userElement => {
-                const username = userElement.querySelector('.user-name').textContent;
-                if (username === userId) {
-                    const statusElement = userElement.querySelector('.user-status');
-                    const statusDot = userElement.querySelector('.status-dot');
-                    
-                    if (isOnline) {
-                        statusElement.className = 'user-status status-online';
-                        statusDot.style.background = 'var(--success)';
-                        statusDot.style.boxShadow = '0 0 8px var(--success)';
-                        statusElement.querySelector('span').textContent = 'Online';
-                    } else {
-                        statusElement.className = 'user-status status-offline';
-                        statusDot.style.background = 'var(--text-muted)';
-                        statusElement.querySelector('span').textContent = 'Offline';
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        chatState.conversations = data.conversations;
+                        updateConversationsList();
                     }
                 }
+            } catch (error) {
+                console.error('Load conversations error:', error);
+            }
+        }
+
+        function updateChatUsers(users) {
+            const onlineContainer = document.getElementById('onlineUsersList');
+            const offlineContainer = document.getElementById('offlineUsersList');
+            
+            if (!onlineContainer || !offlineContainer) return;
+            
+            onlineContainer.innerHTML = '';
+            offlineContainer.innerHTML = '';
+            
+            // Filter out current user and global chat
+            const filteredUsers = users.filter(user => 
+                user.user_id !== state.user.email && user.user_id !== "all"
+            );
+            
+            // Separate online and offline users
+            const onlineUsers = filteredUsers.filter(user => user.online);
+            const offlineUsers = filteredUsers.filter(user => !user.online);
+            
+            // Add online users
+            onlineUsers.forEach(user => {
+                const userElement = createUserElement(user, 'online');
+                onlineContainer.appendChild(userElement);
             });
+            
+            // Add offline users
+            offlineUsers.forEach(user => {
+                const userElement = createUserElement(user, 'offline');
+                offlineContainer.appendChild(userElement);
+            });
+            
+            // Update unread indicators
+            updateUnreadIndicators();
+        }
+
+        function updateConversationsList() {
+            const container = document.getElementById('privateConversationsList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            chatState.conversations.forEach(user => {
+                const userElement = createUserElement(user, user.online ? 'online' : 'offline');
+                container.appendChild(userElement);
+            });
+            
+            // If no conversations, show empty state
+            if (chatState.conversations.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 20px;">
+                        <i class="fas fa-inbox"></i>
+                        <p>No private messages yet</p>
+                    </div>
+                `;
+            }
+        }
+
+        function createUserElement(user, status) {
+            const userElement = document.createElement('div');
+            userElement.className = `chat-user ${chatState.currentRecipient === user.user_id ? 'active' : ''}`;
+            userElement.onclick = () => selectChatUser(user);
+            
+            // Generate avatar color based on username
+            const avatarColor = stringToColor(user.username);
+            
+            // Check for unread messages
+            const unreadCount = chatState.unreadMessages[user.user_id] || 0;
+            
+            userElement.innerHTML = `
+                <div class="user-avatar" style="background: ${avatarColor}">
+                    ${user.username.charAt(0).toUpperCase()}
+                </div>
+                <div class="user-info">
+                    <div class="user-name">${user.username}</div>
+                    <div class="user-status ${status}">
+                        <div class="status-dot"></div>
+                        <span>${status === 'online' ? 'Online' : 'Offline'}</span>
+                    </div>
+                    ${user.role !== 'global' ? `
+                        <div class="user-tag" style="background: ${user.color}; color: white; margin-top: 4px;">
+                            ${user.role}
+                        </div>
+                    ` : ''}
+                    ${unreadCount > 0 ? `
+                        <div class="unread-indicator">
+                            <i class="fas fa-envelope"></i> ${unreadCount} unread
+                        </div>
+                    ` : ''}
+                </div>
+                ${unreadCount > 0 ? `
+                    <div class="unread-badge">${unreadCount}</div>
+                ` : ''}
+            `;
+            
+            return userElement;
+        }
+
+        function selectGlobalChat() {
+            chatState.currentRecipient = "all";
+            
+            // Update UI
+            document.querySelectorAll('.chat-user').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById('globalChatUser').classList.add('active');
+            
+            // Update header
+            document.getElementById('chatRecipientName').textContent = 'Global Chat';
+            document.getElementById('onlineStatusText').textContent = 'Everyone';
+            
+            // Clear unread count for global chat
+            chatState.unreadMessages["all"] = 0;
+            updateUnreadIndicators();
+            
+            // Load messages
+            loadChatMessages();
         }
 
         function selectChatUser(user) {
@@ -2834,29 +3098,30 @@ if __name__ == "__main__":
             document.getElementById('chatRecipientName').textContent = user.username;
             document.getElementById('onlineStatusText').textContent = user.online ? 'Online' : 'Offline';
             
-            // Load messages for this user
+            // Clear unread count for this user
+            chatState.unreadMessages[user.user_id] = 0;
+            updateUnreadIndicators();
+            
+            // Load messages
             loadChatMessages();
         }
 
-        function searchUsers() {
-            const searchTerm = document.getElementById('chatSearch').value.toLowerCase();
-            const users = document.querySelectorAll('.chat-user');
+        async function loadChatMessages(loadMore = false) {
+            if (chatState.isLoadingMessages) return;
             
-            users.forEach(user => {
-                const username = user.querySelector('.user-name').textContent.toLowerCase();
-                const role = user.querySelector('.user-tag')?.textContent.toLowerCase() || '';
-                
-                if (username.includes(searchTerm) || role.includes(searchTerm)) {
-                    user.style.display = 'flex';
-                } else {
-                    user.style.display = 'none';
-                }
-            });
-        }
-
-        async function loadChatMessages() {
+            chatState.isLoadingMessages = true;
+            
             try {
-                const response = await fetch(`${CONFIG.BACKEND_URL}/api/chat/messages?limit=100`, {
+                const params = new URLSearchParams({
+                    limit: '50',
+                    recipient: chatState.currentRecipient === 'all' ? 'all' : chatState.currentRecipient
+                });
+                
+                if (loadMore && chatState.lastMessageTimestamp) {
+                    params.append('before', chatState.lastMessageTimestamp);
+                }
+                
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/chat/messages?${params}`, {
                     headers: {
                         'Authorization': `Bearer ${state.token}`
                     }
@@ -2865,68 +3130,148 @@ if __name__ == "__main__":
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success) {
-                        // Filter messages for current recipient
-                        const filteredMessages = data.messages.filter(msg => {
-                            if (chatState.currentRecipient === 'all') {
-                                return msg.recipient === 'all' || msg.recipient === null || 
-                                       msg.sender === state.user.email || msg.recipient === state.user.email;
-                            } else {
-                                return (msg.sender === chatState.currentRecipient && msg.recipient === state.user.email) ||
-                                       (msg.sender === state.user.email && msg.recipient === chatState.currentRecipient) ||
-                                       (msg.sender === chatState.currentRecipient && msg.recipient === 'all') ||
-                                       (msg.sender === state.user.email && msg.recipient === 'all');
-                            }
-                        });
+                        const messages = data.messages;
                         
-                        chatState.messages = filteredMessages;
-                        displayMessages(filteredMessages);
+                        if (loadMore) {
+                            // Add messages to beginning for infinite scroll
+                            chatState.messages = [...messages, ...chatState.messages];
+                        } else {
+                            chatState.messages = messages;
+                        }
+                        
+                        // Update last message timestamp for pagination
+                        if (messages.length > 0) {
+                            chatState.lastMessageTimestamp = messages[0].timestamp;
+                        }
+                        
+                        // Check if we have more messages
+                        chatState.hasMoreMessages = messages.length === 50;
+                        
+                        displayMessages(chatState.messages, loadMore);
+                        
+                        // If not loading more, scroll to bottom
+                        if (!loadMore) {
+                            setTimeout(() => {
+                                scrollToBottom();
+                            }, 100);
+                        }
                     }
                 }
             } catch (error) {
                 console.error('Load chat messages error:', error);
+            } finally {
+                chatState.isLoadingMessages = false;
             }
         }
 
-        function displayMessages(messages) {
+        function displayMessages(messages, loadMore = false) {
             const container = document.getElementById('messagesContainer');
             const emptyState = document.getElementById('chatEmpty');
             
-            // Clear existing messages except empty state
-            container.querySelectorAll('.message, .date-separator').forEach(el => el.remove());
+            if (!container) return;
             
-            if (messages.length === 0) {
-                emptyState.classList.remove('hidden');
+            // Remove loading indicator if exists
+            const loadingIndicator = container.querySelector('.loading-messages');
+            if (loadingIndicator) {
+                loadingIndicator.remove();
+            }
+            
+            if (!loadMore) {
+                // Clear existing messages except empty state
+                container.querySelectorAll('.message, .date-separator').forEach(el => el.remove());
+            }
+            
+            if (messages.length === 0 && !loadMore) {
+                if (emptyState) emptyState.classList.remove('hidden');
                 return;
             }
             
-            emptyState.classList.add('hidden');
+            if (emptyState) emptyState.classList.add('hidden');
             
             // Group messages by date
             const groupedMessages = groupMessagesByDate(messages);
             
             // Display messages
             Object.entries(groupedMessages).forEach(([date, dateMessages]) => {
-                // Add date separator
-                const dateElement = document.createElement('div');
-                dateElement.className = 'date-separator';
-                dateElement.innerHTML = `<span>${formatChatDate(date)}</span>`;
-                container.appendChild(dateElement);
+                // Check if date separator already exists
+                let dateElement = Array.from(container.querySelectorAll('.date-separator'))
+                    .find(el => el.textContent.includes(date));
+                
+                if (!dateElement) {
+                    dateElement = document.createElement('div');
+                    dateElement.className = 'date-separator';
+                    dateElement.innerHTML = `<span>${formatChatDate(date)}</span>`;
+                    
+                    if (loadMore) {
+                        container.insertBefore(dateElement, container.firstChild);
+                    } else {
+                        container.appendChild(dateElement);
+                    }
+                }
                 
                 // Add messages for this date
                 dateMessages.forEach(message => {
-                    const messageElement = createMessageElement(message);
-                    container.appendChild(messageElement);
+                    // Check if message already exists
+                    const existingMessage = Array.from(container.querySelectorAll('.message'))
+                        .find(el => el.dataset.messageId === message.id);
+                    
+                    if (!existingMessage) {
+                        const messageElement = createMessageElement(message);
+                        
+                        if (loadMore) {
+                            // Find where to insert based on timestamp
+                            let inserted = false;
+                            const allMessages = container.querySelectorAll('.message');
+                            for (let i = 0; i < allMessages.length; i++) {
+                                const msgTime = new Date(allMessages[i].dataset.timestamp);
+                                const newMsgTime = new Date(message.timestamp);
+                                if (newMsgTime < msgTime) {
+                                    container.insertBefore(messageElement, allMessages[i]);
+                                    inserted = true;
+                                    break;
+                                }
+                            }
+                            if (!inserted) {
+                                const dateSeparators = container.querySelectorAll('.date-separator');
+                                const lastDateSeparator = dateSeparators[dateSeparators.length - 1];
+                                if (lastDateSeparator.nextSibling) {
+                                    container.insertBefore(messageElement, lastDateSeparator.nextSibling);
+                                } else {
+                                    container.appendChild(messageElement);
+                                }
+                            }
+                        } else {
+                            container.appendChild(messageElement);
+                        }
+                    }
                 });
             });
             
-            // Scroll to bottom
-            container.scrollTop = container.scrollHeight;
+            // Add loading indicator for infinite scroll
+            if (chatState.hasMoreMessages && !loadMore) {
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.className = 'loading-messages';
+                loadingIndicator.innerHTML = '<div class="loading"></div> Loading more messages...';
+                loadingIndicator.onclick = () => loadMoreMessages();
+                container.insertBefore(loadingIndicator, container.firstChild);
+            }
+            
+            // Update scroll to bottom button visibility
+            updateScrollToBottomButton();
+        }
+
+        function loadMoreMessages() {
+            if (!chatState.isLoadingMessages && chatState.hasMoreMessages) {
+                loadChatMessages(true);
+            }
         }
 
         function createMessageElement(message) {
             const isSent = message.sender === state.user.email;
             const messageElement = document.createElement('div');
             messageElement.className = `message ${isSent ? 'message-sent' : 'message-received'}`;
+            messageElement.dataset.messageId = message.id;
+            messageElement.dataset.timestamp = message.timestamp;
             
             // Format time
             const time = new Date(message.timestamp);
@@ -2996,14 +3341,144 @@ if __name__ == "__main__":
             return messageElement;
         }
 
+        // ========== SCROLLING FUNCTIONS ==========
+        function setupChatScrolling() {
+            const container = document.getElementById('messagesContainer');
+            if (!container) return;
+            
+            // Create scroll to bottom button
+            const scrollButton = document.createElement('button');
+            scrollButton.className = 'scroll-to-bottom hidden';
+            scrollButton.innerHTML = '<i class="fas fa-arrow-down"></i>';
+            scrollButton.onclick = scrollToBottom;
+            document.querySelector('.chat-main').appendChild(scrollButton);
+            
+            // Listen for scroll events
+            container.addEventListener('scroll', () => {
+                updateScrollToBottomButton();
+                
+                // Infinite scroll - load more when near top
+                if (container.scrollTop < 100 && !chatState.isLoadingMessages && chatState.hasMoreMessages) {
+                    loadMoreMessages();
+                }
+            });
+            
+            // Auto-scroll to bottom on new messages if already near bottom
+            const observer = new MutationObserver(() => {
+                if (isNearBottom()) {
+                    setTimeout(() => {
+                        scrollToBottom();
+                    }, 100);
+                }
+            });
+            
+            observer.observe(container, { childList: true, subtree: true });
+        }
+
+        function isNearBottom() {
+            const container = document.getElementById('messagesContainer');
+            if (!container) return false;
+            
+            const distanceFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight;
+            return distanceFromBottom < 200;
+        }
+
+        function updateScrollToBottomButton() {
+            const container = document.getElementById('messagesContainer');
+            const button = document.querySelector('.scroll-to-bottom');
+            
+            if (!container || !button) return;
+            
+            const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
+            
+            if (isAtBottom) {
+                button.classList.remove('visible');
+            } else {
+                button.classList.add('visible');
+            }
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('messagesContainer');
+            if (!container) return;
+            
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // ========== UNREAD MESSAGE TRACKING ==========
+        function updateUnreadIndicators() {
+            // Update all user elements with unread counts
+            document.querySelectorAll('.chat-user').forEach(userElement => {
+                const username = userElement.querySelector('.user-name').textContent;
+                let userId;
+                
+                if (username === 'Global Chat') {
+                    userId = 'all';
+                } else {
+                    // Find user ID from user list
+                    const user = chatState.users.find(u => u.username === username) || 
+                                chatState.conversations.find(u => u.username === username);
+                    if (user) {
+                        userId = user.user_id;
+                    }
+                }
+                
+                if (userId) {
+                    const unreadCount = chatState.unreadMessages[userId] || 0;
+                    const unreadBadge = userElement.querySelector('.unread-badge');
+                    const unreadIndicator = userElement.querySelector('.unread-indicator');
+                    
+                    if (unreadCount > 0) {
+                        if (!unreadBadge) {
+                            const badge = document.createElement('div');
+                            badge.className = 'unread-badge';
+                            userElement.appendChild(badge);
+                        }
+                        userElement.querySelector('.unread-badge').textContent = 
+                            unreadCount > 99 ? '99+' : unreadCount.toString();
+                        
+                        if (!unreadIndicator) {
+                            const indicator = document.createElement('div');
+                            indicator.className = 'unread-indicator';
+                            indicator.innerHTML = `<i class="fas fa-envelope"></i> ${unreadCount} unread`;
+                            userElement.querySelector('.user-info').appendChild(indicator);
+                        }
+                    } else {
+                        if (unreadBadge) unreadBadge.remove();
+                        if (unreadIndicator) unreadIndicator.remove();
+                    }
+                }
+            });
+        }
+
         function handleNewMessage(message, senderTag) {
+            console.log('New message received from:', message.sender);
+            
+            // Increment unread count if message is not from current conversation
+            if (message.sender !== state.user.email) {
+                const recipient = message.recipient || 'all';
+                
+                if (recipient === 'all') {
+                    // Global message
+                    if (chatState.currentRecipient !== 'all') {
+                        chatState.unreadMessages['all'] = (chatState.unreadMessages['all'] || 0) + 1;
+                    }
+                } else if (recipient === state.user.email) {
+                    // Private message to me
+                    if (chatState.currentRecipient !== message.sender) {
+                        chatState.unreadMessages[message.sender] = (chatState.unreadMessages[message.sender] || 0) + 1;
+                    }
+                }
+                
+                updateUnreadIndicators();
+            }
+            
             // Check if message is relevant to current chat
             const isRelevant = 
                 chatState.currentRecipient === 'all' ? 
                     (message.recipient === 'all' || message.recipient === null) :
                     (message.sender === chatState.currentRecipient || 
-                     message.recipient === chatState.currentRecipient ||
-                     message.sender === state.user.email);
+                     message.recipient === chatState.currentRecipient);
             
             if (isRelevant) {
                 // Add to messages
@@ -3017,6 +3492,13 @@ if __name__ == "__main__":
                     (message.recipient === state.user.email || message.recipient === 'all' || message.recipient === null)) {
                     markMessageAsRead(message.id);
                 }
+            }
+            
+            // Update user list if sender is new
+            const userExists = chatState.users.some(u => u.user_id === message.sender) ||
+                              chatState.conversations.some(u => u.user_id === message.sender);
+            if (!userExists && message.sender !== state.user.email) {
+                loadChatUsers();
             }
         }
 
@@ -4729,8 +5211,10 @@ if __name__ == "__main__":
         window.sendChatMessage = sendChatMessage;
         window.handleChatKeydown = handleChatKeydown;
         window.searchUsers = searchUsers;
+        window.selectGlobalChat = selectGlobalChat;
+        window.scrollToBottom = scrollToBottom;
+        window.loadMoreMessages = loadMoreMessages;
+        window.playVoiceNote = playVoiceNote;
     </script>
 </body>
 </html>
-
-
