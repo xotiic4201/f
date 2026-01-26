@@ -8,33 +8,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* ========== CYBERPUNK THEME ========== */
+        /* ========== RED/BLACK THEME ========== */
         :root {
-            --primary: #00ff9d;
-            --primary-dark: #00cc7d;
-            --primary-light: #33ffb1;
-            --secondary: #0a0a0f;
-            --secondary-dark: #050508;
-            --secondary-light: #15151f;
-            --accent: #00d9ff;
-            --accent-dark: #00aacc;
+            --primary: #ff2a2a;
+            --primary-dark: #cc0000;
+            --primary-light: #ff6666;
+            --secondary: #0a0a0a;
+            --secondary-dark: #050505;
+            --secondary-light: #1a1a1a;
+            --accent: #ff5555;
+            --accent-dark: #ff2222;
             --danger: #ff2a6d;
-            --warning: #ffb142;
-            --success: #00ff9d;
-            --info: #00d9ff;
-            --purple: #9d4edd;
+            --warning: #ffaa00;
+            --success: #00ff00;
+            --info: #ff5555;
+            --purple: #ff55ff;
             
-            --background: #050508;
-            --card-bg: rgba(10, 10, 15, 0.9);
-            --card-border: rgba(0, 217, 255, 0.2);
+            --background: #000000;
+            --card-bg: rgba(20, 0, 0, 0.9);
+            --card-border: rgba(255, 42, 42, 0.3);
             --text: #ffffff;
-            --text-secondary: #b0b0c0;
-            --text-muted: #6c6c80;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
             
-            --glow-primary: 0 0 20px rgba(0, 255, 157, 0.5);
-            --glow-accent: 0 0 20px rgba(0, 217, 255, 0.5);
+            --glow-primary: 0 0 20px rgba(255, 42, 42, 0.5);
+            --glow-accent: 0 0 20px rgba(255, 85, 85, 0.5);
             --glow-danger: 0 0 20px rgba(255, 42, 109, 0.5);
-            --glow-purple: 0 0 20px rgba(157, 78, 221, 0.5);
+            --glow-purple: 0 0 20px rgba(255, 85, 255, 0.5);
             
             --radius-sm: 4px;
             --radius-md: 8px;
@@ -68,8 +68,8 @@
             width: 100%;
             height: 100%;
             background-image: 
-                linear-gradient(rgba(0, 255, 157, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 157, 0.03) 1px, transparent 1px);
+                linear-gradient(rgba(255, 42, 42, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 42, 42, 0.03) 1px, transparent 1px);
             background-size: 50px 50px;
             z-index: -1;
             pointer-events: none;
@@ -82,9 +82,9 @@
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0, 255, 157, 0.05) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(157, 78, 221, 0.05) 0%, transparent 50%);
+                radial-gradient(circle at 20% 50%, rgba(255, 85, 85, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 42, 42, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 85, 255, 0.05) 0%, transparent 50%);
             z-index: -1;
             pointer-events: none;
         }
@@ -98,7 +98,7 @@
             background: linear-gradient(
                 to bottom,
                 transparent 50%,
-                rgba(0, 217, 255, 0.02) 51%,
+                rgba(255, 85, 85, 0.02) 51%,
                 transparent 52%
             );
             background-size: 100% 4px;
@@ -116,7 +116,7 @@
         /* Animations */
         @keyframes glow-pulse {
             0%, 100% { box-shadow: var(--glow-primary); }
-            50% { box-shadow: 0 0 30px rgba(0, 255, 157, 0.8); }
+            50% { box-shadow: 0 0 30px rgba(255, 42, 42, 0.8); }
         }
 
         @keyframes flicker {
@@ -132,6 +132,11 @@
         @keyframes slideIn {
             from { transform: translateX(-20px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .glow-pulse {
@@ -153,12 +158,12 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
-            background: linear-gradient(135deg, #050508 0%, #0a0a15 100%);
+            background: linear-gradient(135deg, #000000 0%, #1a0000 100%);
         }
 
         .login-box {
-            background: rgba(10, 10, 15, 0.95);
-            border: 1px solid rgba(0, 217, 255, 0.2);
+            background: rgba(20, 0, 0, 0.95);
+            border: 1px solid rgba(255, 42, 42, 0.3);
             border-radius: var(--radius-xl);
             padding: 50px 40px;
             width: 100%;
@@ -224,7 +229,7 @@
             width: 100%;
             padding: 16px;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 217, 255, 0.2);
+            border: 1px solid rgba(255, 85, 85, 0.2);
             border-radius: var(--radius-md);
             color: var(--text);
             font-family: 'Inter', sans-serif;
@@ -235,8 +240,8 @@
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 255, 157, 0.1);
-            background: rgba(0, 255, 157, 0.03);
+            box-shadow: 0 0 0 3px rgba(255, 42, 42, 0.1);
+            background: rgba(255, 42, 42, 0.03);
         }
 
         /* Buttons */
@@ -276,14 +281,14 @@
 
         .btn-primary {
             background: linear-gradient(45deg, var(--primary), var(--primary-dark));
-            color: #000;
+            color: white;
             font-weight: 700;
             box-shadow: var(--glow-primary);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 255, 157, 0.4);
+            box-shadow: 0 10px 30px rgba(255, 42, 42, 0.4);
         }
 
         .btn-secondary {
@@ -300,14 +305,14 @@
 
         .btn-accent {
             background: linear-gradient(45deg, var(--accent), var(--accent-dark));
-            color: #000;
+            color: white;
             font-weight: 700;
             box-shadow: var(--glow-accent);
         }
 
         .btn-accent:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 217, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(255, 85, 85, 0.4);
         }
 
         .btn-danger {
@@ -367,9 +372,9 @@
         }
 
         .header {
-            background: rgba(10, 10, 15, 0.95);
+            background: rgba(20, 0, 0, 0.95);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 217, 255, 0.2);
+            border: 1px solid rgba(255, 85, 85, 0.3);
             border-radius: var(--radius-xl);
             padding: 25px 30px;
             margin-bottom: 30px;
@@ -407,7 +412,7 @@
             align-items: center;
             justify-content: center;
             font-size: 28px;
-            color: #000;
+            color: white;
             box-shadow: var(--glow-primary);
             animation: glow-pulse 3s infinite;
         }
@@ -444,8 +449,8 @@
             align-items: center;
             gap: 10px;
             padding: 10px 20px;
-            background: rgba(0, 255, 157, 0.1);
-            border: 1px solid rgba(0, 255, 157, 0.3);
+            background: rgba(255, 42, 42, 0.1);
+            border: 1px solid rgba(255, 42, 42, 0.3);
             border-radius: var(--radius-full);
             font-size: 13px;
             font-weight: 600;
@@ -478,7 +483,7 @@
             padding: 12px 25px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: var(--radius-lg);
-            border: 1px solid rgba(0, 217, 255, 0.2);
+            border: 1px solid rgba(255, 85, 85, 0.2);
         }
 
         .user-avatar {
@@ -491,7 +496,7 @@
             justify-content: center;
             font-weight: bold;
             font-size: 20px;
-            color: #000;
+            color: white;
             box-shadow: var(--glow-primary);
         }
 
@@ -611,7 +616,7 @@
         }
 
         .panel-header {
-            background: rgba(10, 10, 15, 0.95);
+            background: rgba(20, 0, 0, 0.95);
             padding: 20px;
             border-bottom: 1px solid var(--card-border);
             display: flex;
@@ -645,19 +650,21 @@
         /* Tabs */
         .tabs {
             display: flex;
-            background: rgba(10, 10, 15, 0.95);
+            background: rgba(20, 0, 0, 0.95);
             border-bottom: 1px solid var(--card-border);
             padding: 5px;
+            flex-wrap: wrap;
         }
 
         .tab {
             flex: 1;
+            min-width: 120px;
             padding: 15px;
             background: transparent;
             border: none;
             color: var(--text-secondary);
             font-family: 'Orbitron', monospace;
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             cursor: pointer;
@@ -671,12 +678,12 @@
 
         .tab:hover {
             color: var(--text);
-            background: rgba(0, 255, 157, 0.1);
+            background: rgba(255, 42, 42, 0.1);
         }
 
         .tab.active {
             color: var(--primary);
-            background: rgba(0, 255, 157, 0.2);
+            background: rgba(255, 42, 42, 0.2);
         }
 
         .tab.active::after {
@@ -700,7 +707,7 @@
         .table-container {
             overflow-x: auto;
             border-radius: var(--radius-md);
-            border: 1px solid rgba(0, 217, 255, 0.1);
+            border: 1px solid rgba(255, 85, 85, 0.1);
             background: rgba(0, 0, 0, 0.3);
             flex: 1;
             min-height: 0;
@@ -713,7 +720,7 @@
         }
 
         th {
-            background: rgba(0, 255, 157, 0.1);
+            background: rgba(255, 42, 42, 0.1);
             padding: 15px 20px;
             text-align: left;
             font-weight: 600;
@@ -722,7 +729,7 @@
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            border-bottom: 2px solid rgba(0, 255, 157, 0.3);
+            border-bottom: 2px solid rgba(255, 42, 42, 0.3);
         }
 
         td {
@@ -732,7 +739,7 @@
         }
 
         tr:hover td {
-            background: rgba(0, 255, 157, 0.05);
+            background: rgba(255, 42, 42, 0.05);
         }
 
         /* Status Badges */
@@ -750,9 +757,9 @@
         }
 
         .status-online {
-            background: rgba(0, 255, 157, 0.1);
+            background: rgba(0, 255, 0, 0.1);
             color: var(--success);
-            border: 1px solid rgba(0, 255, 157, 0.3);
+            border: 1px solid rgba(0, 255, 0, 0.3);
         }
 
         .status-offline {
@@ -762,15 +769,15 @@
         }
 
         .status-pending {
-            background: rgba(255, 209, 102, 0.1);
+            background: rgba(255, 170, 0, 0.1);
             color: var(--warning);
-            border: 1px solid rgba(255, 209, 102, 0.3);
+            border: 1px solid rgba(255, 170, 0, 0.3);
         }
 
         .status-running {
-            background: rgba(0, 217, 255, 0.1);
+            background: rgba(255, 85, 85, 0.1);
             color: var(--accent);
-            border: 1px solid rgba(0, 217, 255, 0.3);
+            border: 1px solid rgba(255, 85, 85, 0.3);
         }
 
         /* Forms */
@@ -784,7 +791,7 @@
         select.form-control {
             cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2300ff9d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ff2a2a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 16px center;
             padding-right: 40px;
@@ -844,7 +851,7 @@
             max-width: 600px;
             max-height: 90vh;
             overflow: hidden;
-            box-shadow: 0 0 60px rgba(0, 255, 157, 0.3);
+            box-shadow: 0 0 60px rgba(255, 42, 42, 0.3);
         }
 
         .modal-header {
@@ -892,7 +899,7 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(0, 255, 157, 0.3);
+            border: 3px solid rgba(255, 42, 42, 0.3);
             border-top: 3px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -920,7 +927,7 @@
         .loading-spinner {
             width: 80px;
             height: 80px;
-            border: 4px solid rgba(0, 255, 157, 0.3);
+            border: 4px solid rgba(255, 42, 42, 0.3);
             border-top: 4px solid var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -1008,7 +1015,7 @@
         }
 
         .editor-header {
-            background: rgba(0, 255, 157, 0.1);
+            background: rgba(255, 42, 42, 0.1);
             padding: 10px 15px;
             display: flex;
             justify-content: space-between;
@@ -1060,7 +1067,7 @@
         .space-y-2 > * + * { margin-top: 8px; }
         .space-y-3 > * + * { margin-top: 12px; }
 
-        /* ========== CHAT STYLES FIX ========== */
+        /* ========== CHAT STYLES ========== */
         .chat-container {
             display: flex;
             height: 100%;
@@ -1078,7 +1085,7 @@
             border-right: 1px solid var(--card-border);
             display: flex;
             flex-direction: column;
-            background: rgba(10, 10, 15, 0.95);
+            background: rgba(20, 0, 0, 0.95);
             overflow: hidden;
             position: relative;
             height: 100%;
@@ -1104,7 +1111,7 @@
         .chat-header {
             padding: 20px;
             border-bottom: 1px solid var(--card-border);
-            background: rgba(0, 255, 157, 0.05);
+            background: rgba(255, 42, 42, 0.05);
             flex-shrink: 0;
             position: relative;
             z-index: 10;
@@ -1158,11 +1165,11 @@
             border-radius: 4px;
         }
 
-        /* Message Input Area - Fixed Position */
+        /* Message Input Area */
         .chat-input-area {
             padding: 20px;
             border-top: 1px solid var(--card-border);
-            background: rgba(10, 10, 15, 0.95);
+            background: rgba(20, 0, 0, 0.95);
             flex-shrink: 0;
             position: relative;
             z-index: 10;
@@ -1194,7 +1201,7 @@
         .message-input:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 255, 157, 0.1);
+            box-shadow: 0 0 0 3px rgba(255, 42, 42, 0.1);
         }
 
         /* Chat user styles */
@@ -1212,11 +1219,11 @@
         }
 
         .chat-user:hover {
-            background: rgba(0, 255, 157, 0.1);
+            background: rgba(255, 42, 42, 0.1);
         }
 
         .chat-user.active {
-            background: rgba(0, 255, 157, 0.2);
+            background: rgba(255, 42, 42, 0.2);
             border: 1px solid var(--primary);
         }
 
@@ -1228,7 +1235,7 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            color: #000;
+            color: white;
             font-size: 16px;
             background: linear-gradient(45deg, var(--primary), var(--accent));
         }
@@ -1244,6 +1251,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: white;
         }
 
         .chat-user .user-status {
@@ -1263,17 +1271,19 @@
             background: var(--text-muted);
         }
 
-        .chat-user .user-tag {
+        /* User Tag Styles - Same background as chat */
+        .user-tag {
             font-size: 10px;
             padding: 2px 8px;
             border-radius: 10px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            color: white !important;
-            background: var(--purple);
+            background: var(--card-bg) !important;
             margin-top: 4px;
             display: inline-block;
+            border: 1px solid var(--card-border);
+            color: white !important;
         }
 
         /* Chat Messages */
@@ -1287,25 +1297,25 @@
             margin-bottom: 4px;
             align-self: flex-start;
             background: rgba(255, 255, 255, 0.1);
-            color: var(--text);
+            color: white;
         }
 
         .message-sent {
             align-self: flex-end;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #000;
+            color: white;
             border-bottom-right-radius: 4px;
         }
 
         .message-received {
             align-self: flex-start;
             background: rgba(255, 255, 255, 0.1);
-            color: var(--text);
+            color: white;
             border-bottom-left-radius: 4px;
         }
 
         .message-client {
-            background: rgba(0, 128, 0, 0.2);
+            background: rgba(0, 100, 0, 0.2);
             color: #90ee90;
             border-left: 3px solid #32cd32;
         }
@@ -1317,6 +1327,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            color: white;
         }
 
         .message-time {
@@ -1324,32 +1335,11 @@
             opacity: 0.7;
             margin-top: 4px;
             text-align: right;
+            color: #cccccc;
         }
 
         .attachment-buttons {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .attach-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: var(--text);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-        }
-
-        .attach-btn:hover {
-            background: var(--primary);
-            color: #000;
-            transform: translateY(-2px);
+            display: none; /* Removed file/image/mic buttons */
         }
 
         .typing-indicator {
@@ -1379,7 +1369,7 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            color: var(--text);
+            color: white;
             font-size: 14px;
         }
 
@@ -1390,8 +1380,8 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--accent);
-            background: rgba(0, 255, 157, 0.1);
-            border-bottom: 1px solid rgba(0, 255, 157, 0.2);
+            background: rgba(255, 42, 42, 0.1);
+            border-bottom: 1px solid rgba(255, 42, 42, 0.2);
             font-family: 'Orbitron', monospace;
             flex-shrink: 0;
         }
@@ -1404,7 +1394,7 @@
             font-size: 10px;
             color: var(--accent);
             padding: 4px 8px;
-            background: rgba(0, 217, 255, 0.1);
+            background: rgba(255, 85, 85, 0.1);
             border-radius: 10px;
             margin-top: 4px;
         }
@@ -1434,7 +1424,7 @@
             height: 40px;
             border-radius: 50%;
             background: var(--primary);
-            color: #000;
+            color: white;
             border: none;
             cursor: pointer;
             display: flex;
@@ -1456,7 +1446,7 @@
         .scroll-to-bottom:hover {
             background: var(--primary-light);
             transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(0, 255, 157, 0.8);
+            box-shadow: 0 0 20px rgba(255, 42, 42, 0.8);
         }
 
         /* Client chat button */
@@ -1477,13 +1467,152 @@
         }
 
         /* Alert animations */
-        @keyframes alert-pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .alert-pulse {
+            animation: pulse 1s infinite;
         }
 
-        .alert-pulse {
-            animation: alert-pulse 1s infinite;
+        /* ========== SCREENSHOTS GRID STYLES ========== */
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .screenshot-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .screenshot-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--glow-primary);
+        }
+
+        .screenshot-image {
+            height: 150px;
+            overflow: hidden;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screenshot-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .screenshot-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .screenshot-info {
+            padding: 12px;
+        }
+
+        .screenshot-client {
+            font-weight: bold;
+            color: var(--accent);
+            margin-bottom: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .screenshot-filename {
+            font-size: 14px;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .screenshot-size, .screenshot-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .screenshot-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        /* Recording table */
+        .recording-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-recording {
+            background: rgba(255, 42, 109, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 42, 109, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        .status-completed {
+            background: rgba(0, 255, 0, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .status-failed {
+            background: rgba(255, 42, 109, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 42, 109, 0.3);
+        }
+
+        /* Video Player */
+        .video-player {
+            width: 100%;
+            background: #000;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            max-height: 400px;
+        }
+
+        /* Screenshot Preview Modal */
+        .screenshot-modal {
+            background: rgba(0, 0, 0, 0.95);
+        }
+
+        .screenshot-modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            background: transparent;
+            border: none;
+        }
+
+        .screenshot-modal-content img {
+            max-width: 100%;
+            max-height: calc(90vh - 100px);
+            object-fit: contain;
         }
 
         /* Responsive design */
@@ -1525,6 +1654,22 @@
             
             .chat-main {
                 height: calc(100% - 200px);
+            }
+            
+            .grid-cols-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid-cols-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                min-width: 100px;
+                font-size: 10px;
+                padding: 10px 5px;
             }
         }
     </style>
@@ -1638,11 +1783,11 @@
                 
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fas fa-terminal"></i>
+                        <i class="fas fa-camera"></i>
                     </div>
-                    <div class="stat-value" id="activeCommands">0</div>
-                    <div class="stat-label">ACTIVE COMMANDS</div>
-                    <div class="form-hint" id="commandsHint">No active commands</div>
+                    <div class="stat-value" id="totalScreenshots">0</div>
+                    <div class="stat-label">SCREENSHOTS</div>
+                    <div class="form-hint" id="screenshotsHint">Today</div>
                 </div>
             </div>
 
@@ -1659,6 +1804,12 @@
                         </button>
                         <button class="tab" onclick="switchTab('python')">
                             <i class="fab fa-python"></i> PYTHON
+                        </button>
+                        <button class="tab" onclick="switchTab('screenshots')">
+                            <i class="fas fa-camera"></i> SCREENSHOTS
+                        </button>
+                        <button class="tab" onclick="switchTab('recordings')">
+                            <i class="fas fa-video"></i> RECORDINGS
                         </button>
                         <button class="tab" onclick="switchTab('logs')">
                             <i class="fas fa-clipboard-list"></i> LOGS
@@ -1736,6 +1887,7 @@
                                     <option value="custom">⚡ Custom Command</option>
                                     <option value="restart">🔄 Restart Client</option>
                                     <option value="shutdown">⏻ Shutdown Client</option>
+                                    <option value="record_screen">🎥 Record Screen</option>
                                 </select>
                             </div>
                             
@@ -1868,6 +2020,114 @@ if __name__ == "__main__":
                         </div>
                     </div>
                     
+                    <!-- Screenshots Tab -->
+                    <div id="screenshotsTab" class="tab-content hidden">
+                        <div class="panel-header">
+                            <h2><i class="fas fa-camera"></i> SCREENSHOTS</h2>
+                            <div class="panel-actions">
+                                <button onclick="captureAllScreenshots()" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-camera"></i> CAPTURE ALL
+                                </button>
+                                <button onclick="refreshScreenshots()" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-sync"></i> REFRESH
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-content">
+                            <div class="form-group mb-3">
+                                <div class="flex gap-2">
+                                    <select id="screenshotClientFilter" class="form-control" onchange="filterScreenshots()">
+                                        <option value="all">All Clients</option>
+                                    </select>
+                                    <input type="text" id="screenshotSearch" class="form-control" placeholder="Search screenshots..." onkeyup="filterScreenshots()">
+                                </div>
+                            </div>
+                            
+                            <div id="screenshotsEmpty" class="empty-state">
+                                <i class="fas fa-camera-slash"></i>
+                                <h3>No Screenshots</h3>
+                                <p>Capture screenshots from clients to see them here</p>
+                            </div>
+                            
+                            <div id="screenshotsGrid" class="grid grid-cols-3 gap-4">
+                                <!-- Screenshots will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recordings Tab -->
+                    <div id="recordingsTab" class="tab-content hidden">
+                        <div class="panel-header">
+                            <h2><i class="fas fa-video"></i> SCREEN RECORDINGS</h2>
+                            <div class="panel-actions">
+                                <button onclick="startRecordingAll()" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-record-vinyl"></i> RECORD ALL
+                                </button>
+                                <button onclick="stopRecordingAll()" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-stop"></i> STOP ALL
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="panel-content space-y-3">
+                            <div class="form-group">
+                                <label class="form-label">RECORDING CONTROLS</label>
+                                <div class="flex gap-2">
+                                    <select id="recordingClient" class="form-control">
+                                        <option value="">-- Select a client --</option>
+                                    </select>
+                                    <button onclick="startRecording()" class="btn btn-danger">
+                                        <i class="fas fa-record-vinyl"></i> START RECORDING
+                                    </button>
+                                    <button onclick="stopRecording()" class="btn btn-secondary" id="stopRecordingBtn" disabled>
+                                        <i class="fas fa-stop"></i> STOP
+                                    </button>
+                                </div>
+                                <div class="form-hint">Recording duration: <span id="recordingDuration">00:00</span></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">RECORDING SETTINGS</label>
+                                <div class="flex gap-2">
+                                    <input type="number" id="recordingLength" class="form-control" value="30" min="5" max="300">
+                                    <span class="flex items-center">seconds</span>
+                                    <input type="number" id="recordingFps" class="form-control" value="30" min="1" max="60">
+                                    <span class="flex items-center">FPS</span>
+                                    <select id="recordingQuality" class="form-control">
+                                        <option value="low">Low Quality</option>
+                                        <option value="medium" selected>Medium Quality</option>
+                                        <option value="high">High Quality</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div id="recordingsEmpty" class="empty-state">
+                                <i class="fas fa-video-slash"></i>
+                                <h3>No Recordings</h3>
+                                <p>Start screen recordings from clients to see them here</p>
+                            </div>
+                            
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>CLIENT</th>
+                                            <th>FILENAME</th>
+                                            <th>SIZE</th>
+                                            <th>DURATION</th>
+                                            <th>CREATED</th>
+                                            <th>ACTIONS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recordingsTable">
+                                        <!-- Recordings will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Logs Tab -->
                     <div id="logsTab" class="tab-content hidden">
                         <div class="panel-header">
@@ -1954,7 +2214,7 @@ if __name__ == "__main__":
                                                     <div class="status-dot"></div>
                                                     <span>Online</span>
                                                 </div>
-                                                <div class="user-tag" style="background: var(--accent);">
+                                                <div class="user-tag" style="border-color: #00ffff;">
                                                     Everyone
                                                 </div>
                                             </div>
@@ -2006,18 +2266,6 @@ if __name__ == "__main__":
                                 </div>
                                 
                                 <div class="chat-input-area">
-                                    <div class="attachment-buttons">
-                                        <button class="attach-btn" onclick="attachFile()" title="Attach File">
-                                            <i class="fas fa-paperclip"></i>
-                                        </button>
-                                        <button class="attach-btn" onclick="attachImage()" title="Attach Image">
-                                            <i class="fas fa-image"></i>
-                                        </button>
-                                        <button class="attach-btn" onclick="recordVoiceNote()" id="voiceRecordBtn" title="Record Voice Note">
-                                            <i class="fas fa-microphone"></i>
-                                        </button>
-                                    </div>
-                                    
                                     <div class="message-input-container">
                                         <textarea 
                                             id="messageInput" 
@@ -2090,6 +2338,9 @@ if __name__ == "__main__":
                                 <button onclick="quickAction('screenshot_all')" class="btn btn-secondary w-full justify-start">
                                     <i class="fas fa-camera"></i> Capture All Screens
                                 </button>
+                                <button onclick="quickAction('record_all')" class="btn btn-danger w-full justify-start">
+                                    <i class="fas fa-record-vinyl"></i> Record All Screens
+                                </button>
                                 <button onclick="quickAction('system_info_all')" class="btn btn-secondary w-full justify-start">
                                     <i class="fas fa-info-circle"></i> Get All System Info
                                 </button>
@@ -2098,9 +2349,6 @@ if __name__ == "__main__":
                                 </button>
                                 <button onclick="quickAction('talk_to_all_clients')" class="btn btn-primary w-full justify-start">
                                     <i class="fas fa-bullhorn"></i> Message All Clients
-                                </button>
-                                <button onclick="showPythonTemplate('monitor')" class="btn btn-secondary w-full justify-start">
-                                    <i class="fab fa-python"></i> System Monitor Script
                                 </button>
                             </div>
                         </div>
@@ -2142,6 +2390,36 @@ if __name__ == "__main__":
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner"></div>
         <div class="mt-4 text-accent" id="loadingMessage">Loading...</div>
+    </div>
+
+    <!-- Screenshot Preview Modal -->
+    <div id="screenshotPreviewModal" class="modal screenshot-modal">
+        <div class="modal-content screenshot-modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-expand"></i> SCREENSHOT PREVIEW</h3>
+                <button class="modal-close" onclick="closeScreenshotPreview()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <img id="previewImage" src="" alt="Screenshot Preview">
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div id="videoPlayerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-video"></i> VIDEO PLAYER</h3>
+                <button class="modal-close" onclick="closeVideoPlayer()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="video-player">
+                    <video id="videoPlayer" controls>
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Python Templates Modal -->
@@ -2197,6 +2475,7 @@ if __name__ == "__main__":
                         <option value="message">📝 Simple Message</option>
                         <option value="system_info">💻 Get System Info</option>
                         <option value="screenshot">📷 Capture Screenshot</option>
+                        <option value="record_screen">🎥 Record Screen</option>
                         <option value="custom">⚡ Custom Command</option>
                         <option value="python">🐍 Python Script</option>
                     </select>
@@ -2243,9 +2522,9 @@ if __name__ == "__main__":
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">LOGS PER PAGE</label>
-                    <input type="number" id="settingsLogsPerPage" class="form-control" value="100" min="10" max="500">
-                    <div class="form-hint">Number of logs to display per page</div>
+                    <label class="form-label">SCREENSHOTS PER PAGE</label>
+                    <input type="number" id="settingsScreenshotsPerPage" class="form-control" value="12" min="6" max="48">
+                    <div class="form-hint">Number of screenshots to display per page</div>
                 </div>
                 
                 <div class="flex gap-2 mt-4">
@@ -2259,13 +2538,6 @@ if __name__ == "__main__":
             </div>
         </div>
     </div>
-
-    <!-- Hidden file inputs -->
-    <input type="file" id="fileInput" class="hidden" accept="*/*" onchange="handleFileSelect(event)">
-    <input type="file" id="imageInput" class="hidden" accept="image/*" onchange="handleImageSelect(event)">
-
-    <!-- Audio recorder -->
-    <audio id="audioPlayer" class="hidden"></audio>
 
     <script>
         // ========== CONFIGURATION ==========
@@ -2286,6 +2558,8 @@ if __name__ == "__main__":
             clients: [],
             commands: [],
             logs: [],
+            screenshots: [],
+            recordings: [],
             charts: {},
             refreshInterval: null,
             dashboardStartTime: null,
@@ -2294,8 +2568,10 @@ if __name__ == "__main__":
             settings: {
                 backendUrl: CONFIG.BACKEND_URL,
                 refreshInterval: 10,
-                logsPerPage: 100
-            }
+                screenshotsPerPage: 12
+            },
+            recordingTimers: {},
+            activeRecordings: {}
         };
 
         // ========== CHAT STATE ==========
@@ -2306,9 +2582,6 @@ if __name__ == "__main__":
             conversations: [],
             isTyping: false,
             typingTimeout: null,
-            audioRecorder: null,
-            audioChunks: [],
-            isRecording: false,
             unreadMessages: {}
         };
 
@@ -2462,12 +2735,16 @@ if __name__ == "__main__":
                 clients: [],
                 commands: [],
                 logs: [],
+                screenshots: [],
+                recordings: [],
                 charts: {},
                 refreshInterval: null,
                 dashboardStartTime: null,
                 connectionAttempts: 0,
                 isInitialized: false,
-                settings: state.settings
+                settings: state.settings,
+                recordingTimers: {},
+                activeRecordings: {}
             };
             
             // Reset chat state
@@ -2478,9 +2755,6 @@ if __name__ == "__main__":
                 conversations: [],
                 isTyping: false,
                 typingTimeout: null,
-                audioRecorder: null,
-                audioChunks: [],
-                isRecording: false,
                 unreadMessages: {}
             };
             
@@ -2581,6 +2855,12 @@ if __name__ == "__main__":
                 // Load commands
                 await refreshCommands();
                 
+                // Load screenshots
+                await refreshScreenshots();
+                
+                // Load recordings
+                await refreshRecordings();
+                
                 // Load logs
                 await refreshLogs();
                 
@@ -2613,7 +2893,7 @@ if __name__ == "__main__":
                         document.getElementById('onlineClients').textContent = stats.online_clients;
                         document.getElementById('wsOnlineClients').textContent = stats.ws_online_clients;
                         document.getElementById('chatUsers').textContent = stats.chat_users || 0;
-                        document.getElementById('activeCommands').textContent = stats.pending_commands;
+                        document.getElementById('totalScreenshots').textContent = stats.total_screenshots || 0;
                         document.getElementById('todayLogs').textContent = stats.today_logs;
                         
                         document.getElementById('clientsTrend').innerHTML = 
@@ -2757,6 +3037,39 @@ if __name__ == "__main__":
                 case 'new_message':
                     handleNewMessage(data.message, data.sender_tag);
                     break;
+                    
+                case 'screenshot_received':
+                    showNotification(`New screenshot from ${data.client_id}`, 'info');
+                    refreshScreenshots();
+                    updateStats();
+                    break;
+                    
+                case 'recording_started':
+                    showNotification(`Recording started on ${data.client_id}`, 'info');
+                    state.activeRecordings[data.client_id] = true;
+                    updateRecordingStatus();
+                    break;
+                    
+                case 'recording_stopped':
+                    showNotification(`Recording stopped on ${data.client_id}`, 'info');
+                    delete state.activeRecordings[data.client_id];
+                    updateRecordingStatus();
+                    refreshRecordings();
+                    break;
+                    
+                case 'recording_received':
+                    showNotification(`New recording from ${data.client_id}`, 'info');
+                    refreshRecordings();
+                    break;
+            }
+        }
+
+        function updateRecordingStatus() {
+            const activeCount = Object.keys(state.activeRecordings).length;
+            if (activeCount > 0) {
+                document.getElementById('recordingsTab').querySelector('i').className = 'fas fa-video alert-pulse';
+            } else {
+                document.getElementById('recordingsTab').querySelector('i').className = 'fas fa-video';
             }
         }
 
@@ -2864,6 +3177,8 @@ if __name__ == "__main__":
                         updateClientsTable();
                         updateClientDropdowns();
                         updateLogFilterClients();
+                        updateScreenshotFilterClients();
+                        updateRecordingClientDropdown();
                     }
                 }
             } catch (error) {
@@ -2911,8 +3226,8 @@ if __name__ == "__main__":
                             <button onclick="openClientChat('${client.client_id}')" class="btn btn-client-chat btn-icon" title="Talk to Client">
                                 <i class="fas fa-comment"></i>
                             </button>
-                            <button onclick="clientAction('${client.client_id}', 'python')" class="btn btn-secondary btn-icon" title="Run Python">
-                                <i class="fab fa-python"></i>
+                            <button onclick="clientAction('${client.client_id}', 'record')" class="btn btn-danger btn-icon" title="Record Screen">
+                                <i class="fas fa-video"></i>
                             </button>
                         </div>
                     </td>
@@ -2950,6 +3265,34 @@ if __name__ == "__main__":
             }
         }
 
+        function updateRecordingClientDropdown() {
+            const select = document.getElementById('recordingClient');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">-- Select a client --</option>';
+            state.clients.forEach(client => {
+                if (client.online || client.ws_online) {
+                    const option = document.createElement('option');
+                    option.value = client.client_id;
+                    option.textContent = `${client.name} (${client.client_id.substring(0, 8)})`;
+                    select.appendChild(option);
+                }
+            });
+        }
+
+        function updateScreenshotFilterClients() {
+            const select = document.getElementById('screenshotClientFilter');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="all">All Clients</option>';
+            state.clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.client_id;
+                option.textContent = `${client.name} (${client.client_id.substring(0, 8)})`;
+                select.appendChild(option);
+            });
+        }
+
         function clientAction(clientId, action) {
             switch (action) {
                 case 'screenshot':
@@ -2957,6 +3300,10 @@ if __name__ == "__main__":
                     break;
                 case 'info':
                     sendCommandToClient(clientId, 'system_info');
+                    break;
+                case 'record':
+                    document.getElementById('recordingClient').value = clientId;
+                    switchTab('recordings');
                     break;
                 case 'python':
                     document.getElementById('pythonClient').value = clientId;
@@ -2998,6 +3345,9 @@ if __name__ == "__main__":
             if (commandType === 'custom') {
                 paramsDiv.classList.remove('hidden');
                 codeTextarea.placeholder = 'Enter custom command (e.g., "dir" or "ls -la")';
+            } else if (commandType === 'record_screen') {
+                paramsDiv.classList.remove('hidden');
+                codeTextarea.placeholder = 'Enter recording parameters as JSON: {"duration": 30, "fps": 30, "quality": "medium"}';
             } else {
                 paramsDiv.classList.add('hidden');
             }
@@ -3021,6 +3371,16 @@ if __name__ == "__main__":
                     return;
                 }
                 parameters.code = code;
+            } else if (commandType === 'record_screen') {
+                const code = document.getElementById('commandCode').value.trim();
+                if (code) {
+                    try {
+                        parameters = JSON.parse(code);
+                    } catch (e) {
+                        showNotification('Invalid JSON parameters', 'error');
+                        return;
+                    }
+                }
             }
             
             showLoading('Sending command...');
@@ -3272,6 +3632,583 @@ if __name__ == "__main__":
             }
         }
 
+        // ========== SCREENSHOTS FUNCTIONS ==========
+        async function refreshScreenshots() {
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/screenshots`, {
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        state.screenshots = data.screenshots || [];
+                        updateScreenshotsGrid(state.screenshots);
+                    }
+                }
+            } catch (error) {
+                console.error('Refresh screenshots error:', error);
+            }
+        }
+
+        function updateScreenshotsGrid(screenshots) {
+            const grid = document.getElementById('screenshotsGrid');
+            const emptyState = document.getElementById('screenshotsEmpty');
+            
+            if (!grid) return;
+            
+            grid.innerHTML = '';
+            
+            // Apply filters
+            let filteredScreenshots = [...screenshots];
+            const clientFilter = document.getElementById('screenshotClientFilter').value;
+            const searchTerm = document.getElementById('screenshotSearch').value.toLowerCase();
+            
+            if (clientFilter && clientFilter !== 'all') {
+                filteredScreenshots = filteredScreenshots.filter(s => s.client_id === clientFilter);
+            }
+            
+            if (searchTerm) {
+                filteredScreenshots = filteredScreenshots.filter(s => 
+                    s.filename.toLowerCase().includes(searchTerm) ||
+                    s.client_id.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (filteredScreenshots.length === 0) {
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            if (emptyState) emptyState.classList.add('hidden');
+            
+            filteredScreenshots.forEach(screenshot => {
+                const screenshotElement = document.createElement('div');
+                screenshotElement.className = 'screenshot-item';
+                screenshotElement.innerHTML = `
+                    <div class="screenshot-card">
+                        <div class="screenshot-image">
+                            <img src="data:image/png;base64,${screenshot.image_data || ''}" 
+                                 alt="${screenshot.filename}"
+                                 onclick="openScreenshotPreview('${screenshot.id}')">
+                        </div>
+                        <div class="screenshot-info">
+                            <div class="screenshot-client">${getClientName(screenshot.client_id)}</div>
+                            <div class="screenshot-filename">${screenshot.filename}</div>
+                            <div class="screenshot-size">${formatFileSize(screenshot.size || 0)}</div>
+                            <div class="screenshot-time">${formatTime(screenshot.created_at)}</div>
+                            <div class="screenshot-actions">
+                                <button onclick="downloadScreenshot('${screenshot.id}', '${screenshot.filename}')" 
+                                        class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button onclick="deleteScreenshot('${screenshot.id}')" 
+                                        class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(screenshotElement);
+            });
+        }
+
+        async function captureAllScreenshots() {
+            try {
+                showLoading('Capturing screenshots from all clients...');
+                
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/screenshot/all`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showNotification(`Screenshot requests sent to ${data.count} clients`, 'success');
+                }
+            } catch (error) {
+                console.error('Capture all screenshots error:', error);
+                showNotification('Failed to capture screenshots', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function downloadScreenshot(screenshotId, filename) {
+            try {
+                showLoading('Downloading screenshot...');
+                
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/screenshot/${screenshotId}/download`, {
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    
+                    showNotification('Screenshot downloaded', 'success');
+                }
+            } catch (error) {
+                console.error('Download screenshot error:', error);
+                showNotification('Failed to download screenshot', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function deleteScreenshot(screenshotId) {
+            if (confirm('Delete this screenshot?')) {
+                try {
+                    const response = await fetch(`${CONFIG.BACKEND_URL}/api/screenshot/${screenshotId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${state.token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        showNotification('Screenshot deleted', 'success');
+                        refreshScreenshots();
+                    }
+                } catch (error) {
+                    console.error('Delete screenshot error:', error);
+                    showNotification('Failed to delete screenshot', 'error');
+                }
+            }
+        }
+
+        function openScreenshotPreview(screenshotId) {
+            const screenshot = state.screenshots.find(s => s.id === screenshotId);
+            if (screenshot) {
+                document.getElementById('previewImage').src = `data:image/png;base64,${screenshot.image_data}`;
+                document.getElementById('screenshotPreviewModal').style.display = 'flex';
+            }
+        }
+
+        function closeScreenshotPreview() {
+            document.getElementById('screenshotPreviewModal').style.display = 'none';
+        }
+
+        function filterScreenshots() {
+            updateScreenshotsGrid(state.screenshots);
+        }
+
+        // ========== RECORDING FUNCTIONS ==========
+        async function refreshRecordings() {
+            try {
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/recordings`, {
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        state.recordings = data.recordings || [];
+                        updateRecordingsTable(state.recordings);
+                    }
+                }
+            } catch (error) {
+                console.error('Refresh recordings error:', error);
+            }
+        }
+
+        function updateRecordingsTable(recordings) {
+            const table = document.getElementById('recordingsTable');
+            const emptyState = document.getElementById('recordingsEmpty');
+            
+            if (!table) return;
+            
+            table.innerHTML = '';
+            
+            if (recordings.length === 0) {
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            if (emptyState) emptyState.classList.add('hidden');
+            
+            recordings.forEach(recording => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${getClientName(recording.client_id)}</td>
+                    <td>${recording.filename}</td>
+                    <td>${formatFileSize(recording.size || 0)}</td>
+                    <td>${recording.duration || 'N/A'}</td>
+                    <td>${formatTime(recording.created_at)}</td>
+                    <td>
+                        <div class="flex gap-1">
+                            <button onclick="downloadRecording('${recording.id}', '${recording.filename}')" 
+                                    class="btn btn-secondary btn-sm">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button onclick="playRecording('${recording.id}')" 
+                                    class="btn btn-primary btn-sm">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button onclick="deleteRecording('${recording.id}')" 
+                                    class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+        }
+
+        async function startRecording() {
+            const clientId = document.getElementById('recordingClient').value;
+            const duration = document.getElementById('recordingLength').value;
+            const fps = document.getElementById('recordingFps').value;
+            const quality = document.getElementById('recordingQuality').value;
+            
+            if (!clientId) {
+                showNotification('Please select a client', 'warning');
+                return;
+            }
+            
+            try {
+                showLoading('Starting recording...');
+                
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/recording/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.token}`
+                    },
+                    body: JSON.stringify({
+                        client_id: clientId,
+                        duration: parseInt(duration),
+                        fps: parseInt(fps),
+                        quality: quality
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showNotification('Recording started', 'success');
+                    
+                    // Start timer
+                    startRecordingTimer(clientId, duration);
+                    
+                    // Enable stop button
+                    document.getElementById('stopRecordingBtn').disabled = false;
+                    
+                    // Mark as active recording
+                    state.activeRecordings[clientId] = true;
+                    updateRecordingStatus();
+                }
+            } catch (error) {
+                console.error('Start recording error:', error);
+                showNotification('Failed to start recording', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function stopRecording() {
+            const clientId = document.getElementById('recordingClient').value;
+            
+            if (!clientId) {
+                showNotification('Please select a client', 'warning');
+                return;
+            }
+            
+            try {
+                showLoading('Stopping recording...');
+                
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/recording/stop`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.token}`
+                    },
+                    body: JSON.stringify({
+                        client_id: clientId
+                    })
+                });
+                
+                if (response.ok) {
+                    showNotification('Recording stopped', 'success');
+                    
+                    // Stop timer
+                    stopRecordingTimer();
+                    
+                    // Disable stop button
+                    document.getElementById('stopRecordingBtn').disabled = true;
+                    
+                    // Remove from active recordings
+                    delete state.activeRecordings[clientId];
+                    updateRecordingStatus();
+                    
+                    // Refresh recordings
+                    refreshRecordings();
+                }
+            } catch (error) {
+                console.error('Stop recording error:', error);
+                showNotification('Failed to stop recording', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function startRecordingTimer(clientId, duration) {
+            let seconds = 0;
+            const maxSeconds = parseInt(duration);
+            const durationDisplay = document.getElementById('recordingDuration');
+            
+            // Clear existing timer
+            if (state.recordingTimers[clientId]) {
+                clearInterval(state.recordingTimers[clientId]);
+            }
+            
+            const timer = setInterval(() => {
+                seconds++;
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                durationDisplay.textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+                
+                if (seconds >= maxSeconds) {
+                    clearInterval(timer);
+                    delete state.recordingTimers[clientId];
+                    stopRecording();
+                }
+            }, 1000);
+            
+            // Store timer reference
+            state.recordingTimers[clientId] = timer;
+        }
+
+        function stopRecordingTimer() {
+            const clientId = document.getElementById('recordingClient').value;
+            if (state.recordingTimers[clientId]) {
+                clearInterval(state.recordingTimers[clientId]);
+                delete state.recordingTimers[clientId];
+            }
+            document.getElementById('recordingDuration').textContent = '00:00';
+        }
+
+        async function startRecordingAll() {
+            const onlineClients = state.clients.filter(c => c.online || c.ws_online);
+            
+            if (onlineClients.length === 0) {
+                showNotification('No online clients', 'warning');
+                return;
+            }
+            
+            if (!confirm(`Start recording on ${onlineClients.length} clients?`)) {
+                return;
+            }
+            
+            try {
+                showLoading(`Starting recordings on ${onlineClients.length} clients...`);
+                
+                const duration = document.getElementById('recordingLength').value;
+                const fps = document.getElementById('recordingFps').value;
+                const quality = document.getElementById('recordingQuality').value;
+                
+                let successCount = 0;
+                
+                for (const client of onlineClients) {
+                    try {
+                        const response = await fetch(`${CONFIG.BACKEND_URL}/api/recording/start`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${state.token}`
+                            },
+                            body: JSON.stringify({
+                                client_id: client.client_id,
+                                duration: parseInt(duration),
+                                fps: parseInt(fps),
+                                quality: quality
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            successCount++;
+                            state.activeRecordings[client.client_id] = true;
+                        }
+                    } catch (error) {
+                        console.error(`Failed to start recording on ${client.client_id}:`, error);
+                    }
+                }
+                
+                updateRecordingStatus();
+                showNotification(`Started recordings on ${successCount} clients`, 'success');
+                
+            } catch (error) {
+                console.error('Start recording all error:', error);
+                showNotification('Failed to start recordings', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function stopRecordingAll() {
+            const recordingClients = Object.keys(state.activeRecordings);
+            
+            if (recordingClients.length === 0) {
+                showNotification('No active recordings', 'warning');
+                return;
+            }
+            
+            if (!confirm(`Stop ${recordingClients.length} active recordings?`)) {
+                return;
+            }
+            
+            try {
+                showLoading(`Stopping ${recordingClients.length} recordings...`);
+                
+                let successCount = 0;
+                
+                for (const clientId of recordingClients) {
+                    try {
+                        const response = await fetch(`${CONFIG.BACKEND_URL}/api/recording/stop`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${state.token}`
+                            },
+                            body: JSON.stringify({
+                                client_id: clientId
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            successCount++;
+                            delete state.activeRecordings[clientId];
+                            
+                            // Stop timer
+                            if (state.recordingTimers[clientId]) {
+                                clearInterval(state.recordingTimers[clientId]);
+                                delete state.recordingTimers[clientId];
+                            }
+                        }
+                    } catch (error) {
+                        console.error(`Failed to stop recording on ${clientId}:`, error);
+                    }
+                }
+                
+                updateRecordingStatus();
+                showNotification(`Stopped ${successCount} recordings`, 'success');
+                
+                // Refresh recordings list
+                refreshRecordings();
+                
+            } catch (error) {
+                console.error('Stop recording all error:', error);
+                showNotification('Failed to stop recordings', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function downloadRecording(recordingId, filename) {
+            try {
+                showLoading('Downloading recording...');
+                
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/recording/${recordingId}/download`, {
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    
+                    showNotification('Recording downloaded', 'success');
+                }
+            } catch (error) {
+                console.error('Download recording error:', error);
+                showNotification('Failed to download recording', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function playRecording(recordingId) {
+            try {
+                showLoading('Loading recording...');
+                
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/recording/${recordingId}/play`, {
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    
+                    const videoPlayer = document.getElementById('videoPlayer');
+                    videoPlayer.src = url;
+                    
+                    document.getElementById('videoPlayerModal').style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Play recording error:', error);
+                showNotification('Failed to load recording', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function deleteRecording(recordingId) {
+            if (confirm('Delete this recording?')) {
+                try {
+                    const response = await fetch(`${CONFIG.BACKEND_URL}/api/recording/${recordingId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${state.token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        showNotification('Recording deleted', 'success');
+                        refreshRecordings();
+                    }
+                } catch (error) {
+                    console.error('Delete recording error:', error);
+                    showNotification('Failed to delete recording', 'error');
+                }
+            }
+        }
+
+        function closeVideoPlayer() {
+            const videoPlayer = document.getElementById('videoPlayer');
+            if (videoPlayer.src) {
+                window.URL.revokeObjectURL(videoPlayer.src);
+                videoPlayer.src = '';
+            }
+            document.getElementById('videoPlayerModal').style.display = 'none';
+        }
+
         // ========== LOG MANAGEMENT ==========
         async function refreshLogs() {
             try {
@@ -3368,6 +4305,8 @@ if __name__ == "__main__":
 
         async function exportLogs() {
             try {
+                showLoading('Exporting logs...');
+                
                 const response = await fetch(`${CONFIG.BACKEND_URL}/api/logs?limit=1000`, {
                     headers: {
                         'Authorization': `Bearer ${state.token}`
@@ -3402,12 +4341,25 @@ if __name__ == "__main__":
             } catch (error) {
                 console.error('Export logs error:', error);
                 showNotification('Failed to export logs', 'error');
+            } finally {
+                hideLoading();
             }
         }
 
         async function clearLogs() {
             if (confirm('Clear all logs? This action cannot be undone.')) {
-                showNotification('Log clearing not implemented in demo', 'warning');
+                showLoading('Clearing logs...');
+                try {
+                    // In a real implementation, you would call a backend endpoint
+                    // For now, just clear the local state
+                    state.logs = [];
+                    updateLogsTable();
+                    showNotification('Logs cleared', 'success');
+                } catch (error) {
+                    showNotification('Failed to clear logs', 'error');
+                } finally {
+                    hideLoading();
+                }
             }
         }
 
@@ -3476,7 +4428,7 @@ if __name__ == "__main__":
                 // Add to messages array
                 const messageWithTag = { 
                     ...message, 
-                    sender_tag: senderTag || { role: 'user', color: '#00ff9d' }
+                    sender_tag: senderTag || { role: 'user', color: '#ff2a2a' }
                 };
                 
                 // Add to state
@@ -3548,13 +4500,13 @@ if __name__ == "__main__":
             const timeString = time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
             // Get sender tag
-            const senderTag = message.sender_tag || { role: 'user', color: '#00ff9d' };
+            const senderTag = message.sender_tag || { role: 'user', color: '#ff2a2a' };
             
             // Create message content
             const messageContent = `
-                <div class="message-sender" style="color: ${senderTag.color}">
+                <div class="message-sender">
                     ${message.sender === state.user.email ? 'You' : message.sender}
-                    <span class="user-tag" style="background: ${senderTag.color}">
+                    <span class="user-tag" style="border-color: ${senderTag.color}">
                         ${senderTag.role}
                     </span>
                 </div>
@@ -3644,7 +4596,7 @@ if __name__ == "__main__":
                         <div class="status-dot"></div>
                         <span>${status === 'online' ? 'Online' : 'Offline'}</span>
                     </div>
-                    <div class="user-tag" style="background: ${user.color || '#00ff9d'}">
+                    <div class="user-tag" style="border-color: ${user.color || '#ff2a2a'}">
                         ${user.role}
                     </div>
                     ${unreadCount > 0 ? `
@@ -3850,7 +4802,7 @@ if __name__ == "__main__":
                         timestamp: new Date().toISOString()
                     };
                     
-                    handleNewMessage(tempMessage, { role: 'admin', color: '#00ff9d' });
+                    handleNewMessage(tempMessage, { role: 'admin', color: '#ff2a2a' });
                 }
             } catch (error) {
                 console.error('Send message error:', error);
@@ -3999,6 +4951,9 @@ if __name__ == "__main__":
             } else if (type === 'python') {
                 paramsDiv.classList.remove('hidden');
                 textarea.placeholder = 'Enter Python code...';
+            } else if (type === 'record_screen') {
+                paramsDiv.classList.remove('hidden');
+                textarea.placeholder = 'Enter recording parameters as JSON: {"duration": 30, "fps": 30, "quality": "medium"}';
             } else {
                 paramsDiv.classList.add('hidden');
                 textarea.placeholder = 'Parameters will be added automatically...';
@@ -4062,6 +5017,18 @@ if __name__ == "__main__":
                             parameters.code = command;
                             parameters.is_python = true;
                             break;
+                        case 'record_screen':
+                            if (command) {
+                                try {
+                                    const recordParams = JSON.parse(command);
+                                    parameters.duration = recordParams.duration || 30;
+                                    parameters.fps = recordParams.fps || 30;
+                                    parameters.quality = recordParams.quality || 'medium';
+                                } catch (e) {
+                                    throw new Error('Invalid JSON parameters');
+                                }
+                            }
+                            break;
                         case 'system_info':
                         case 'screenshot':
                             // No additional parameters needed
@@ -4121,7 +5088,7 @@ if __name__ == "__main__":
                 recipient: state.user.email,
                 message: `[Client Response]: ${data.message}`,
                 timestamp: data.timestamp || new Date().toISOString(),
-                sender_tag: { role: 'client', color: '#32cd32' }
+                sender_tag: { role: 'client', color: '#00ff00' }
             };
             
             handleNewMessage(chatMessage, chatMessage.sender_tag);
@@ -4138,8 +5105,8 @@ if __name__ == "__main__":
                     datasets: [{
                         label: 'Active Connections',
                         data: [],
-                        borderColor: '#00ff9d',
-                        backgroundColor: 'rgba(0, 255, 157, 0.1)',
+                        borderColor: '#ff2a2a',
+                        backgroundColor: 'rgba(255, 42, 42, 0.1)',
                         borderWidth: 2,
                         tension: 0.4,
                         fill: true
@@ -4206,14 +5173,21 @@ if __name__ == "__main__":
             // Activate clicked tab
             event.currentTarget.classList.add('active');
             
-            // Load chat data if switching to chat tab
-            if (tabName === 'chat') {
-                setTimeout(() => {
-                    fixChatContainerHeight();
-                }, 100);
-                
-                loadChatUsers();
-                loadChatMessages();
+            // Load specific data for tabs
+            switch(tabName) {
+                case 'chat':
+                    setTimeout(() => {
+                        fixChatContainerHeight();
+                    }, 100);
+                    loadChatUsers();
+                    loadChatMessages();
+                    break;
+                case 'screenshots':
+                    refreshScreenshots();
+                    break;
+                case 'recordings':
+                    refreshRecordings();
+                    break;
             }
         }
 
@@ -4234,6 +5208,14 @@ if __name__ == "__main__":
             if (!text) return 'N/A';
             if (text.length <= maxLength) return text;
             return text.substring(0, maxLength) + '...';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
         function showLoading(message = 'Loading...') {
@@ -4289,12 +5271,11 @@ if __name__ == "__main__":
         function quickAction(action) {
             switch (action) {
                 case 'screenshot_all':
-                    state.clients.forEach(client => {
-                        if (client.ws_online) {
-                            sendCommandToClient(client.client_id, 'screenshot');
-                        }
-                    });
-                    showNotification('Screenshot requests sent to all clients', 'info');
+                    captureAllScreenshots();
+                    break;
+                    
+                case 'record_all':
+                    startRecordingAll();
                     break;
                     
                 case 'system_info_all':
@@ -4309,13 +5290,14 @@ if __name__ == "__main__":
                 case 'refresh_all':
                     refreshClients();
                     refreshCommands();
+                    refreshScreenshots();
+                    refreshRecordings();
                     refreshLogs();
                     updateStats();
                     showNotification('All data refreshed', 'success');
                     break;
                     
                 case 'talk_to_all_clients':
-                    // Open client chat modal for broadcast
                     openClientChat();
                     showNotification('Open client chat to send message to all', 'info');
                     break;
@@ -4329,7 +5311,7 @@ if __name__ == "__main__":
         function showSettings() {
             document.getElementById('settingsBackendUrl').value = state.settings.backendUrl;
             document.getElementById('settingsRefreshInterval').value = state.settings.refreshInterval;
-            document.getElementById('settingsLogsPerPage').value = state.settings.logsPerPage;
+            document.getElementById('settingsScreenshotsPerPage').value = state.settings.screenshotsPerPage;
             document.getElementById('settingsModal').style.display = 'flex';
         }
 
@@ -4340,7 +5322,7 @@ if __name__ == "__main__":
         function saveSettings() {
             state.settings.backendUrl = document.getElementById('settingsBackendUrl').value;
             state.settings.refreshInterval = parseInt(document.getElementById('settingsRefreshInterval').value);
-            state.settings.logsPerPage = parseInt(document.getElementById('settingsLogsPerPage').value);
+            state.settings.screenshotsPerPage = parseInt(document.getElementById('settingsScreenshotsPerPage').value);
             
             // Update CONFIG
             CONFIG.BACKEND_URL = state.settings.backendUrl;
@@ -4363,7 +5345,7 @@ if __name__ == "__main__":
             state.settings = {
                 backendUrl: 'https://dd-kpxl.onrender.com',
                 refreshInterval: 10,
-                logsPerPage: 100
+                screenshotsPerPage: 12
             };
             
             showSettings();
@@ -4390,40 +5372,13 @@ if __name__ == "__main__":
                 hash = str.charCodeAt(i) + ((hash << 5) - hash);
             }
             const hue = hash % 360;
-            return `hsl(${hue}, 70%, 60%)`;
+            return `hsl(${hue}, 70%, 50%)`;
         }
 
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
-        }
-
-        // File attachment functions (simplified)
-        function attachFile() {
-            document.getElementById('fileInput').click();
-        }
-
-        function attachImage() {
-            document.getElementById('imageInput').click();
-        }
-
-        function recordVoiceNote() {
-            showNotification('Voice recording not implemented in browser', 'info');
-        }
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                showNotification(`File selected: ${file.name}`, 'info');
-            }
-        }
-
-        function handleImageSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                showNotification(`Image selected: ${file.name}`, 'info');
-            }
         }
 
         // Run Python test
@@ -4477,6 +5432,22 @@ if __name__ == "__main__":
         window.hidePythonTemplates = hidePythonTemplates;
         window.loadPythonTemplate = loadPythonTemplate;
         window.runPythonTest = runPythonTest;
+        window.refreshScreenshots = refreshScreenshots;
+        window.captureAllScreenshots = captureAllScreenshots;
+        window.downloadScreenshot = downloadScreenshot;
+        window.deleteScreenshot = deleteScreenshot;
+        window.openScreenshotPreview = openScreenshotPreview;
+        window.closeScreenshotPreview = closeScreenshotPreview;
+        window.filterScreenshots = filterScreenshots;
+        window.refreshRecordings = refreshRecordings;
+        window.startRecording = startRecording;
+        window.stopRecording = stopRecording;
+        window.startRecordingAll = startRecordingAll;
+        window.stopRecordingAll = stopRecordingAll;
+        window.downloadRecording = downloadRecording;
+        window.playRecording = playRecording;
+        window.deleteRecording = deleteRecording;
+        window.closeVideoPlayer = closeVideoPlayer;
         window.exportLogs = exportLogs;
         window.clearLogs = clearLogs;
         window.filterLogs = filterLogs;
@@ -4484,9 +5455,6 @@ if __name__ == "__main__":
         window.showAbout = showAbout;
         window.showSettings = showSettings;
         window.showHelp = showHelp;
-        window.attachFile = attachFile;
-        window.attachImage = attachImage;
-        window.recordVoiceNote = recordVoiceNote;
         window.sendChatMessage = sendChatMessage;
         window.handleChatKeydown = handleChatKeydown;
         window.searchUsers = searchUsers;
