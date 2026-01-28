@@ -1741,6 +1741,103 @@
                 padding: 10px 5px;
             }
         }
+
+        /* ========== FIXES CSS ========== */
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .screenshot-item {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .screenshot-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(255, 42, 42, 0.2);
+        }
+
+        .screenshot-image {
+            height: 150px;
+            overflow: hidden;
+            background: linear-gradient(45deg, #1a0000, #000);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screenshot-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+
+        .screenshot-image img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Video player improvements */
+        .video-player {
+            position: relative;
+            width: 100%;
+            background: #000;
+        }
+
+        .video-player video {
+            width: 100%;
+            height: auto;
+            max-height: 70vh;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Status indicators */
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .status-online .status-indicator {
+            background: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+            animation: pulse 2s infinite;
+        }
+
+        .status-offline .status-indicator {
+            background: #ff2a2a;
+            box-shadow: 0 0 10px #ff2a2a;
+        }
+
+        /* Loading states */
+        .loading-shimmer {
+            background: linear-gradient(90deg, 
+                rgba(255, 42, 42, 0.1) 0%, 
+                rgba(255, 85, 85, 0.2) 50%, 
+                rgba(255, 42, 42, 0.1) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
     </style>
 </head>
 <body>
@@ -2030,6 +2127,22 @@
                             </div>
                             
                             <div class="form-group">
+                                <label class="form-label">EXECUTION SETTINGS</label>
+                                <div class="flex gap-2">
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" id="pythonRestrictedMode" checked>
+                                        <span>Restricted Mode</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                        <input type="checkbox" id="pythonAllowImports" checked>
+                                        <span>Allow Imports</span>
+                                    </label>
+                                    <input type="number" id="pythonTimeout" class="form-control" value="60" style="width: 100px;">
+                                    <span class="flex items-center">seconds timeout</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
                                 <label class="form-label">FILENAME</label>
                                 <input type="text" id="pythonFilename" class="form-control" placeholder="script.py" value="script.py">
                             </div>
@@ -2087,6 +2200,21 @@ if __name__ == "__main__":
                                 <button onclick="showPythonTemplates()" class="btn btn-secondary">
                                     <i class="fas fa-list"></i> TEMPLATES
                                 </button>
+                                <button onclick="viewPythonExecutions()" class="btn btn-secondary">
+                                    <i class="fas fa-history"></i> HISTORY
+                                </button>
+                            </div>
+                            
+                            <div class="flex gap-2 mt-2">
+                                <button onclick="loadPythonTemplate('system_monitor')" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-desktop"></i> System Monitor
+                                </button>
+                                <button onclick="loadPythonTemplate('file_scanner')" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-file"></i> File Scanner
+                                </button>
+                                <button onclick="loadPythonTemplate('network_info')" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-network-wired"></i> Network Info
+                                </button>
                             </div>
                             
                             <div id="pythonResult" class="hidden mt-3">
@@ -2134,7 +2262,7 @@ if __name__ == "__main__":
                                 <p>Capture screenshots from clients to see them here</p>
                             </div>
                             
-                            <div id="screenshotsGrid" class="grid grid-cols-3 gap-4">
+                            <div id="screenshotsGrid" class="grid grid-cols-3 gap-4 screenshot-grid">
                                 <!-- Screenshots will be loaded here -->
                             </div>
                         </div>
@@ -2674,6 +2802,434 @@ if __name__ == "__main__":
             unreadMessages: {}
         };
 
+        // ========== PYTHON TEMPLATES ==========
+        const pythonTemplates = {
+            system_monitor: `#!/usr/bin/env python3
+"""
+System Monitor Script
+Collects comprehensive system information
+"""
+
+import platform
+import sys
+import os
+import psutil
+import datetime
+import json
+import socket
+
+def get_system_info():
+    """Collect system information"""
+    info = {}
+    
+    # Basic system info
+    info['hostname'] = socket.gethostname()
+    info['platform'] = platform.platform()
+    info['processor'] = platform.processor()
+    info['architecture'] = platform.architecture()[0]
+    info['python_version'] = sys.version
+    
+    # CPU info
+    info['cpu_percent'] = psutil.cpu_percent(interval=1)
+    info['cpu_count'] = psutil.cpu_count()
+    info['cpu_freq'] = psutil.cpu_freq().current if psutil.cpu_freq() else 'N/A'
+    
+    # Memory info
+    mem = psutil.virtual_memory()
+    info['memory_total'] = mem.total // (1024**3)
+    info['memory_available'] = mem.available // (1024**3)
+    info['memory_percent'] = mem.percent
+    info['memory_used'] = mem.used // (1024**3)
+    
+    # Disk info
+    disk = psutil.disk_usage('/')
+    info['disk_total'] = disk.total // (1024**3)
+    info['disk_used'] = disk.used // (1024**3)
+    info['disk_free'] = disk.free // (1024**3)
+    info['disk_percent'] = disk.percent
+    
+    # Network info
+    info['network_interfaces'] = []
+    for interface, addrs in psutil.net_if_addrs().items():
+        interface_info = {'name': interface, 'addresses': []}
+        for addr in addrs:
+            interface_info['addresses'].append({
+                'family': str(addr.family),
+                'address': addr.address,
+                'netmask': addr.netmask if hasattr(addr, 'netmask') else None
+            })
+        info['network_interfaces'].append(interface_info)
+    
+    # Process info (top 10 by CPU)
+    processes = []
+    for proc in psutil.process_iter(['pid', 'name', 'cpu_percent', 'memory_percent']):
+        try:
+            processes.append(proc.info)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    
+    processes.sort(key=lambda x: x['cpu_percent'] or 0, reverse=True)
+    info['top_processes'] = processes[:10]
+    
+    # System uptime
+    info['boot_time'] = datetime.datetime.fromtimestamp(psutil.boot_time()).isoformat()
+    info['current_time'] = datetime.datetime.now().isoformat()
+    
+    return info
+
+def main():
+    """Main execution function"""
+    print("=== SYSTEM MONITOR STARTED ===\\n")
+    
+    try:
+        info = get_system_info()
+        
+        # Print formatted output
+        print(f"Hostname: {info['hostname']}")
+        print(f"Platform: {info['platform']}")
+        print(f"Processor: {info['processor']}")
+        print(f"Architecture: {info['architecture']}")
+        print(f"Python Version: {info['python_version']}\\n")
+        
+        print(f"CPU Usage: {info['cpu_percent']}%")
+        print(f"CPU Count: {info['cpu_count']}")
+        print(f"CPU Frequency: {info['cpu_freq']} MHz\\n")
+        
+        print(f"Memory Total: {info['memory_total']} GB")
+        print(f"Memory Available: {info['memory_available']} GB")
+        print(f"Memory Used: {info['memory_used']} GB ({info['memory_percent']}%)\\n")
+        
+        print(f"Disk Total: {info['disk_total']} GB")
+        print(f"Disk Used: {info['disk_used']} GB")
+        print(f"Disk Free: {info['disk_free']} GB ({info['disk_percent']}% used)\\n")
+        
+        print("Network Interfaces:")
+        for interface in info['network_interfaces']:
+            print(f"  {interface['name']}:")
+            for addr in interface['addresses']:
+                print(f"    {addr['family']}: {addr['address']}")
+        print()
+        
+        print("Top Processes by CPU:")
+        for proc in info['top_processes']:
+            print(f"  PID {proc['pid']}: {proc['name']} - CPU: {proc['cpu_percent']}%, MEM: {proc['memory_percent']}%")
+        print()
+        
+        print(f"System Boot Time: {info['boot_time']}")
+        print(f"Current Time: {info['current_time']}")
+        
+        # Return JSON for structured data
+        return json.dumps(info, indent=2)
+        
+    except Exception as e:
+        print(f"Error collecting system info: {e}")
+        return None
+
+if __name__ == "__main__":
+    result = main()
+    print("\\n=== SYSTEM MONITOR COMPLETED ===")
+    sys.exit(0)`,
+
+            file_scanner: `#!/usr/bin/env python3
+"""
+File System Scanner
+Scans directories and provides file information
+"""
+
+import os
+import sys
+import stat
+import datetime
+import hashlib
+import json
+
+def scan_directory(path=".", max_depth=3, current_depth=0):
+    """Recursively scan directory"""
+    results = {
+        'path': os.path.abspath(path),
+        'files': [],
+        'directories': [],
+        'total_size': 0,
+        'file_count': 0,
+        'directory_count': 0
+    }
+    
+    try:
+        for item in os.listdir(path):
+            item_path = os.path.join(path, item)
+            
+            try:
+                stat_info = os.stat(item_path)
+                
+                item_data = {
+                    'name': item,
+                    'path': item_path,
+                    'size': stat_info.st_size,
+                    'modified': datetime.datetime.fromtimestamp(stat_info.st_mtime).isoformat(),
+                    'created': datetime.datetime.fromtimestamp(stat_info.st_ctime).isoformat(),
+                    'permissions': stat.filemode(stat_info.st_mode)
+                }
+                
+                if stat.S_ISDIR(stat_info.st_mode):
+                    # It's a directory
+                    item_data['type'] = 'directory'
+                    results['directory_count'] += 1
+                    results['directories'].append(item_data)
+                    
+                    # Recursively scan if not too deep
+                    if current_depth < max_depth:
+                        subdir = scan_directory(item_path, max_depth, current_depth + 1)
+                        item_data['contents'] = subdir
+                        results['total_size'] += subdir['total_size']
+                        
+                else:
+                    # It's a file
+                    item_data['type'] = 'file'
+                    item_data['extension'] = os.path.splitext(item)[1]
+                    
+                    # Calculate MD5 hash for files under 10MB
+                    if stat_info.st_size < 10 * 1024 * 1024:
+                        try:
+                            with open(item_path, 'rb') as f:
+                                item_data['md5'] = hashlib.md5(f.read()).hexdigest()
+                        except:
+                            item_data['md5'] = 'error'
+                    
+                    results['files'].append(item_data)
+                    results['file_count'] += 1
+                    results['total_size'] += stat_info.st_size
+                    
+            except (PermissionError, OSError) as e:
+                # Skip files/directories we can't access
+                continue
+                
+    except (PermissionError, OSError) as e:
+        results['error'] = str(e)
+    
+    return results
+
+def main():
+    """Main execution function"""
+    print("=== FILE SYSTEM SCANNER ===\\n")
+    
+    # Get directory to scan from arguments or use current
+    scan_path = sys.argv[1] if len(sys.argv) > 1 else "."
+    
+    print(f"Scanning directory: {os.path.abspath(scan_path)}\\n")
+    
+    try:
+        results = scan_directory(scan_path)
+        
+        print(f"Scan completed successfully!\\n")
+        print(f"Total Files: {results['file_count']}")
+        print(f"Total Directories: {results['directory_count']}")
+        print(f"Total Size: {results['total_size'] / (1024**2):.2f} MB\\n")
+        
+        print("File Types Found:")
+        extensions = {}
+        for file in results['files']:
+            ext = file['extension'] or 'no extension'
+            extensions[ext] = extensions.get(ext, 0) + 1
+        
+        for ext, count in sorted(extensions.items(), key=lambda x: x[1], reverse=True)[:10]:
+            print(f"  {ext}: {count} files")
+        
+        print("\\nLargest Files:")
+        largest_files = sorted(results['files'], key=lambda x: x['size'], reverse=True)[:10]
+        for i, file in enumerate(largest_files, 1):
+            size_mb = file['size'] / (1024**2)
+            print(f"  {i}. {file['name']} - {size_mb:.2f} MB")
+        
+        print("\\nRecently Modified Files:")
+        recent_files = sorted(results['files'], key=lambda x: x['modified'], reverse=True)[:10]
+        for i, file in enumerate(recent_files, 1):
+            date = datetime.datetime.fromisoformat(file['modified']).strftime('%Y-%m-%d %H:%M')
+            print(f"  {i}. {file['name']} - {date}")
+        
+        # Return JSON for structured data
+        return json.dumps(results, indent=2)
+        
+    except Exception as e:
+        print(f"Error scanning directory: {e}")
+        return None
+
+if __name__ == "__main__":
+    result = main()
+    print("\\n=== SCAN COMPLETED ===")
+    sys.exit(0)`,
+
+            network_info: `#!/usr/bin/env python3
+"""
+Network Information Script
+Collects network configuration and connections
+"""
+
+import socket
+import psutil
+import platform
+import json
+import subprocess
+import sys
+
+def get_network_info():
+    """Collect network information"""
+    info = {}
+    
+    # Host information
+    info['hostname'] = socket.gethostname()
+    info['fqdn'] = socket.getfqdn()
+    
+    # Network interfaces
+    interfaces = {}
+    for interface, addrs in psutil.net_if_addrs().items():
+        interface_info = {
+            'addresses': [],
+            'stats': {},
+            'is_up': False
+        }
+        
+        # Addresses
+        for addr in addrs:
+            addr_info = {
+                'family': str(addr.family),
+                'address': addr.address,
+                'netmask': addr.netmask if hasattr(addr, 'netmask') else None,
+                'broadcast': addr.broadcast if hasattr(addr, 'broadcast') else None
+            }
+            interface_info['addresses'].append(addr_info)
+        
+        # Interface statistics
+        try:
+            stats = psutil.net_if_stats()[interface]
+            interface_info['stats'] = {
+                'is_up': stats.isup,
+                'duplex': stats.duplex,
+                'speed': stats.speed,
+                'mtu': stats.mtu
+            }
+            interface_info['is_up'] = stats.isup
+        except:
+            pass
+        
+        interfaces[interface] = interface_info
+    
+    info['interfaces'] = interfaces
+    
+    # Network connections
+    connections = []
+    try:
+        for conn in psutil.net_connections(kind='inet'):
+            conn_info = {
+                'fd': conn.fd,
+                'family': str(conn.family),
+                'type': str(conn.type),
+                'laddr': f"{conn.laddr.ip}:{conn.laddr.port}" if conn.laddr else None,
+                'raddr': f"{conn.raddr.ip}:{conn.raddr.port}" if conn.raddr else None,
+                'status': conn.status,
+                'pid': conn.pid
+            }
+            connections.append(conn_info)
+    except:
+        pass
+    
+    info['connections'] = connections
+    
+    # Network I/O counters
+    io_counters = {}
+    try:
+        for interface, counters in psutil.net_io_counters(pernic=True).items():
+            io_counters[interface] = {
+                'bytes_sent': counters.bytes_sent,
+                'bytes_recv': counters.bytes_recv,
+                'packets_sent': counters.packets_sent,
+                'packets_recv': counters.packets_recv,
+                'errin': counters.errin,
+                'errout': counters.errout,
+                'dropin': counters.dropin,
+                'dropout': counters.dropout
+            }
+    except:
+        pass
+    
+    info['io_counters'] = io_counters
+    
+    # DNS information
+    info['dns_servers'] = []
+    try:
+        # This might require platform-specific code
+        if platform.system() == 'Windows':
+            import ctypes
+            import ctypes.wintypes
+            # Windows DNS query
+            pass
+        else:
+            # Linux/Mac - read resolv.conf
+            with open('/etc/resolv.conf', 'r') as f:
+                for line in f:
+                    if line.startswith('nameserver'):
+                        info['dns_servers'].append(line.split()[1])
+    except:
+        pass
+    
+    # Default gateway
+    info['gateways'] = {}
+    try:
+        gateways = psutil.net_if_addrs()
+        # This is simplified - in production you'd use netifaces or similar
+        info['gateways'] = {'default': 'N/A'}
+    except:
+        pass
+    
+    return info
+
+def main():
+    """Main execution function"""
+    print("=== NETWORK INFORMATION ===\\n")
+    
+    try:
+        info = get_network_info()
+        
+        print(f"Hostname: {info['hostname']}")
+        print(f"FQDN: {info['fqdn']}\\n")
+        
+        print("Network Interfaces:")
+        for interface, data in info['interfaces'].items():
+            print(f"\\n  {interface}:")
+            print(f"    Status: {'UP' if data['is_up'] else 'DOWN'}")
+            for addr in data['addresses']:
+                print(f"    {addr['family']}: {addr['address']}")
+            if data['stats']:
+                print(f"    Speed: {data['stats'].get('speed', 'N/A')} Mbps")
+                print(f"    MTU: {data['stats'].get('mtu', 'N/A')}")
+        
+        print("\\nActive Connections:")
+        for conn in info['connections'][:20]:  # Show first 20
+            if conn['status'] == 'ESTABLISHED':
+                print(f"  {conn['laddr']} <- {conn['raddr']} (PID: {conn['pid']})")
+        
+        print("\\nNetwork Traffic (bytes):")
+        for interface, counters in info['io_counters'].items():
+            sent_mb = counters['bytes_sent'] / (1024**2)
+            recv_mb = counters['bytes_recv'] / (1024**2)
+            print(f"  {interface}: Sent: {sent_mb:.2f} MB, Received: {recv_mb:.2f} MB")
+        
+        print(f"\\nDNS Servers: {', '.join(info['dns_servers']) if info['dns_servers'] else 'Not found'}")
+        
+        # Return JSON for structured data
+        return json.dumps(info, indent=2)
+        
+    except Exception as e:
+        print(f"Error collecting network info: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+if __name__ == "__main__":
+    result = main()
+    print("\\n=== NETWORK INFO COMPLETED ===")
+    sys.exit(0)`
+        };
+
         // ========== INITIALIZATION ==========
         document.addEventListener('DOMContentLoaded', async () => {
             // Load settings
@@ -2703,6 +3259,9 @@ if __name__ == "__main__":
             
             // Add auto controls to screenshots tab
             addAutoControls();
+            
+            // Add missing button handlers
+            addMissingButtonHandlers();
         });
 
         function setupEventListeners() {
@@ -2753,6 +3312,34 @@ if __name__ == "__main__":
                     }
                 });
             }
+        }
+
+        function addMissingButtonHandlers() {
+            document.addEventListener('click', function(e) {
+                // Handle screenshot actions
+                if (e.target.closest('[data-action="screenshot"]')) {
+                    const tr = e.target.closest('tr');
+                    if (tr) {
+                        const clientId = tr.querySelector('code').textContent;
+                        const client = state.clients.find(c => c.client_id.includes(clientId));
+                        if (client) {
+                            clientAction(client.client_id, 'screenshot');
+                        }
+                    }
+                }
+                
+                // Handle system info
+                if (e.target.closest('[data-action="system-info"]')) {
+                    const tr = e.target.closest('tr');
+                    if (tr) {
+                        const clientId = tr.querySelector('code').textContent;
+                        const client = state.clients.find(c => c.client_id.includes(clientId));
+                        if (client) {
+                            clientAction(client.client_id, 'info');
+                        }
+                    }
+                }
+            });
         }
 
         // ========== SCREEN STREAMING FUNCTIONS ==========
@@ -3552,9 +4139,10 @@ if __name__ == "__main__":
             container.classList.remove('hidden');
             
             state.clients.forEach(client => {
+                const clientStatus = updateClientStatus(client);
+                const isOnline = clientStatus.online;
                 const row = document.createElement('tr');
                 const lastSeen = formatTime(client.last_seen);
-                const isOnline = client.online || client.ws_online;
                 const statusClass = isOnline ? 'status-online' : 'status-offline';
                 const statusText = isOnline ? 'ONLINE' : 'OFFLINE';
                 const isStreaming = state.activeStreams[client.client_id];
@@ -3570,10 +4158,10 @@ if __name__ == "__main__":
                     <td>${lastSeen}</td>
                     <td>
                         <div class="flex gap-1">
-                            <button onclick="clientAction('${client.client_id}', 'screenshot')" class="btn btn-secondary btn-icon" title="Capture Screenshot">
+                            <button onclick="clientAction('${client.client_id}', 'screenshot')" class="btn btn-secondary btn-icon" title="Capture Screenshot" data-action="screenshot">
                                 <i class="fas fa-camera"></i>
                             </button>
-                            <button onclick="clientAction('${client.client_id}', 'info')" class="btn btn-secondary btn-icon" title="System Info">
+                            <button onclick="clientAction('${client.client_id}', 'info')" class="btn btn-secondary btn-icon" title="System Info" data-action="system-info">
                                 <i class="fas fa-info-circle"></i>
                             </button>
                             <button onclick="openClientChat('${client.client_id}')" class="btn btn-client-chat btn-icon" title="Talk to Client">
@@ -3592,6 +4180,25 @@ if __name__ == "__main__":
             });
         }
 
+        function updateClientStatus(client) {
+            const now = new Date();
+            const lastSeen = new Date(client.last_seen);
+            const minutesAgo = (now - lastSeen) / (1000 * 60);
+            
+            // Consider client online if:
+            // 1. ws_online is true (WebSocket connected) OR
+            // 2. Last seen within 2 minutes
+            const isOnline = client.ws_online || (minutesAgo < 2);
+            
+            return {
+                ...client,
+                online: isOnline,
+                status: isOnline ? 'online' : 'offline',
+                statusText: isOnline ? 'ONLINE' : 'OFFLINE',
+                minutesAgo: Math.floor(minutesAgo)
+            };
+        }
+
         function updateClientDropdowns() {
             const commandSelect = document.getElementById('commandClient');
             const pythonSelect = document.getElementById('pythonClient');
@@ -3599,7 +4206,8 @@ if __name__ == "__main__":
             if (commandSelect) {
                 commandSelect.innerHTML = '<option value="">-- Select a client --</option>';
                 state.clients.forEach(client => {
-                    if (client.online || client.ws_online) {
+                    const clientStatus = updateClientStatus(client);
+                    if (clientStatus.online) {
                         const option = document.createElement('option');
                         option.value = client.client_id;
                         option.textContent = `${client.name} (${client.client_id.substring(0, 8)})`;
@@ -3611,7 +4219,8 @@ if __name__ == "__main__":
             if (pythonSelect) {
                 pythonSelect.innerHTML = '<option value="">-- Select a client --</option>';
                 state.clients.forEach(client => {
-                    if (client.online || client.ws_online) {
+                    const clientStatus = updateClientStatus(client);
+                    if (clientStatus.online) {
                         const option = document.createElement('option');
                         option.value = client.client_id;
                         option.textContent = `${client.name} (${client.client_id.substring(0, 8)})`;
@@ -3627,7 +4236,8 @@ if __name__ == "__main__":
             
             select.innerHTML = '<option value="">-- Select a client --</option>';
             state.clients.forEach(client => {
-                if (client.online || client.ws_online) {
+                const clientStatus = updateClientStatus(client);
+                if (clientStatus.online) {
                     const option = document.createElement('option');
                     option.value = client.client_id;
                     option.textContent = `${client.name} (${client.client_id.substring(0, 8)})`;
@@ -3721,6 +4331,38 @@ if __name__ == "__main__":
             }
         }
 
+        function validateCommand(clientId, commandType, parameters) {
+            if (!clientId) {
+                throw new Error('Please select a client');
+            }
+            
+            switch(commandType) {
+                case 'custom':
+                    if (!parameters.code || parameters.code.trim().length === 0) {
+                        throw new Error('Please enter a command');
+                    }
+                    break;
+                case 'record_screen':
+                    try {
+                        const params = JSON.parse(parameters.code || '{}');
+                        if (!params.duration || params.duration < 5 || params.duration > 300) {
+                            throw new Error('Duration must be between 5 and 300 seconds');
+                        }
+                    } catch(e) {
+                        throw new Error('Invalid recording parameters: ' + e.message);
+                    }
+                    break;
+                case 'live_screen':
+                    const fps = parseInt(document.getElementById('streamFps').value);
+                    if (isNaN(fps) || fps < 1 || fps > 30) {
+                        throw new Error('FPS must be between 1 and 30');
+                    }
+                    break;
+            }
+            
+            return true;
+        }
+
         async function sendCommand() {
             const clientId = document.getElementById('commandClient').value;
             const commandType = document.getElementById('commandType').value;
@@ -3755,6 +4397,14 @@ if __name__ == "__main__":
                         return;
                     }
                 }
+            }
+            
+            // Validate command
+            try {
+                validateCommand(clientId, commandType, parameters);
+            } catch (error) {
+                showNotification(error.message, 'error');
+                return;
             }
             
             showLoading('Sending command...');
@@ -3857,6 +4507,9 @@ if __name__ == "__main__":
             const filename = document.getElementById('pythonFilename').value.trim();
             const content = document.getElementById('pythonCode').value;
             const args = document.getElementById('pythonArgs').value.trim().split(' ').filter(arg => arg);
+            const restrictedMode = document.getElementById('pythonRestrictedMode').checked;
+            const allowImports = document.getElementById('pythonAllowImports').checked;
+            const timeout = parseInt(document.getElementById('pythonTimeout').value) || 60;
             
             if (!clientId) {
                 showNotification('Please select a client first', 'warning');
@@ -3873,7 +4526,12 @@ if __name__ == "__main__":
                 return;
             }
             
-            showLoading('Executing Python file...');
+            if (timeout < 10 || timeout > 300) {
+                showNotification('Timeout must be between 10 and 300 seconds', 'warning');
+                return;
+            }
+            
+            showLoading('Executing Python file on client...');
             
             try {
                 const response = await fetch(`${CONFIG.BACKEND_URL}/api/execute-python`, {
@@ -3886,20 +4544,267 @@ if __name__ == "__main__":
                         client_id: clientId,
                         filename: filename,
                         content: content,
-                        parameters: args
+                        parameters: args,
+                        timeout: timeout,
+                        allow_imports: allowImports,
+                        restricted_mode: restrictedMode
                     })
                 });
                 
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success) {
-                        showNotification(`Python file sent for execution`, 'success');
-                        document.getElementById('pythonResult').classList.add('hidden');
+                        showNotification(`Python file sent for execution (ID: ${data.command_id})`, 'success');
+                        
+                        // Clear result area for new execution
+                        document.getElementById('pythonResult').classList.remove('hidden');
+                        document.getElementById('pythonOutput').textContent = 
+                            `=== PYTHON EXECUTION QUEUED ===\n\n` +
+                            `Command ID: ${data.command_id}\n` +
+                            `Client: ${clientId}\n` +
+                            `Filename: ${filename}\n` +
+                            `Status: ${data.sent_via_websocket ? 'Sent to client' : 'Queued (client offline)'}\n` +
+                            `Waiting for execution results...\n`;
+                        
+                        // Start polling for results
+                        pollPythonExecutionResult(data.command_id);
                     }
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to execute Python file');
                 }
             } catch (error) {
                 console.error('Execute Python error:', error);
-                showNotification('Failed to execute Python file', 'error');
+                showNotification(`Failed to execute Python: ${error.message}`, 'error');
+                
+                document.getElementById('pythonResult').classList.remove('hidden');
+                document.getElementById('pythonOutput').textContent = 
+                    `=== EXECUTION ERROR ===\n\n` +
+                    `Error: ${error.message}\n` +
+                    `Client: ${clientId}\n` +
+                    `Time: ${new Date().toLocaleTimeString()}`;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Poll for Python execution results
+        async function pollPythonExecutionResult(commandId) {
+            const maxAttempts = 60; // 60 attempts = 30 seconds
+            let attempts = 0;
+            
+            const pollInterval = setInterval(async () => {
+                attempts++;
+                
+                if (attempts > maxAttempts) {
+                    clearInterval(pollInterval);
+                    document.getElementById('pythonOutput').textContent += '\n\n=== TIMEOUT ===\nExecution timed out after 30 seconds';
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`${CONFIG.BACKEND_URL}/api/python-execution/${commandId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${state.token}`
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            const command = data.command;
+                            
+                            if (command.status === 'completed' || command.status === 'failed') {
+                                clearInterval(pollInterval);
+                                
+                                // Display results
+                                document.getElementById('pythonOutput').textContent = 
+                                    `=== PYTHON EXECUTION RESULT ===\n\n` +
+                                    `Command ID: ${command.id}\n` +
+                                    `Status: ${command.status.toUpperCase()}\n` +
+                                    `Exit Code: ${command.exit_code || 0}\n` +
+                                    `Client: ${command.client_id}\n` +
+                                    `Time: ${formatTime(command.completed_at || command.created_at)}\n\n`;
+                                
+                                if (command.result) {
+                                    document.getElementById('pythonOutput').textContent += 
+                                        `=== OUTPUT ===\n${command.result}\n\n`;
+                                }
+                                
+                                if (command.error) {
+                                    document.getElementById('pythonOutput').textContent += 
+                                        `=== ERROR ===\n${command.error}\n\n`;
+                                }
+                                
+                                // Auto-scroll to results
+                                document.getElementById('pythonOutput').scrollIntoView({ behavior: 'smooth' });
+                                
+                                // Update commands history
+                                refreshCommands();
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Poll error:', error);
+                }
+            }, 500); // Poll every 500ms
+        }
+
+        async function viewPythonExecutions() {
+            try {
+                showLoading('Loading Python execution history...');
+                
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/python-executions?limit=50`, {
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        showPythonExecutionHistory(data.executions);
+                    }
+                }
+            } catch (error) {
+                console.error('View Python executions error:', error);
+                showNotification('Failed to load execution history', 'error');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function showPythonExecutionHistory(executions) {
+            // Create modal for execution history
+            const modalHtml = `
+                <div id="pythonHistoryModal" class="modal">
+                    <div class="modal-content" style="max-width: 900px;">
+                        <div class="modal-header">
+                            <h3><i class="fab fa-python"></i> PYTHON EXECUTION HISTORY</h3>
+                            <button class="modal-close" onclick="closePythonHistory()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>TIME</th>
+                                            <th>CLIENT</th>
+                                            <th>FILENAME</th>
+                                            <th>STATUS</th>
+                                            <th>EXIT CODE</th>
+                                            <th>ACTIONS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pythonHistoryTable">
+                                        ${executions.map(exec => `
+                                            <tr>
+                                                <td>${formatTime(exec.created_at)}</td>
+                                                <td>${getClientName(exec.client_id)}</td>
+                                                <td><code>${exec.filename || 'unknown.py'}</code></td>
+                                                <td>
+                                                    <span class="status-badge ${exec.status === 'completed' ? 'status-online' : exec.status === 'failed' ? 'status-offline' : 'status-pending'}">
+                                                        ${exec.status.toUpperCase()}
+                                                    </span>
+                                                </td>
+                                                <td>${exec.exit_code || 'N/A'}</td>
+                                                <td>
+                                                    <button onclick="viewPythonExecutionDetails('${exec.id}')" 
+                                                            class="btn btn-secondary btn-sm">
+                                                        <i class="fas fa-eye"></i> Details
+                                                    </button>
+                                                    ${exec.status === 'pending' ? `
+                                                    <button onclick="cancelPythonExecution('${exec.id}')" 
+                                                            class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-times"></i> Cancel
+                                                    </button>
+                                                    ` : ''}
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal to document
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            document.getElementById('pythonHistoryModal').style.display = 'flex';
+        }
+
+        function closePythonHistory() {
+            const modal = document.getElementById('pythonHistoryModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        async function viewPythonExecutionDetails(commandId) {
+            try {
+                showLoading('Loading execution details...');
+                
+                const response = await fetch(`${CONFIG.BACKEND_URL}/api/python-execution/${commandId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${state.token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        const command = data.command;
+                        
+                        // Show details in modal
+                        const detailsHtml = `
+                            <div class="python-details">
+                                <h4>Execution Details</h4>
+                                <div class="space-y-3">
+                                    <div><strong>Command ID:</strong> ${command.id}</div>
+                                    <div><strong>Client:</strong> ${command.client_id}</div>
+                                    <div><strong>Filename:</strong> ${command.parameters?.filename || 'unknown.py'}</div>
+                                    <div><strong>Status:</strong> ${command.status}</div>
+                                    <div><strong>Exit Code:</strong> ${command.exit_code || 'N/A'}</div>
+                                    <div><strong>Created:</strong> ${formatTime(command.created_at)}</div>
+                                    ${command.completed_at ? `<div><strong>Completed:</strong> ${formatTime(command.completed_at)}</div>` : ''}
+                                    
+                                    <div class="mt-3">
+                                        <strong>Code Preview:</strong>
+                                        <pre class="form-control" style="max-height: 200px; overflow: auto;">
+${command.parameters?.content || 'No code available'}
+                                        </pre>
+                                    </div>
+                                    
+                                    ${command.result ? `
+                                    <div class="mt-3">
+                                        <strong>Output:</strong>
+                                        <pre class="form-control" style="max-height: 200px; overflow: auto; background: rgba(0,255,0,0.1);">
+${command.result}
+                                        </pre>
+                                    </div>
+                                    ` : ''}
+                                    
+                                    ${command.error ? `
+                                    <div class="mt-3">
+                                        <strong>Error:</strong>
+                                        <pre class="form-control" style="max-height: 200px; overflow: auto; background: rgba(255,0,0,0.1);">
+${command.error}
+                                        </pre>
+                                    </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                        
+                        showNotification('Execution details loaded', 'info');
+                        alert(detailsHtml.replace(/<\/?[^>]+(>|$)/g, "")); // Simple alert for now
+                    }
+                }
+            } catch (error) {
+                console.error('View execution details error:', error);
+                showNotification('Failed to load execution details', 'error');
             } finally {
                 hideLoading();
             }
@@ -3959,51 +4864,47 @@ if __name__ == "__main__":
         }
 
         function loadPythonTemplate(templateName) {
-            hidePythonTemplates();
+            if (pythonTemplates[templateName]) {
+                document.getElementById('pythonCode').value = pythonTemplates[templateName];
+                document.getElementById('pythonFilename').value = `${templateName}.py`;
+                showNotification(`Loaded ${templateName.replace('_', ' ')} template`, 'success');
+                
+                // Auto-format the code
+                setTimeout(() => formatPythonCode(), 100);
+            }
+        }
+
+        // Run Python test
+        function runPythonTest() {
+            const code = document.getElementById('pythonCode').value;
             
-            const templates = {
-                monitor: `#!/usr/bin/env python3
-import psutil
-import platform
-import datetime
-
-def get_system_info():
-    info = {}
-    
-    info['cpu_percent'] = psutil.cpu_percent(interval=1)
-    info['cpu_count'] = psutil.cpu_count()
-    info['memory_total'] = psutil.virtual_memory().total // (1024**3)
-    info['memory_available'] = psutil.virtual_memory().available // (1024**3)
-    info['memory_percent'] = psutil.virtual_memory().percent
-    info['disk_percent'] = psutil.disk_usage('/').percent
-    info['hostname'] = platform.node()
-    info['platform'] = platform.platform()
-    
-    return info
-
-def main():
-    print("=== SYSTEM MONITOR ===\\n")
-    
-    info = get_system_info()
-    
-    print(f"Hostname: {info['hostname']}")
-    print(f"Platform: {info['platform']}")
-    print(f"CPU Usage: {info['cpu_percent']}% ({info['cpu_count']} cores)")
-    print(f"Memory: {info['memory_available']}GB / {info['memory_total']}GB ({info['memory_percent']}%)")
-    print(f"Disk Usage: {info['disk_percent']}%")
-    print(f"Timestamp: {datetime.datetime.now()}")
-    
-    return 0
-
-if __name__ == "__main__":
-    main()`
-            };
-            
-            const template = templates[templateName];
-            if (template) {
-                document.getElementById('pythonCode').value = template;
-                document.getElementById('pythonFilename').value = `${templateName}_script.py`;
-                showNotification(`Loaded ${templateName} template`, 'success');
+            try {
+                // Create a simple test environment
+                const testOutput = [];
+                const originalLog = console.log;
+                
+                console.log = function(...args) {
+                    testOutput.push(args.join(' '));
+                    originalLog.apply(console, args);
+                };
+                
+                // Try to execute the code (in a limited way)
+                eval(`
+                    try {
+                        ${code}
+                    } catch(e) {
+                        console.log("Error:", e.message);
+                    }
+                `);
+                
+                console.log = originalLog;
+                
+                document.getElementById('pythonResult').classList.remove('hidden');
+                document.getElementById('pythonOutput').textContent = testOutput.join('\\n') || 'No output generated';
+                
+            } catch (error) {
+                document.getElementById('pythonResult').classList.remove('hidden');
+                document.getElementById('pythonOutput').textContent = `Test Error: ${error.message}`;
             }
         }
 
@@ -4060,13 +4961,37 @@ if __name__ == "__main__":
             if (emptyState) emptyState.classList.add('hidden');
             
             filteredScreenshots.forEach(screenshot => {
+                // Check if image_data exists and is valid
+                let imageSrc = 'data:image/png;base64,';
+                if (screenshot.image_data && screenshot.image_data.length > 100) {
+                    imageSrc += screenshot.image_data;
+                } else {
+                    // Create a placeholder
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 300;
+                    canvas.height = 200;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Draw placeholder
+                    ctx.fillStyle = '#1a0000';
+                    ctx.fillRect(0, 0, 300, 200);
+                    
+                    ctx.fillStyle = '#ff2a2a';
+                    ctx.font = '20px Orbitron';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('No Preview', 150, 100);
+                    
+                    imageSrc = canvas.toDataURL();
+                }
+                
                 const screenshotElement = document.createElement('div');
                 screenshotElement.className = 'screenshot-item';
                 screenshotElement.innerHTML = `
                     <div class="screenshot-card">
                         <div class="screenshot-image">
-                            <img src="data:image/png;base64,${screenshot.image_data || ''}" 
+                            <img src="${imageSrc}" 
                                  alt="${screenshot.filename}"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzFhMDAwMCIvPjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiBmb250LWZhbWlseT0iT3JiaXRyb24iIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiNmZjJhMmEiIHRleHQtYW5jaG9yPSJtaWRkbGUiPk5vIFByZXZpZXc8L3RleHQ+PC9zdmc+'"
                                  onclick="openScreenshotPreview('${screenshot.id}')">
                         </div>
                         <div class="screenshot-info">
@@ -4083,12 +5008,42 @@ if __name__ == "__main__":
                                         class="btn btn-danger btn-sm">
                                     <i class="fas fa-trash"></i>
                                 </button>
+                                <button onclick="viewFullscreen('${screenshot.id}')" 
+                                        class="btn btn-primary btn-sm">
+                                    <i class="fas fa-expand"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
                 `;
                 grid.appendChild(screenshotElement);
             });
+        }
+
+        // Add fullscreen viewing
+        function viewFullscreen(screenshotId) {
+            const screenshot = state.screenshots.find(s => s.id === screenshotId);
+            if (screenshot && screenshot.image_data) {
+                const img = new Image();
+                img.src = `data:image/png;base64,${screenshot.image_data}`;
+                img.onload = function() {
+                    const w = window.open('', '_blank');
+                    w.document.write(`
+                        <html>
+                            <head>
+                                <title>${screenshot.filename}</title>
+                                <style>
+                                    body { margin: 0; padding: 0; background: #000; }
+                                    img { max-width: 100%; max-height: 100vh; }
+                                </style>
+                            </head>
+                            <body>
+                                <img src="${img.src}" alt="${screenshot.filename}">
+                            </body>
+                        </html>
+                    `);
+                };
+            }
         }
 
         async function captureAllScreenshots() {
@@ -4381,7 +5336,7 @@ if __name__ == "__main__":
         }
 
         async function startRecordingAll() {
-            const onlineClients = state.clients.filter(c => c.online || c.ws_online);
+            const onlineClients = state.clients.filter(c => updateClientStatus(c).online);
             
             if (onlineClients.length === 0) {
                 showNotification('No online clients', 'warning');
@@ -4531,6 +5486,13 @@ if __name__ == "__main__":
             try {
                 showLoading('Loading recording...');
                 
+                const recording = state.recordings.find(r => r.id === recordingId);
+                if (!recording) {
+                    throw new Error('Recording not found');
+                }
+                
+                // In a real implementation, you would fetch the video data
+                // For now, we'll use a placeholder approach
                 const response = await fetch(`${CONFIG.BACKEND_URL}/api/recording/${recordingId}/play`, {
                     headers: {
                         'Authorization': `Bearer ${state.token}`
@@ -4539,16 +5501,21 @@ if __name__ == "__main__":
                 
                 if (response.ok) {
                     const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
+                    const url = URL.createObjectURL(blob);
                     
                     const videoPlayer = document.getElementById('videoPlayer');
                     videoPlayer.src = url;
                     
                     document.getElementById('videoPlayerModal').style.display = 'flex';
+                    
+                    // Play automatically
+                    videoPlayer.play().catch(e => console.log('Autoplay prevented:', e));
+                    
+                    showNotification('Recording loaded', 'success');
                 }
             } catch (error) {
                 console.error('Play recording error:', error);
-                showNotification('Failed to load recording', 'error');
+                showNotification('Failed to load recording: ' + error.message, 'error');
             } finally {
                 hideLoading();
             }
@@ -4578,8 +5545,9 @@ if __name__ == "__main__":
         function closeVideoPlayer() {
             const videoPlayer = document.getElementById('videoPlayer');
             if (videoPlayer.src) {
-                window.URL.revokeObjectURL(videoPlayer.src);
+                URL.revokeObjectURL(videoPlayer.src);
                 videoPlayer.src = '';
+                videoPlayer.pause();
             }
             document.getElementById('videoPlayerModal').style.display = 'none';
         }
@@ -5520,7 +6488,7 @@ if __name__ == "__main__":
             const timeLabel = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
             chart.data.labels.push(timeLabel);
-            chart.data.datasets[0].data.push(state.clients.filter(c => c.ws_online).length);
+            chart.data.datasets[0].data.push(state.clients.filter(c => updateClientStatus(c).online).length);
             
             if (chart.data.labels.length > 10) {
                 chart.data.labels.shift();
@@ -5659,7 +6627,7 @@ if __name__ == "__main__":
                     break;
                     
                 case 'live_stream_all':
-                    const onlineClients = state.clients.filter(c => c.online || c.ws_online);
+                    const onlineClients = state.clients.filter(c => updateClientStatus(c).online);
                     if (onlineClients.length === 0) {
                         showNotification('No online clients', 'warning');
                         return;
@@ -5673,7 +6641,7 @@ if __name__ == "__main__":
                     
                 case 'system_info_all':
                     state.clients.forEach(client => {
-                        if (client.ws_online) {
+                        if (updateClientStatus(client).online) {
                             sendCommandToClient(client.client_id, 'system_info');
                         }
                     });
@@ -5774,40 +6742,6 @@ if __name__ == "__main__":
             return div.innerHTML;
         }
 
-        // Run Python test
-        function runPythonTest() {
-            const code = document.getElementById('pythonCode').value;
-            
-            try {
-                // Create a simple test environment
-                const testOutput = [];
-                const originalLog = console.log;
-                
-                console.log = function(...args) {
-                    testOutput.push(args.join(' '));
-                    originalLog.apply(console, args);
-                };
-                
-                // Try to execute the code (in a limited way)
-                eval(`
-                    try {
-                        ${code}
-                    } catch(e) {
-                        console.log("Error:", e.message);
-                    }
-                `);
-                
-                console.log = originalLog;
-                
-                document.getElementById('pythonResult').classList.remove('hidden');
-                document.getElementById('pythonOutput').textContent = testOutput.join('\\n') || 'No output generated';
-                
-            } catch (error) {
-                document.getElementById('pythonResult').classList.remove('hidden');
-                document.getElementById('pythonOutput').textContent = `Test Error: ${error.message}`;
-            }
-        }
-
         // ========== GLOBAL EXPORTS ==========
         window.handleLogin = handleLogin;
         window.handleLogout = handleLogout;
@@ -5832,6 +6766,7 @@ if __name__ == "__main__":
         window.openScreenshotPreview = openScreenshotPreview;
         window.closeScreenshotPreview = closeScreenshotPreview;
         window.filterScreenshots = filterScreenshots;
+        window.viewFullscreen = viewFullscreen;
         window.refreshRecordings = refreshRecordings;
         window.startRecording = startRecording;
         window.stopRecording = stopRecording;
@@ -5869,6 +6804,9 @@ if __name__ == "__main__":
         window.startAutoScreenshots = startAutoScreenshots;
         window.stopAutoScreenshots = stopAutoScreenshots;
         window.addAutoControls = addAutoControls;
+        window.viewPythonExecutions = viewPythonExecutions;
+        window.closePythonHistory = closePythonHistory;
+        window.viewPythonExecutionDetails = viewPythonExecutionDetails;
     </script>
 </body>
 </html>
