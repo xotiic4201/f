@@ -889,43 +889,7 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   window.addEventListener('resize', ()=>{ c.width=window.innerWidth; c.height=window.innerHeight; });
 })();
 
-// ─── MOCK DATA ────────────────────────────────────────────────────────────────
-const mockBots = [
-  { ip:'192.168.1.105', host:'DESKTOP-ABC123', user:'john_doe', os:'Win 11 x64', status:'active', last:'2024-01-15T10:30:00' },
-  { ip:'192.168.1.110', host:'ubuntu-server', user:'root', os:'Ubuntu 22.04', status:'active', last:'2024-01-15T10:29:00' },
-  { ip:'10.0.0.42', host:'MacBook-Pro', user:'alice', os:'macOS 14.2', status:'inactive', last:'2024-01-15T09:15:00' },
-  { ip:'172.16.0.5', host:'WIN-CORP01', user:'admin', os:'Win Server 2019', status:'active', last:'2024-01-15T10:28:00' },
-  { ip:'192.168.2.88', host:'laptop-home', user:'bob', os:'Win 10 x64', status:'inactive', last:'2024-01-14T22:00:00' },
-];
 
-const mockKS = [
-  { ts:'10:30:45', ip:'192.168.1.105', user:'john_doe', keys:'gmail.com user@gmail.co...', imp:85 },
-  { ts:'10:29:12', ip:'192.168.1.110', user:'root', keys:'sudo apt-get install...', imp:20 },
-  { ts:'10:28:55', ip:'10.0.0.42', user:'alice', keys:'paypal.com mypasswor...', imp:95 },
-  { ts:'10:27:30', ip:'172.16.0.5', user:'admin', keys:'ssh root@192.168.1.1', imp:60 },
-  { ts:'10:26:10', ip:'192.168.1.105', user:'john_doe', keys:'Hello World from...', imp:5 },
-];
-
-const mockCreds = [
-  { ts:'10:30:01', ip:'192.168.1.105', type:'EMAIL', val:'user@gmail.com:P@ssw0rd' },
-  { ts:'10:28:44', ip:'10.0.0.42', type:'PAYPAL', val:'alice@mail.com:Hunter2!' },
-  { ts:'10:27:20', ip:'172.16.0.5', type:'SSH', val:'root:toor@10.0.0.1' },
-  { ts:'10:25:05', ip:'192.168.1.110', type:'FTP', val:'admin:admin123@ftp.corp' },
-  { ts:'10:22:33', ip:'192.168.1.105', type:'DISCORD', val:'john_doe#1234:abc123' },
-];
-
-const mockFiles = [
-  { ip:'192.168.1.105', path:'C:\\Users\\john\\Documents\\passwords.txt', size:2048 },
-  { ip:'10.0.0.42', path:'/Users/alice/Desktop/bitcoin_wallet.dat', size:51200 },
-  { ip:'172.16.0.5', path:'C:\\Admin\\backup\\db_dump.sql', size:1048576 },
-  { ip:'192.168.1.110', path:'/etc/shadow', size:1024 },
-];
-
-const mockWifi = [
-  { ip:'192.168.1.105', ssid:'HomeNetwork', pwd:'mypassword123' },
-  { ip:'10.0.0.42', ssid:'CoffeeShop_Free', pwd:'coffee2024' },
-  { ip:'172.16.0.5', ssid:'CORP-WIFI-2G', pwd:'C0rp@2024!' },
-];
 
 // ─── AUTH ─────────────────────────────────────────────────────────────────────
 let CREDS = { user:'xotiic', pass:'40671Mps19*' };
@@ -1170,3 +1134,4 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 </body>
 </html>
+
