@@ -1,1333 +1,1172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WORM C2 | ADVANCED</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Share+Tech+Mono&display=swap');
-        
-        :root {
-            --bg-primary: #0a0c0f;
-            --bg-secondary: #111317;
-            --bg-tertiary: #1a1d24;
-            --accent-primary: #00ff9d;
-            --accent-secondary: #00ccff;
-            --accent-danger: #ff3b3b;
-            --accent-warning: #ffb800;
-            --text-primary: #e0e0e0;
-            --text-secondary: #8b8b8b;
-            --border-color: #2a2e35;
-            --glow-color: rgba(0, 255, 157, 0.2);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        /* Login Screen */
-        .login-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .login-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 40px;
-            width: 400px;
-            box-shadow: 0 0 30px var(--glow-color);
-            animation: glow 2s infinite;
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 20px var(--glow-color); }
-            50% { box-shadow: 0 0 40px var(--glow-color); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .login-card h1 {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .login-card input {
-            width: 100%;
-            padding: 12px 16px;
-            margin: 10px 0;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        .login-card input:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 15px var(--glow-color);
-        }
-
-        .login-card button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 20px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            border: none;
-            border-radius: 8px;
-            color: var(--bg-primary);
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .login-card button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 255, 157, 0.3);
-        }
-
-        .error-message {
-            color: var(--accent-danger);
-            text-align: center;
-            margin-top: 15px;
-            display: none;
-            animation: shake 0.5s ease;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        /* Main Dashboard */
-        .dashboard {
-            display: none;
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        /* Header */
-        .header {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            backdrop-filter: blur(10px);
-        }
-
-        .logo {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 2rem;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo span {
-            font-size: 1rem;
-            background: var(--bg-tertiary);
-            padding: 4px 8px;
-            border-radius: 4px;
-            color: var(--text-secondary);
-            -webkit-text-fill-color: var(--text-secondary);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .stat-card {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent-primary);
-            box-shadow: 0 5px 15px var(--glow-color);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 600;
-            color: var(--accent-primary);
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Section Headers */
-        .section-header {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--accent-primary);
-            margin: 30px 0 20px 0;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--accent-primary);
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        /* Content Panels */
-        .panel {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .panel:hover {
-            border-color: var(--accent-primary);
-            box-shadow: 0 5px 20px var(--glow-color);
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .panel-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--accent-primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Tables */
-        .table-container {
-            overflow-x: auto;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            text-align: left;
-            padding: 12px;
-            background: var(--bg-tertiary);
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.9rem;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        tr:hover {
-            background: var(--bg-tertiary);
-        }
-
-        /* Status Indicators */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-        }
-
-        .status-active {
-            background: rgba(0, 255, 157, 0.1);
-            color: var(--accent-primary);
-        }
-
-        .status-inactive {
-            background: rgba(255, 59, 59, 0.1);
-            color: var(--accent-danger);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .status-active .status-dot {
-            background: var(--accent-primary);
-            box-shadow: 0 0 10px var(--accent-primary);
-        }
-
-        .status-inactive .status-dot {
-            background: var(--accent-danger);
-            box-shadow: 0 0 10px var(--accent-danger);
-        }
-
-        /* Forms */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .form-input, .form-select, .form-textarea {
-            width: 100%;
-            padding: 12px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 15px var(--glow-color);
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            color: var(--bg-primary);
-        }
-
-        .btn-danger {
-            background: var(--accent-danger);
-            color: white;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 255, 157, 0.3);
-        }
-
-        /* Grid Layouts */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .grid-3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        /* Terminal Output */
-        .terminal {
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            padding: 15px;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 0.9rem;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .terminal-line {
-            padding: 4px 0;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--accent-primary);
-        }
-
-        .terminal-line .timestamp {
-            color: var(--text-secondary);
-            margin-right: 10px;
-        }
-
-        /* Upload Area */
-        .upload-area {
-            border: 2px dashed var(--border-color);
-            border-radius: 12px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 20px 0;
-        }
-
-        .upload-area:hover, .upload-area.dragover {
-            border-color: var(--accent-primary);
-            background: var(--bg-tertiary);
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateY(-50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .modal-close {
-            float: right;
-            cursor: pointer;
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-        }
-
-        /* Help Cards */
-        .help-section {
-            margin-bottom: 30px;
-        }
-
-        .help-title {
-            font-size: 1.2rem;
-            color: var(--accent-primary);
-            margin-bottom: 15px;
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        .help-card {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 15px;
-        }
-
-        .help-card code {
-            background: var(--bg-primary);
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: var(--accent-secondary);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .grid-2, .grid-3 {
-                grid-template-columns: 1fr;
-            }
-            
-            .header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Spacing */
-        .mt-4 {
-            margin-top: 40px;
-        }
-        .mb-2 {
-            margin-bottom: 20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XWORM C2</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg0: #000000;
+  --bg1: #080808;
+  --bg2: #0f0f0f;
+  --bg3: #141414;
+  --red: #ff0000;
+  --red2: #cc0000;
+  --red3: #880000;
+  --red-glow: rgba(255,0,0,0.15);
+  --red-dim: rgba(255,0,0,0.06);
+  --green: #00ff41;
+  --text: #cccccc;
+  --text2: #666666;
+  --border: #1a1a1a;
+  --border-red: #330000;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg0);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Matrix Rain Canvas */
+#matrixCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0.04;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scanlines overlay */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Red vignette */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(180,0,0,0.12) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* LOGIN */
+#loginScreen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  background: var(--bg0);
+}
+
+.login-box {
+  width: 380px;
+  background: var(--bg1);
+  border: 1px solid var(--red3);
+  padding: 40px;
+  position: relative;
+  box-shadow: 0 0 60px rgba(255,0,0,0.1), inset 0 0 30px rgba(255,0,0,0.03);
+}
+
+.login-box::before, .login-box::after {
+  content: '';
+  position: absolute;
+  width: 20px; height: 20px;
+  border-color: var(--red);
+  border-style: solid;
+}
+.login-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.login-box::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+.login-skull {
+  text-align: center;
+  font-size: 3rem;
+  margin-bottom: 5px;
+  animation: pulse-skull 2s infinite;
+}
+@keyframes pulse-skull {
+  0%,100% { filter: drop-shadow(0 0 8px var(--red)); }
+  50% { filter: drop-shadow(0 0 20px var(--red)); }
+}
+
+.login-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 2rem;
+  text-align: center;
+  color: var(--red);
+  letter-spacing: 6px;
+  margin-bottom: 30px;
+  text-shadow: 0 0 20px var(--red);
+}
+
+.login-field {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border-red);
+  color: var(--text);
+  padding: 10px 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.login-field:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 10px rgba(255,0,0,0.2);
+}
+
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--red3);
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.login-btn:hover {
+  background: var(--red2);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255,0,0,0.3);
+}
+
+.login-error {
+  color: var(--red);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 10px;
+  display: none;
+}
+
+/* MAIN APP */
+#app {
+  display: none;
+  height: 100vh;
+  flex-direction: column;
+  position: relative;
+  z-index: 10;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 52px;
+  background: var(--bg1);
+  border-bottom: 1px solid var(--border-red);
+  flex-shrink: 0;
+  box-shadow: 0 2px 20px rgba(255,0,0,0.1);
+}
+
+.brand {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.4rem;
+  color: var(--red);
+  letter-spacing: 4px;
+  text-shadow: 0 0 15px var(--red);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-ver {
+  font-size: 0.7rem;
+  color: var(--text2);
+  border: 1px solid var(--border);
+  padding: 2px 6px;
+  letter-spacing: 1px;
+}
+
+.header-stats {
+  display: flex;
+  gap: 4px;
+}
+.hstat {
+  background: var(--bg2);
+  border: 1px solid var(--border-red);
+  padding: 5px 14px;
+  text-align: center;
+}
+.hstat-val {
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--red);
+  font-size: 1rem;
+  text-shadow: 0 0 8px var(--red);
+}
+.hstat-lbl {
+  font-size: 0.65rem;
+  color: var(--text2);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sys-time {
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--text2);
+  font-size: 0.85rem;
+}
+.logout-btn {
+  background: transparent;
+  border: 1px solid var(--border-red);
+  color: var(--text2);
+  padding: 5px 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: all 0.2s;
+}
+.logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+/* TABS */
+.tabs-bar {
+  display: flex;
+  background: var(--bg1);
+  border-bottom: 1px solid var(--border-red);
+  flex-shrink: 0;
+  padding: 0 20px;
+  gap: 2px;
+}
+
+.tab {
+  padding: 10px 20px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  color: var(--text2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  text-transform: uppercase;
+}
+.tab:hover { color: var(--text); background: var(--red-dim); }
+.tab.active {
+  color: var(--red);
+  border-bottom-color: var(--red);
+  background: var(--red-dim);
+  text-shadow: 0 0 8px rgba(255,0,0,0.5);
+}
+
+/* CONTENT AREA */
+.content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.tab-pane {
+  display: none;
+  height: 100%;
+  padding: 16px 20px;
+  overflow: hidden;
+}
+.tab-pane.active { display: flex; flex-direction: column; }
+
+/* PANELS */
+.panel {
+  background: var(--bg1);
+  border: 1px solid var(--border-red);
+  position: relative;
+}
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--red3), transparent);
+}
+
+.panel-head {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-red);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--red);
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.panel-head-left { display: flex; align-items: center; gap: 8px; }
+
+/* Grid layouts */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.col-flex { display: flex; flex-direction: column; gap: 12px; }
+
+/* Tables */
+.tbl-wrap { overflow-y: auto; flex: 1; }
+.tbl-wrap::-webkit-scrollbar { width: 4px; }
+.tbl-wrap::-webkit-scrollbar-track { background: var(--bg0); }
+.tbl-wrap::-webkit-scrollbar-thumb { background: var(--red3); }
+
+table { width: 100%; border-collapse: collapse; }
+th {
+  padding: 8px 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text2);
+  letter-spacing: 1px;
+  text-align: left;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border-red);
+  position: sticky; top: 0;
+  text-transform: uppercase;
+}
+td {
+  padding: 7px 12px;
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Share Tech Mono', monospace;
+  color: #aaa;
+}
+tr:hover td { background: var(--red-dim); color: var(--text); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 1px;
+}
+.badge-active { background: rgba(0,255,65,0.08); color: #00ff41; border: 1px solid rgba(0,255,65,0.2); }
+.badge-dead   { background: rgba(255,0,0,0.08);  color: var(--red); border: 1px solid var(--border-red); }
+
+.dot { width: 6px; height: 6px; border-radius: 50%; }
+.dot-active { background: #00ff41; box-shadow: 0 0 6px #00ff41; animation: blink 1.5s infinite; }
+.dot-dead   { background: var(--red); }
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+/* Forms */
+.f-group { margin-bottom: 12px; }
+.f-label {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text2);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+.f-input, .f-select {
+  width: 100%;
+  background: var(--bg2);
+  border: 1px solid var(--border-red);
+  color: var(--text);
+  padding: 8px 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.f-input:focus, .f-select:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 8px rgba(255,0,0,0.15);
+}
+.f-select option { background: var(--bg2); }
+
+/* Buttons */
+.btn {
+  padding: 8px 18px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.btn-red {
+  background: var(--red3);
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+.btn-red:hover { background: var(--red2); color: #fff; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
+.btn-outline {
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover { border-color: var(--red); color: var(--red); }
+.btn-ghost {
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border-red);
+  padding: 4px 10px;
+  font-size: 0.7rem;
+}
+.btn-ghost:hover { color: var(--red); }
+
+/* Terminal */
+.terminal {
+  background: var(--bg0);
+  padding: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  overflow-y: auto;
+  flex: 1;
+}
+.terminal::-webkit-scrollbar { width: 4px; }
+.terminal::-webkit-scrollbar-thumb { background: var(--red3); }
+.t-line { padding: 2px 0; color: #00ff41; }
+.t-ts { color: var(--text2); margin-right: 8px; }
+.t-cmd { color: var(--red); }
+.t-err { color: var(--red); }
+.t-prompt { color: var(--red); }
+
+/* Upload area */
+.upload-area {
+  border: 1px dashed var(--border-red);
+  padding: 30px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text2);
+}
+.upload-area:hover { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+
+/* Status bar */
+.status-bar {
+  height: 24px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border-red);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.sb-item {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--text2);
+  letter-spacing: 1px;
+}
+.sb-item span { color: var(--red); }
+
+/* Attack panel */
+.atk-danger {
+  border-color: var(--red) !important;
+  box-shadow: 0 0 20px rgba(255,0,0,0.08);
+}
+
+/* Dashboard grid layout */
+#pane-dashboard {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  padding: 16px 20px;
+  height: 100%;
+}
+#pane-dashboard .span2 { grid-column: span 2; }
+
+/* Bot pane */
+#pane-bots {
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Terminal pane */
+#pane-terminal { gap: 12px; }
+#pane-terminal .grid-2 { flex-shrink: 0; }
+
+/* Attacks pane */
+#pane-attacks { gap: 12px; }
+
+/* Data pane */
+#pane-data { gap: 12px; }
+
+/* Plugins pane */
+#pane-plugins { gap: 12px; }
+
+/* Settings pane */
+#pane-settings { gap: 12px; max-width: 600px; }
+
+.section-divider {
+  border: none;
+  border-top: 1px solid var(--border-red);
+  margin: 8px 0;
+}
+
+.tag-red {
+  background: rgba(255,0,0,0.1);
+  color: var(--red);
+  border: 1px solid var(--border-red);
+  padding: 1px 6px;
+  font-size: 0.7rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.pct-bar-wrap {
+  background: var(--bg2);
+  height: 4px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+}
+.pct-bar { height: 100%; background: var(--red); transition: width 0.5s; }
+
+/* Importance color */
+.imp-high { color: var(--red); text-shadow: 0 0 6px var(--red); }
+.imp-low  { color: #00ff41; }
+</style>
 </head>
 <body>
-    <!-- Login Screen -->
-    <div class="login-container" id="loginScreen">
-        <div class="login-card">
-            <h1>🔐 WORM C2</h1>
-            <input type="text" id="username" placeholder="Username" value="xotiic">
-            <input type="password" id="password" placeholder="Password" value="40671Mps19*">
-            <button onclick="login()">ACCESS TERMINAL</button>
-            <div class="error-message" id="loginError">Invalid credentials</div>
+
+<canvas id="matrixCanvas"></canvas>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-skull">💀</div>
+    <div class="login-title">XWORM</div>
+    <input class="login-field" type="text" id="u" placeholder="USERNAME" value="xotiic" autocomplete="off">
+    <input class="login-field" type="password" id="p" placeholder="PASSWORD" value="40671Mps19*" autocomplete="off">
+    <button class="login-btn" onclick="login()">[ AUTHENTICATE ]</button>
+    <div class="login-error" id="loginErr">⛔ ACCESS DENIED</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="brand">
+      ☠ XWORM<span class="brand-ver">v2.0</span>
+    </div>
+    <div class="header-stats">
+      <div class="hstat"><div class="hstat-val" id="sBots">12</div><div class="hstat-lbl">Active</div></div>
+      <div class="hstat"><div class="hstat-val" id="sTotal">24</div><div class="hstat-lbl">Total</div></div>
+      <div class="hstat"><div class="hstat-val" id="sKeys">1,542</div><div class="hstat-lbl">Keylog</div></div>
+      <div class="hstat"><div class="hstat-val" id="sCreds">87</div><div class="hstat-lbl">Creds</div></div>
+    </div>
+    <div class="header-right">
+      <div class="sys-time" id="sysTime">--:--:--</div>
+      <button class="logout-btn" onclick="logout()">LOGOUT</button>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-bar">
+    <div class="tab active" onclick="switchTab('dashboard')">⚡ DASHBOARD</div>
+    <div class="tab" onclick="switchTab('bots')">🤖 BOT MANAGER</div>
+    <div class="tab" onclick="switchTab('terminal')">💻 TERMINAL</div>
+    <div class="tab" onclick="switchTab('attacks')">☠ ATTACKS</div>
+    <div class="tab" onclick="switchTab('data')">📁 CAPTURED</div>
+    <div class="tab" onclick="switchTab('plugins')">🔌 PLUGINS</div>
+    <div class="tab" onclick="switchTab('settings')">⚙ SETTINGS</div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- DASHBOARD TAB -->
+    <div id="pane-dashboard" class="tab-pane active">
+      <!-- Keystrokes panel -->
+      <div class="panel col-flex" style="overflow:hidden;">
+        <div class="panel-head">
+          <div class="panel-head-left">⌨ LIVE KEYSTROKES</div>
+          <input class="f-input" style="width:140px;padding:3px 8px;font-size:0.72rem;" placeholder="Filter IP..." oninput="filterKS(this.value)">
         </div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Time</th><th>IP</th><th>User</th><th>Keys</th><th>Imp</th></tr></thead>
+          <tbody id="tbKS"></tbody></table>
+        </div>
+      </div>
+
+      <!-- Credentials panel -->
+      <div class="panel col-flex" style="overflow:hidden; grid-column: span 2;">
+        <div class="panel-head"><div class="panel-head-left">🔑 RECENT CREDENTIALS</div></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Time</th><th>IP</th><th>Type</th><th>Value</th></tr></thead>
+          <tbody id="tbCreds"></tbody></table>
+        </div>
+      </div>
+
+      <!-- Browser Data -->
+      <div class="panel col-flex" style="overflow:hidden;">
+        <div class="panel-head"><div class="panel-head-left">🌐 BROWSER DATA</div></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Bot</th><th>Passwords</th><th>History</th></tr></thead>
+          <tbody id="tbBrowser"></tbody></table>
+        </div>
+      </div>
+
+      <!-- WiFi -->
+      <div class="panel col-flex" style="overflow:hidden;">
+        <div class="panel-head"><div class="panel-head-left">📶 WIFI NETWORKS</div></div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Bot</th><th>SSID</th><th>Password</th></tr></thead>
+          <tbody id="tbWifi"></tbody></table>
+        </div>
+      </div>
+
+      <!-- Screenshots -->
+      <div class="panel col-flex" style="overflow:hidden;">
+        <div class="panel-head"><div class="panel-head-left">📸 SCREENSHOTS</div></div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--text2);font-family:'Share Tech Mono',monospace;font-size:0.8rem;letter-spacing:2px;">
+          [ NO CAPTURES YET ]
+        </div>
+      </div>
     </div>
 
-    <!-- Main Dashboard (All sections visible by scrolling) -->
-    <div class="dashboard" id="dashboard">
-        <!-- Header with Stats -->
-        <div class="header">
-            <div class="logo">
-                🧬 WORM.C2
-                <span>v2.0</span>
-            </div>
-            <div class="stats-grid" id="stats">
-                <div class="stat-card">
-                    <div class="stat-value" id="statBots">12</div>
-                    <div class="stat-label">Active Bots</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statTotal">24</div>
-                    <div class="stat-label">Total Bots</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statKeys">1,542</div>
-                    <div class="stat-label">Keystrokes</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="statCreds">87</div>
-                    <div class="stat-label">Credentials</div>
-                </div>
-            </div>
+    <!-- BOTS TAB -->
+    <div id="pane-bots" class="tab-pane" style="flex-direction:column;gap:12px;">
+      <div class="panel" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+        <div class="panel-head">
+          <div class="panel-head-left">🤖 BOT MANAGER — <span id="botCount" style="color:#aaa;">12 ONLINE</span></div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-outline" onclick="loadBots()">↻ REFRESH</button>
+            <button class="btn btn-red" onclick="killAll()">💀 KILL ALL</button>
+          </div>
         </div>
-
-        <!-- SECTION 1: DASHBOARD / LIVE DATA -->
-        <div class="section-header">📊 LIVE DASHBOARD</div>
-        
-        <div class="grid-2">
-            <!-- Live Keystrokes -->
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">📡 Live Keystrokes</div>
-                    <input type="text" class="form-input" placeholder="Filter IP..." style="width: 200px;" id="keystrokeFilter" onkeyup="filterKeystrokes()">
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>IP</th>
-                                <th>User</th>
-                                <th>Keystrokes</th>
-                                <th>Importance</th>
-                            </tr>
-                        </thead>
-                        <tbody id="keystrokeTable"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Recent Credentials -->
-            <div class="panel">
-                <div class="panel-header">
-                    <div class="panel-title">🔑 Recent Credentials</div>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>IP</th>
-                                <th>Type</th>
-                                <th>Value</th>
-                            </tr>
-                        </thead>
-                        <tbody id="credentialTable"></tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr>
+              <th><input type="checkbox" onchange="toggleAll(this)" style="accent-color:var(--red);"></th>
+              <th>IP Address</th><th>Hostname</th><th>User</th><th>OS</th>
+              <th>Status</th><th>Last Seen</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="tbBots"></tbody>
+          </table>
         </div>
-
-        <div class="grid-3">
-            <!-- Browser Data -->
-            <div class="panel">
-                <div class="panel-title">🌐 Browser Data</div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Bot</th>
-                                <th>Passwords</th>
-                                <th>History</th>
-                            </tr>
-                        </thead>
-                        <tbody id="browserTable"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- WiFi Networks -->
-            <div class="panel">
-                <div class="panel-title">📶 WiFi Networks</div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Bot</th>
-                                <th>SSID</th>
-                                <th>Password</th>
-                            </tr>
-                        </thead>
-                        <tbody id="wifiTable"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Recent Screenshots -->
-            <div class="panel">
-                <div class="panel-title">📸 Recent Screenshots</div>
-                <div class="table-container" id="screenshotList">
-                    <div style="color: var(--text-secondary); text-align: center; padding: 20px;">
-                        📷 Screenshot previews would appear here
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 2: BOT MANAGEMENT -->
-        <div class="section-header">🤖 BOT MANAGEMENT</div>
-        
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">🤖 Bot Management</div>
-                <div>
-                    <button class="btn btn-outline" onclick="refreshBots()">🔄 Refresh</button>
-                    <button class="btn btn-danger" onclick="showKillModal()">💀 Kill Selected</button>
-                </div>
-            </div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" onchange="toggleAllBots(this)"></th>
-                            <th>IP</th>
-                            <th>Hostname</th>
-                            <th>User</th>
-                            <th>OS</th>
-                            <th>Status</th>
-                            <th>Last Seen</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="botTable"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- SECTION 3: REMOTE TERMINAL -->
-        <div class="section-header">💻 REMOTE TERMINAL</div>
-        
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">💻 Remote Terminal</div>
-            </div>
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">Command</label>
-                    <input type="text" class="form-input" id="terminalCommand" placeholder="e.g., dir, ls, whoami" value="whoami">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Target</label>
-                    <select class="form-select" id="terminalTarget">
-                        <option value="all">All Bots</option>
-                        <option value="192.168.1.105">192.168.1.105 (DESKTOP-ABC123)</option>
-                        <option value="192.168.1.110">192.168.1.110 (ubuntu-server)</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn btn-primary" onclick="sendTerminalCommand()">▶️ Execute</button>
-            
-            <div style="margin-top: 20px;">
-                <div class="panel-title">📟 Output</div>
-                <div class="terminal" id="terminalOutput">
-                    <div class="terminal-line"><span class="timestamp">[SYSTEM]</span> Ready to accept commands...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 4: ATTACKS -->
-        <div class="section-header">⚡ DDoS ATTACKS</div>
-        
-        <div class="panel" style="border-color: var(--accent-danger);">
-            <div class="panel-header">
-                <div class="panel-title" style="color: var(--accent-danger);">⚡ DDoS Attack Launcher</div>
-            </div>
-            
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">Target (IP/Domain)</label>
-                    <input type="text" class="form-input" id="attackTarget" placeholder="e.g., 192.168.1.100" value="192.168.1.1">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Port</label>
-                    <input type="number" class="form-input" id="attackPort" value="80">
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">Duration (seconds)</label>
-                    <input type="number" class="form-input" id="attackDuration" value="60">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Method</label>
-                    <select class="form-select" id="attackMethod">
-                        <option value="http">HTTP Flood</option>
-                        <option value="syn">SYN Flood</option>
-                        <option value="udp">UDP Flood</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Target Bots</label>
-                <select class="form-select" id="attackBotTarget">
-                    <option value="all">All Bots</option>
-                    <option value="192.168.1.105">192.168.1.105 (DESKTOP-ABC123)</option>
-                    <option value="192.168.1.110">192.168.1.110 (ubuntu-server)</option>
-                </select>
-            </div>
-
-            <button class="btn btn-danger" onclick="launchAttack()">🚀 Launch Attack</button>
-            <div id="attackStatus" style="margin-top: 15px;"></div>
-        </div>
-
-        <!-- SECTION 5: CAPTURED DATA -->
-        <div class="section-header">📁 CAPTURED DATA</div>
-        
-        <div class="grid-2">
-            <div class="panel">
-                <div class="panel-title">🔑 Captured Credentials</div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Bot</th>
-                                <th>Type</th>
-                                <th>Value</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fullCredentialTable"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="panel">
-                <div class="panel-title">📁 Interesting Files</div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Bot</th>
-                                <th>Path</th>
-                                <th>Size</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fileTable"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 6: PLUGINS -->
-        <div class="section-header">🔌 PLUGINS</div>
-        
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">📦 Upload Plugin</div>
-            </div>
-            
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">Plugin Name</label>
-                    <input type="text" class="form-input" id="pluginName" value="custom_plugin">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Version</label>
-                    <input type="text" class="form-input" id="pluginVersion" value="1.0.0">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Description</label>
-                <input type="text" class="form-input" id="pluginDescription" placeholder="What does this plugin do?" value="Custom data collector">
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Target Bots</label>
-                <select class="form-select" id="pluginTarget">
-                    <option value="all">All Bots</option>
-                    <option value="192.168.1.105">192.168.1.105 (DESKTOP-ABC123)</option>
-                    <option value="192.168.1.110">192.168.1.110 (ubuntu-server)</option>
-                </select>
-            </div>
-
-            <div class="upload-area" id="pluginDropArea" onclick="document.getElementById('pluginFile').click()">
-                <input type="file" id="pluginFile" style="display: none;" accept=".py" onchange="handlePluginSelect(this)">
-                <p>📁 Drop plugin .py file here or click to upload</p>
-            </div>
-
-            <button class="btn btn-primary" onclick="uploadPlugin()">⬆️ Upload & Deploy</button>
-        </div>
-
-        <div class="panel">
-            <div class="panel-title">📋 Installed Plugins</div>
-            <div id="pluginList" class="grid-2"></div>
-        </div>
-
-        <!-- SECTION 7: PROPAGATION -->
-        <div class="section-header">🕸️ WORM PROPAGATION</div>
-        
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">🕸️ Worm Propagation</div>
-            </div>
-
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">Network Range</label>
-                    <input type="text" class="form-input" id="propagateRange" value="192.168.1.0/24">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">SSH Username</label>
-                    <input type="text" class="form-input" id="propagateUsername" placeholder="root" value="root">
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">SSH Password</label>
-                    <input type="password" class="form-input" id="propagatePassword" placeholder="password" value="toor">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Execute On</label>
-                    <select class="form-select" id="propagateTarget">
-                        <option value="all">All Bots</option>
-                        <option value="192.168.1.105">192.168.1.105 (DESKTOP-ABC123)</option>
-                    </select>
-                </div>
-            </div>
-
-            <button class="btn btn-primary" onclick="propagate()">🚀 Start Propagation</button>
-            <div id="propagateStatus" style="margin-top: 15px;"></div>
-        </div>
-
-        <!-- SECTION 8: HELP -->
-        <div class="section-header">❓ HELP & DOCUMENTATION</div>
-        
-        <div class="panel">
-            <div class="help-section">
-                <div class="help-title">📌 Getting Started</div>
-                <div class="help-card">
-                    <p>Welcome to the Worm C2 system. This dashboard allows you to control infected machines (bots) and collect data from them.</p>
-                    <p><strong>Default Credentials:</strong> Username: <code>xotiic</code>, Password: <code>40671Mps19*</code></p>
-                    <p><strong>⚠️ Change them immediately!</strong></p>
-                </div>
-            </div>
-
-            <div class="help-section">
-                <div class="help-title">🤖 Bot Management</div>
-                <div class="help-card">
-                    <p><strong>View Bots:</strong> See all infected machines in the Bot Management section.</p>
-                    <p><strong>Status:</strong> Green dot = active (last 5 minutes), Red dot = inactive.</p>
-                </div>
-            </div>
-
-            <div class="help-section">
-                <div class="help-title">💻 Remote Terminal</div>
-                <div class="help-card">
-                    <p>Execute system commands on remote bots:</p>
-                    <ul style="margin-left: 20px;">
-                        <li><code>dir</code> - List directory (Windows)</li>
-                        <li><code>ls -la</code> - List directory (Linux/Mac)</li>
-                        <li><code>whoami</code> - Current user</li>
-                        <li><code>ipconfig</code> / <code>ifconfig</code> - Network info</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="help-section">
-                <div class="help-title">⚡ DDoS Attacks</div>
-                <div class="help-card">
-                    <p><strong>HTTP Flood:</strong> Sends HTTP GET requests to target website.</p>
-                    <p><strong>SYN Flood:</strong> TCP SYN packets (requires root/admin).</p>
-                    <p><strong>UDP Flood:</strong> Sends UDP packets to target port.</p>
-                </div>
-            </div>
-
-            <div class="help-section">
-                <div class="help-title">⚠️ Legal Warning</div>
-                <div class="help-card" style="border-color: var(--accent-danger);">
-                    <p><strong>FOR EDUCATIONAL PURPOSES ONLY!</strong></p>
-                    <p>Using this tool against systems you don't own is illegal.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECTION 9: SETTINGS -->
-        <div class="section-header">⚙️ SETTINGS</div>
-        
-        <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">⚙️ Settings</div>
-            </div>
-
-            <div class="help-card">
-                <h3>Current Credentials</h3>
-                <p><strong>Username:</strong> <span id="currentUsername">xotiic</span></p>
-                <p><strong>Password:</strong> <span id="currentPassword">40671Mps19*</span></p>
-            </div>
-
-            <div class="grid-2">
-                <div class="form-group">
-                    <label class="form-label">New Username</label>
-                    <input type="text" class="form-input" id="newUsername" placeholder="New username">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">New Password</label>
-                    <input type="password" class="form-input" id="newPassword" placeholder="New password">
-                </div>
-            </div>
-
-            <button class="btn btn-primary" onclick="changeCredentials()">Update Credentials</button>
-            <button class="btn btn-outline" onclick="logout()" style="margin-left: 10px;">🚪 Logout</button>
-        </div>
+      </div>
     </div>
 
-    <!-- Kill Bot Modal -->
-    <div class="modal" id="killModal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeModal('killModal')">&times;</span>
-            <h2 style="color: var(--accent-danger); margin-bottom: 20px;">💀 Kill Bot</h2>
-            <p>Select bot to self-destruct:</p>
-            <select class="form-select" id="killBotSelect" style="margin: 10px 0;">
-                <option value="all">All Bots</option>
-                <option value="192.168.1.105">192.168.1.105 (DESKTOP-ABC123)</option>
-                <option value="192.168.1.110">192.168.1.110 (ubuntu-server)</option>
+    <!-- TERMINAL TAB -->
+    <div id="pane-terminal" class="tab-pane" style="flex-direction:column;gap:12px;">
+      <div class="panel" style="flex-shrink:0;">
+        <div class="panel-head"><div class="panel-head-left">💻 REMOTE TERMINAL</div></div>
+        <div style="padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="f-group">
+            <label class="f-label">Command</label>
+            <input class="f-input" id="tCmd" value="whoami" onkeydown="if(event.key==='Enter')execCmd()">
+          </div>
+          <div class="f-group">
+            <label class="f-label">Target</label>
+            <select class="f-select" id="tTarget">
+              <option value="all">All Bots</option>
+              <option value="192.168.1.105">192.168.1.105 (DESKTOP-ABC123)</option>
+              <option value="192.168.1.110">192.168.1.110 (ubuntu-server)</option>
+              <option value="10.0.0.42">10.0.0.42 (MacBook-Pro)</option>
             </select>
-            <button class="btn btn-danger" onclick="killBot()">Execute Self-Destruct</button>
+          </div>
         </div>
+        <div style="padding:0 12px 12px;display:flex;gap:8px;">
+          <button class="btn btn-red" onclick="execCmd()">▶ EXECUTE</button>
+          <button class="btn btn-outline" onclick="clearTerm()">⊘ CLEAR</button>
+        </div>
+      </div>
+      <div class="panel" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="panel-head"><div class="panel-head-left">📟 OUTPUT</div></div>
+        <div class="terminal" id="termOut">
+          <div class="t-line"><span class="t-ts">[SYSTEM]</span><span style="color:#666;"> Ready. Waiting for input...</span></div>
+        </div>
+      </div>
     </div>
 
-    <script>
-        
+    <!-- ATTACKS TAB -->
+    <div id="pane-attacks" class="tab-pane" style="flex-direction:column;gap:12px;">
+      <div class="panel atk-danger" style="flex-shrink:0;">
+        <div class="panel-head" style="color:var(--red);">
+          <div class="panel-head-left">⚡ DDOS LAUNCHER</div>
+          <span class="tag-red">ARMED</span>
+        </div>
+        <div style="padding:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div class="f-group">
+            <label class="f-label">Target IP / Domain</label>
+            <input class="f-input" id="atkTarget" value="192.168.1.1">
+          </div>
+          <div class="f-group">
+            <label class="f-label">Port</label>
+            <input class="f-input" id="atkPort" value="80" type="number">
+          </div>
+          <div class="f-group">
+            <label class="f-label">Duration (sec)</label>
+            <input class="f-input" id="atkDur" value="60" type="number">
+          </div>
+          <div class="f-group">
+            <label class="f-label">Method</label>
+            <select class="f-select" id="atkMethod">
+              <option>HTTP FLOOD</option>
+              <option>SYN FLOOD</option>
+              <option>UDP FLOOD</option>
+            </select>
+          </div>
+          <div class="f-group">
+            <label class="f-label">Bots</label>
+            <select class="f-select" id="atkBots">
+              <option>All Bots</option>
+              <option>192.168.1.105</option>
+              <option>192.168.1.110</option>
+            </select>
+          </div>
+          <div class="f-group" style="display:flex;align-items:flex-end;">
+            <button class="btn btn-red" style="width:100%;font-size:0.9rem;" onclick="launchAtk()">🚀 LAUNCH</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="panel-head"><div class="panel-head-left">📡 ATTACK LOG</div></div>
+        <div class="terminal" id="atkLog">
+          <div class="t-line"><span class="t-ts">[SYSTEM]</span><span style="color:#666;"> Attack launcher armed and ready...</span></div>
+        </div>
+      </div>
+    </div>
 
-        // ==================== LOGIN ====================
-        function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            // Simple hardcoded login for demo
-            if (username === 'xotiic' && password === '40671Mps19*') {
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                loadAllData();
-            } else {
-                document.getElementById('loginError').style.display = 'block';
-            }
-        }
+    <!-- DATA TAB -->
+    <div id="pane-data" class="tab-pane" style="flex-direction:column;gap:12px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;overflow:hidden;">
+        <div class="panel col-flex" style="overflow:hidden;">
+          <div class="panel-head"><div class="panel-head-left">🔑 CREDENTIALS DB</div></div>
+          <div class="tbl-wrap">
+            <table><thead><tr><th>Time</th><th>Bot</th><th>Type</th><th>Value</th></tr></thead>
+            <tbody id="tbFullCreds"></tbody></table>
+          </div>
+        </div>
+        <div class="panel col-flex" style="overflow:hidden;">
+          <div class="panel-head"><div class="panel-head-left">📁 EXFILTRATED FILES</div></div>
+          <div class="tbl-wrap">
+            <table><thead><tr><th>Bot</th><th>Path</th><th>Size</th></tr></thead>
+            <tbody id="tbFiles"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        function loadAllData() {
-            // Stats
-            document.getElementById('statBots').textContent = '12';
-            document.getElementById('statTotal').textContent = '24';
-            document.getElementById('statKeys').textContent = '1,542';
-            document.getElementById('statCreds').textContent = '87';
-            
-            // Load all tables with mock data
-            loadKeystrokes();
-            loadCredentials();
-            loadBots();
-            loadBrowserData();
-            loadWifiData();
-            loadFullCredentials();
-            loadFiles();
-            loadPlugins();
-            
-            // Auto-refresh every 5 seconds
-            setInterval(() => {
-                loadKeystrokes();
-                loadBots();
-            }, 5000);
-        }
+    <!-- PLUGINS TAB -->
+    <div id="pane-plugins" class="tab-pane" style="flex-direction:column;gap:12px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;overflow:hidden;">
+        <div class="panel" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="panel-head"><div class="panel-head-left">📦 DEPLOY PLUGIN</div></div>
+          <div style="padding:14px;overflow-y:auto;flex:1;">
+            <div class="f-group">
+              <label class="f-label">Plugin Name</label>
+              <input class="f-input" id="plgName" value="custom_plugin">
+            </div>
+            <div class="f-group">
+              <label class="f-label">Version</label>
+              <input class="f-input" id="plgVer" value="1.0.0">
+            </div>
+            <div class="f-group">
+              <label class="f-label">Target Bots</label>
+              <select class="f-select" id="plgTarget">
+                <option>All Bots</option>
+                <option>192.168.1.105</option>
+                <option>192.168.1.110</option>
+              </select>
+            </div>
+            <div class="upload-area" onclick="document.getElementById('plgFile').click()">
+              <input type="file" id="plgFile" style="display:none;" accept=".py" onchange="document.getElementById('uploadLbl').textContent='✅ '+this.files[0].name">
+              <div id="uploadLbl">[ DROP .PY FILE OR CLICK ]</div>
+            </div>
+            <button class="btn btn-red" style="width:100%;margin-top:10px;" onclick="deployPlugin()">⬆ UPLOAD & DEPLOY</button>
+          </div>
+        </div>
+        <div class="panel" style="display:flex;flex-direction:column;overflow:hidden;">
+          <div class="panel-head"><div class="panel-head-left">📋 INSTALLED PLUGINS</div></div>
+          <div style="padding:14px;overflow-y:auto;flex:1;" id="plgList"></div>
+        </div>
+      </div>
+    </div>
 
-        // ==================== KEYSTROKES ====================
-        function loadKeystrokes() {
-            const tbody = document.getElementById('keystrokeTable');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            mockData.keystrokes.forEach(log => {
-                const row = tbody.insertRow();
-                row.insertCell().textContent = new Date(log.timestamp).toLocaleTimeString();
-                row.insertCell().textContent = log.ip;
-                row.insertCell().textContent = log.username;
-                
-                const keystrokes = log.keystrokes.length > 30 ? log.keystrokes.substring(0,30) + '...' : log.keystrokes;
-                row.insertCell().textContent = keystrokes;
-                
-                const impCell = row.insertCell();
-                impCell.textContent = log.importance + '%';
-                impCell.style.color = log.importance > 50 ? 'var(--accent-danger)' : 'var(--accent-primary)';
-            });
-        }
+    <!-- SETTINGS TAB -->
+    <div id="pane-settings" class="tab-pane" style="flex-direction:column;gap:12px;max-width:700px;">
+      <div class="panel">
+        <div class="panel-head"><div class="panel-head-left">🔐 CHANGE CREDENTIALS</div></div>
+        <div style="padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="f-group">
+            <label class="f-label">Current Username</label>
+            <input class="f-input" id="curUser" value="xotiic" readonly style="color:var(--text2);">
+          </div>
+          <div class="f-group">
+            <label class="f-label">Current Password</label>
+            <input class="f-input" type="password" id="curPass" value="40671Mps19*" readonly style="color:var(--text2);">
+          </div>
+          <div class="f-group">
+            <label class="f-label">New Username</label>
+            <input class="f-input" id="newUser" placeholder="New username">
+          </div>
+          <div class="f-group">
+            <label class="f-label">New Password</label>
+            <input class="f-input" type="password" id="newPass" placeholder="New password">
+          </div>
+        </div>
+        <div style="padding:0 14px 14px;display:flex;gap:8px;">
+          <button class="btn btn-red" onclick="changeCreds()">UPDATE CREDENTIALS</button>
+          <button class="btn btn-outline" onclick="logout()">🚪 LOGOUT</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div class="panel-head-left">⚠ LEGAL NOTICE</div></div>
+        <div style="padding:14px;font-family:'Share Tech Mono',monospace;font-size:0.8rem;color:var(--text2);line-height:1.8;">
+          <span style="color:var(--red);">[ WARNING ]</span> FOR EDUCATIONAL AND AUTHORIZED TESTING PURPOSES ONLY.<br>
+          Unauthorized use against systems you do not own is illegal and may result in criminal charges.<br>
+          <span style="color:var(--red);">You are responsible for your own actions.</span>
+        </div>
+      </div>
+    </div>
 
-        function filterKeystrokes() {
-            const filter = document.getElementById('keystrokeFilter').value.toLowerCase();
-            const tbody = document.getElementById('keystrokeTable');
-            const rows = tbody.getElementsByTagName('tr');
-            
-            for (let row of rows) {
-                const ip = row.cells[1].textContent.toLowerCase();
-                if (ip.includes(filter)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            }
-        }
+  </div><!-- /content -->
 
-        // ==================== CREDENTIALS ====================
-        function loadCredentials() {
-            const tbody = document.getElementById('credentialTable');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            mockData.credentials.forEach(cred => {
-                const row = tbody.insertRow();
-                row.insertCell().textContent = new Date(cred.timestamp).toLocaleTimeString();
-                row.insertCell().textContent = cred.ip;
-                row.insertCell().textContent = cred.type;
-                row.insertCell().textContent = cred.value;
-            });
-        }
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="sb-item">STATUS: <span>CONNECTED</span></div>
+    <div class="sb-item">C2: <span>127.0.0.1:8080</span></div>
+    <div class="sb-item">UPTIME: <span id="uptime">00:00:00</span></div>
+    <div class="sb-item" style="margin-left:auto;">XWORM C2 v2.0 — AUTHORIZED USE ONLY</div>
+  </div>
+</div>
 
-        // ==================== BOTS ====================
-        function loadBots() {
-            const tbody = document.getElementById('botTable');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            mockData.bots.forEach(bot => {
-                const row = tbody.insertRow();
-                
-                // Checkbox
-                const checkboxCell = row.insertCell();
-                checkboxCell.innerHTML = `<input type="checkbox" value="${bot.ip}">`;
-                
-                row.insertCell().textContent = bot.ip;
-                row.insertCell().textContent = bot.hostname;
-                row.insertCell().textContent = bot.username;
-                row.insertCell().textContent = bot.os_info;
-                
-                const statusCell = row.insertCell();
-                statusCell.innerHTML = `
-                    <span class="status-badge ${bot.status === 'active' ? 'status-active' : 'status-inactive'}">
-                        <span class="status-dot"></span>
-                        ${bot.status}
-                    </span>
-                `;
-                
-                row.insertCell().textContent = new Date(bot.last_seen).toLocaleString();
-                
-                const actionsCell = row.insertCell();
-                actionsCell.innerHTML = `
-                    <button class="btn btn-outline" style="padding: 4px 8px;" onclick="alert('Terminal for ${bot.ip}')">Terminal</button>
-                    <button class="btn btn-danger" style="padding: 4px 8px;" onclick="killSpecificBot('${bot.ip}')">Kill</button>
-                `;
-            });
-        }
+<script>
+// ─── MATRIX RAIN ─────────────────────────────────────────────────────────────
+(function(){
+  const c = document.getElementById('matrixCanvas');
+  const ctx = c.getContext('2d');
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+  const cols = Math.floor(c.width / 16);
+  const drops = Array(cols).fill(1);
+  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEF'.split('');
+  function draw() {
+    ctx.fillStyle = 'rgba(0,0,0,0.05)';
+    ctx.fillRect(0,0,c.width,c.height);
+    ctx.fillStyle = '#ff0000';
+    ctx.font = '14px Share Tech Mono';
+    drops.forEach((y,i) => {
+      const ch = chars[Math.floor(Math.random()*chars.length)];
+      ctx.fillText(ch, i*16, y*16);
+      if(y*16 > c.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    });
+  }
+  setInterval(draw, 50);
+  window.addEventListener('resize', ()=>{ c.width=window.innerWidth; c.height=window.innerHeight; });
+})();
 
-        // ==================== BROWSER DATA ====================
-        function loadBrowserData() {
-            const tbody = document.getElementById('browserTable');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            mockData.browserData.forEach(item => {
-                const row = tbody.insertRow();
-                row.insertCell().textContent = item.ip;
-                row.insertCell().textContent = item.stats.passwords;
-                row.insertCell().textContent = item.stats.history;
-            });
-        }
+// ─── MOCK DATA ────────────────────────────────────────────────────────────────
+const mockBots = [
+  { ip:'192.168.1.105', host:'DESKTOP-ABC123', user:'john_doe', os:'Win 11 x64', status:'active', last:'2024-01-15T10:30:00' },
+  { ip:'192.168.1.110', host:'ubuntu-server', user:'root', os:'Ubuntu 22.04', status:'active', last:'2024-01-15T10:29:00' },
+  { ip:'10.0.0.42', host:'MacBook-Pro', user:'alice', os:'macOS 14.2', status:'inactive', last:'2024-01-15T09:15:00' },
+  { ip:'172.16.0.5', host:'WIN-CORP01', user:'admin', os:'Win Server 2019', status:'active', last:'2024-01-15T10:28:00' },
+  { ip:'192.168.2.88', host:'laptop-home', user:'bob', os:'Win 10 x64', status:'inactive', last:'2024-01-14T22:00:00' },
+];
 
-        // ==================== WIFI DATA ====================
-        function loadWifiData() {
-            const tbody = document.getElementById('wifiTable');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            mockData.wifiData.forEach(item => {
-                try {
-                    const wifiData = JSON.parse(atob(item.wifi_data));
-                    wifiData.forEach(wifi => {
-                        const row = tbody.insertRow();
-                        row.insertCell().textContent = item.ip;
-                        row.insertCell().textContent = wifi.ssid;
-                        row.insertCell().textContent = wifi.password;
-                    });
-                } catch (e) {}
-            });
-        }
+const mockKS = [
+  { ts:'10:30:45', ip:'192.168.1.105', user:'john_doe', keys:'gmail.com user@gmail.co...', imp:85 },
+  { ts:'10:29:12', ip:'192.168.1.110', user:'root', keys:'sudo apt-get install...', imp:20 },
+  { ts:'10:28:55', ip:'10.0.0.42', user:'alice', keys:'paypal.com mypasswor...', imp:95 },
+  { ts:'10:27:30', ip:'172.16.0.5', user:'admin', keys:'ssh root@192.168.1.1', imp:60 },
+  { ts:'10:26:10', ip:'192.168.1.105', user:'john_doe', keys:'Hello World from...', imp:5 },
+];
 
-        // ==================== FULL CREDENTIALS ====================
-        function loadFullCredentials() {
-            const tbody = document.getElementById('fullCredentialTable');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            mockData.credentials.forEach(cred => {
-                const row = tbody.insertRow();
-                row.insertCell().textContent = new Date(cred.timestamp).toLocaleString();
-                row.insertCell().textContent = cred.ip;
-                row.insertCell().textContent = cred.type;
-                row.insertCell().textContent = cred.value;
-            });
-        }
+const mockCreds = [
+  { ts:'10:30:01', ip:'192.168.1.105', type:'EMAIL', val:'user@gmail.com:P@ssw0rd' },
+  { ts:'10:28:44', ip:'10.0.0.42', type:'PAYPAL', val:'alice@mail.com:Hunter2!' },
+  { ts:'10:27:20', ip:'172.16.0.5', type:'SSH', val:'root:toor@10.0.0.1' },
+  { ts:'10:25:05', ip:'192.168.1.110', type:'FTP', val:'admin:admin123@ftp.corp' },
+  { ts:'10:22:33', ip:'192.168.1.105', type:'DISCORD', val:'john_doe#1234:abc123' },
+];
 
-        // ==================== FILES ====================
-        function loadFiles() {
-            const tbody = document.getElementById('fileTable');
-            if (!tbody) return;
-            
-            tbody.innerHTML = '';
-            
-            mockData.files.forEach(item => {
-                (item.files || []).forEach(file => {
-                    const row = tbody.insertRow();
-                    row.insertCell().textContent = item.ip;
-                    row.insertCell().textContent = file.path;
-                    row.insertCell().textContent = (file.size / 1024).toFixed(2) + ' KB';
-                });
-            });
-        }
+const mockFiles = [
+  { ip:'192.168.1.105', path:'C:\\Users\\john\\Documents\\passwords.txt', size:2048 },
+  { ip:'10.0.0.42', path:'/Users/alice/Desktop/bitcoin_wallet.dat', size:51200 },
+  { ip:'172.16.0.5', path:'C:\\Admin\\backup\\db_dump.sql', size:1048576 },
+  { ip:'192.168.1.110', path:'/etc/shadow', size:1024 },
+];
 
-        // ==================== PLUGINS ====================
-        function loadPlugins() {
-            const pluginList = document.getElementById('pluginList');
-            if (!pluginList) return;
-            
-            const plugins = {
-                'keylogger_pro': { version: '2.1.0', description: 'Advanced keystroke logging', uploaded: new Date() },
-                'screenshotter': { version: '1.3.0', description: 'Screen capture module', uploaded: new Date() },
-                'credential_stealer': { version: '3.0.0', description: 'Browser credential harvester', uploaded: new Date() }
-            };
-            
-            pluginList.innerHTML = '';
-            
-            Object.entries(plugins).forEach(([name, info]) => {
-                const div = document.createElement('div');
-                div.className = 'help-card';
-                div.innerHTML = `
-                    <div style="color: var(--accent-primary); font-weight: bold;">${name}</div>
-                    <div style="color: var(--text-secondary);">v${info.version}</div>
-                    <div style="margin-top: 5px;">${info.description}</div>
-                `;
-                pluginList.appendChild(div);
-            });
-        }
+const mockWifi = [
+  { ip:'192.168.1.105', ssid:'HomeNetwork', pwd:'mypassword123' },
+  { ip:'10.0.0.42', ssid:'CoffeeShop_Free', pwd:'coffee2024' },
+  { ip:'172.16.0.5', ssid:'CORP-WIFI-2G', pwd:'C0rp@2024!' },
+];
 
-        // ==================== ACTIONS ====================
-        function toggleAllBots(checkbox) {
-            document.querySelectorAll('#botTable input[type="checkbox"]').forEach(cb => {
-                cb.checked = checkbox.checked;
-            });
-        }
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+let CREDS = { user:'xotiic', pass:'40671Mps19*' };
+function login() {
+  const u = document.getElementById('u').value;
+  const p = document.getElementById('p').value;
+  if(u === CREDS.user && p === CREDS.pass) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    init();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    setTimeout(()=>document.getElementById('loginErr').style.display='none', 3000);
+  }
+}
+document.addEventListener('keydown', e => { if(e.key==='Enter') login(); });
+function logout() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
 
-        function sendTerminalCommand() {
-            const command = document.getElementById('terminalCommand').value;
-            const target = document.getElementById('terminalTarget').value;
-            
-            const output = document.getElementById('terminalOutput');
-            const line = document.createElement('div');
-            line.className = 'terminal-line';
-            line.innerHTML = `<span class="timestamp">[${new Date().toLocaleTimeString()}]</span> > ${command} (on ${target})`;
-            output.appendChild(line);
-            
-            setTimeout(() => {
-                const response = document.createElement('div');
-                response.className = 'terminal-line';
-                response.innerHTML = `<span class="timestamp">[${new Date().toLocaleTimeString()}]</span> ✓ Command executed successfully`;
-                output.appendChild(response);
-                output.scrollTop = output.scrollHeight;
-            }, 1000);
-        }
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function init() {
+  loadKS(); loadCreds(); loadBots(); loadBrowser(); loadWifi();
+  loadFullCreds(); loadFiles(); loadPlugins();
+  setInterval(() => { loadKS(); loadBots(); }, 5000);
+  setInterval(updateTime, 1000);
+  setInterval(updateUptime, 1000);
+  updateTime();
+}
 
-        function launchAttack() {
-            const target = document.getElementById('attackTarget').value;
-            document.getElementById('attackStatus').innerHTML = `🚀 Attack launched on ${target} - 12 bots engaged`;
-        }
+// ─── CLOCK ────────────────────────────────────────────────────────────────────
+function updateTime() {
+  document.getElementById('sysTime').textContent = new Date().toLocaleTimeString();
+}
+let uptimeSecs = 0;
+function updateUptime() {
+  uptimeSecs++;
+  const h = String(Math.floor(uptimeSecs/3600)).padStart(2,'0');
+  const m = String(Math.floor((uptimeSecs%3600)/60)).padStart(2,'0');
+  const s = String(uptimeSecs%60).padStart(2,'0');
+  document.getElementById('uptime').textContent = `${h}:${m}:${s}`;
+}
 
-        function propagate() {
-            const range = document.getElementById('propagateRange').value;
-            document.getElementById('propagateStatus').innerHTML = `🔄 Scanning ${range}... Found 3 potential targets`;
-        }
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => { p.classList.remove('active'); p.style.display='none'; });
+  const tabs = ['dashboard','bots','terminal','attacks','data','plugins','settings'];
+  document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
+  const pane = document.getElementById('pane-'+name);
+  pane.classList.add('active');
+  if(name === 'dashboard') { pane.style.display = 'grid'; }
+  else { pane.style.display = 'flex'; }
+}
 
-        function uploadPlugin() {
-            alert('Plugin uploaded and deployed to selected bots');
-            loadPlugins();
-        }
+// ─── DATA LOADERS ─────────────────────────────────────────────────────────────
+function loadKS() {
+  const tb = document.getElementById('tbKS'); if(!tb) return;
+  tb.innerHTML = '';
+  mockKS.forEach(r => {
+    const tr = tb.insertRow();
+    tr.insertCell().textContent = r.ts;
+    tr.insertCell().textContent = r.ip;
+    tr.insertCell().textContent = r.user;
+    tr.insertCell().textContent = r.keys;
+    const td = tr.insertCell();
+    td.textContent = r.imp + '%';
+    td.className = r.imp > 50 ? 'imp-high' : 'imp-low';
+  });
+}
 
-        function handlePluginSelect(input) {
-            document.getElementById('pluginDropArea').innerHTML = `<p>✅ Selected: ${input.files[0].name}</p>`;
-        }
+function filterKS(v) {
+  const rows = document.querySelectorAll('#tbKS tr');
+  rows.forEach(r => r.style.display = r.cells[1]?.textContent.includes(v) ? '' : 'none');
+}
 
-        function changeCredentials() {
-            alert('Credentials updated! Please login again.');
-            logout();
-        }
+function loadCreds() {
+  const tb = document.getElementById('tbCreds'); if(!tb) return;
+  tb.innerHTML = '';
+  mockCreds.forEach(r => {
+    const tr = tb.insertRow();
+    tr.insertCell().textContent = r.ts;
+    tr.insertCell().textContent = r.ip;
+    const td = tr.insertCell(); td.innerHTML = `<span class="tag-red">${r.type}</span>`;
+    tr.insertCell().textContent = r.val;
+  });
+}
 
-        function logout() {
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('loginScreen').style.display = 'flex';
-        }
+function loadBots() {
+  const tb = document.getElementById('tbBots'); if(!tb) return;
+  tb.innerHTML = '';
+  mockBots.forEach(b => {
+    const tr = tb.insertRow();
+    tr.insertCell().innerHTML = `<input type="checkbox" style="accent-color:var(--red);">`;
+    tr.insertCell().textContent = b.ip;
+    tr.insertCell().textContent = b.host;
+    tr.insertCell().textContent = b.user;
+    tr.insertCell().textContent = b.os;
+    tr.insertCell().innerHTML = `<span class="badge ${b.status==='active'?'badge-active':'badge-dead'}"><span class="dot ${b.status==='active'?'dot-active':'dot-dead'}"></span>${b.status.toUpperCase()}</span>`;
+    tr.insertCell().textContent = new Date(b.last).toLocaleString();
+    tr.insertCell().innerHTML = `<button class="btn-ghost btn" onclick="termTo('${b.ip}')">TERM</button> <button class="btn-ghost btn" style="color:var(--red)" onclick="killBot('${b.ip}')">KILL</button>`;
+  });
+  document.getElementById('botCount').textContent = mockBots.filter(b=>b.status==='active').length + ' ONLINE';
+}
 
-        function showKillModal() {
-            document.getElementById('killModal').style.display = 'flex';
-        }
+function loadBrowser() {
+  const tb = document.getElementById('tbBrowser'); if(!tb) return;
+  tb.innerHTML = '';
+  [['192.168.1.105',23,847],['10.0.0.42',12,334],['172.16.0.5',8,1204]].forEach(([ip,pw,h]) => {
+    const tr = tb.insertRow();
+    tr.insertCell().textContent = ip;
+    tr.insertCell().textContent = pw;
+    tr.insertCell().textContent = h;
+  });
+}
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
+function loadWifi() {
+  const tb = document.getElementById('tbWifi'); if(!tb) return;
+  tb.innerHTML = '';
+  mockWifi.forEach(r => {
+    const tr = tb.insertRow();
+    tr.insertCell().textContent = r.ip;
+    tr.insertCell().textContent = r.ssid;
+    tr.insertCell().textContent = r.pwd;
+  });
+}
 
-        function killBot() {
-            alert('💀 Kill signal sent');
-            closeModal('killModal');
-        }
+function loadFullCreds() {
+  const tb = document.getElementById('tbFullCreds'); if(!tb) return;
+  tb.innerHTML = '';
+  mockCreds.forEach(r => {
+    const tr = tb.insertRow();
+    tr.insertCell().textContent = r.ts;
+    tr.insertCell().textContent = r.ip;
+    const td = tr.insertCell(); td.innerHTML = `<span class="tag-red">${r.type}</span>`;
+    tr.insertCell().textContent = r.val;
+  });
+}
 
-        function killSpecificBot(ip) {
-            if (confirm(`💀 Kill bot ${ip}?`)) {
-                alert(`Kill signal sent to ${ip}`);
-            }
-        }
+function loadFiles() {
+  const tb = document.getElementById('tbFiles'); if(!tb) return;
+  tb.innerHTML = '';
+  mockFiles.forEach(r => {
+    const tr = tb.insertRow();
+    tr.insertCell().textContent = r.ip;
+    tr.insertCell().textContent = r.path;
+    tr.insertCell().textContent = (r.size/1024).toFixed(1)+' KB';
+  });
+}
 
-        function refreshBots() {
-            loadBots();
-            alert('Bot list refreshed');
-        }
+function loadPlugins() {
+  const el = document.getElementById('plgList'); if(!el) return;
+  const plugins = [
+    { name:'keylogger_pro', ver:'2.1.0', desc:'Advanced keystroke logging module' },
+    { name:'screenshotter', ver:'1.3.0', desc:'Screen capture & live stream' },
+    { name:'cred_stealer', ver:'3.0.0', desc:'Browser credential harvester' },
+    { name:'file_exfil', ver:'1.0.2', desc:'Sensitive file finder & exfiltrator' },
+  ];
+  el.innerHTML = '';
+  plugins.forEach(p => {
+    el.innerHTML += `<div style="background:var(--bg2);border:1px solid var(--border-red);padding:10px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="color:var(--red);font-family:'Share Tech Mono',monospace;font-size:0.85rem;">${p.name} <span style="color:var(--text2);font-size:0.7rem;">v${p.ver}</span></div>
+        <div style="color:var(--text2);font-size:0.78rem;margin-top:3px;">${p.desc}</div>
+      </div>
+      <button class="btn-ghost btn" style="color:var(--red)">REMOVE</button>
+    </div>`;
+  });
+}
 
-        // Modal close on outside click
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
+// ─── ACTIONS ─────────────────────────────────────────────────────────────────
+function toggleAll(cb) {
+  document.querySelectorAll('#tbBots input[type=checkbox]').forEach(c => c.checked = cb.checked);
+}
+function killAll() { if(confirm('Kill ALL bots?')) termLog('atkLog', '💀 Kill signal sent to all bots — awaiting confirmation...', true); }
+function killBot(ip) { if(confirm(`Kill ${ip}?`)) termLog('atkLog', `💀 Kill signal sent → ${ip}`, true); }
+function termTo(ip) {
+  document.getElementById('tTarget').value = ip;
+  switchTab('terminal');
+  termLog('termOut', `Switched target → ${ip}`, false);
+}
 
-        // Initialize drag and drop
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropArea = document.getElementById('pluginDropArea');
-            if (dropArea) {
-                dropArea.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    e.target.classList.add('dragover');
-                });
+function execCmd() {
+  const cmd = document.getElementById('tCmd').value.trim();
+  const tgt = document.getElementById('tTarget').value;
+  if(!cmd) return;
+  termLog('termOut', `<span class="t-prompt">$</span> ${cmd} → <span style="color:#888;">${tgt}</span>`, false);
+  setTimeout(() => {
+    const fake = {whoami:'john_doe', ls:'bin boot dev etc home', dir:'Directory of C:\\Users\\john', ifconfig:'eth0: 192.168.1.105', ipconfig:'IPv4: 192.168.1.105'};
+    const out = fake[cmd.split(' ')[0]] || 'Command executed successfully.';
+    termLog('termOut', `<span style="color:#00ff41;">${out}</span>`, false);
+  }, 600);
+  document.getElementById('tCmd').value = '';
+}
 
-                dropArea.addEventListener('dragleave', (e) => {
-                    e.preventDefault();
-                    e.target.classList.remove('dragover');
-                });
+function clearTerm() {
+  document.getElementById('termOut').innerHTML = '<div class="t-line"><span class="t-ts">[CLEARED]</span></div>';
+}
 
-                dropArea.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    e.target.classList.remove('dragover');
-                    
-                    const file = e.dataTransfer.files[0];
-                    if (file && file.name.endsWith('.py')) {
-                        document.getElementById('pluginDropArea').innerHTML = `<p>✅ Selected: ${file.name}</p>`;
-                    } else {
-                        alert('Please upload a .py file');
-                    }
-                });
-            }
-        });
-    </script>
+function launchAtk() {
+  const t = document.getElementById('atkTarget').value;
+  const m = document.getElementById('atkMethod').value;
+  const d = document.getElementById('atkDur').value;
+  termLog('atkLog', `🚀 LAUNCHING ${m} → ${t} for ${d}s`, true);
+  setTimeout(()=>termLog('atkLog','⚡ Attack active — 12 bots engaged', true), 800);
+  setTimeout(()=>termLog('atkLog',`📊 Packets sent: ${Math.floor(Math.random()*500000+100000).toLocaleString()}`, true), 2000);
+}
+
+function termLog(id, msg, isRed) {
+  const out = document.getElementById(id);
+  if(!out) return;
+  const d = document.createElement('div');
+  d.className = 't-line';
+  d.innerHTML = `<span class="t-ts">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+  if(isRed) d.style.color = 'var(--red)';
+  out.appendChild(d);
+  out.scrollTop = out.scrollHeight;
+}
+
+function deployPlugin() {
+  const n = document.getElementById('plgName').value;
+  alert(`Plugin "${n}" deployed.`);
+  loadPlugins();
+}
+
+function changeCreds() {
+  const u = document.getElementById('newUser').value;
+  const p = document.getElementById('newPass').value;
+  if(u) CREDS.user = u;
+  if(p) CREDS.pass = p;
+  alert('Credentials updated. Please login again.');
+  logout();
+}
+
+// Fix initial pane display
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.querySelectorAll('.tab-pane').forEach(p => {
+    if(!p.classList.contains('active')) p.style.display = 'none';
+  });
+});
+</script>
 </body>
 </html>
